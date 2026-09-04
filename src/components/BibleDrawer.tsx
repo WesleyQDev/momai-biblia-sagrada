@@ -59,7 +59,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
       >
         {/* Header Superior Limpo */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/70 bg-card shrink-0">
-          <h2 className="text-base font-serif font-bold text-text">
+          <h2 className="text-base font-serif font-bold text-[#1c1917]">
             {selectedBook ? selectedBook.name : 'Livros da Bíblia'}
           </h2>
 
@@ -124,8 +124,8 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
                   onClick={() => handleSelectBook(b)}
                   className={`w-full py-2.5 px-4 flex items-center justify-between text-left transition-colors rounded-xl cursor-pointer ${
                     isCurrent
-                      ? 'bg-accent/15 text-text font-bold'
-                      : 'hover:bg-input/40 text-text'
+                      ? 'bg-accent/15 text-[#1c1917] font-bold'
+                      : 'hover:bg-input/40 text-[#1c1917]'
                   }`}
                 >
                   <span className="text-sm font-serif">{b.name}</span>
@@ -155,8 +155,8 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
                     style={{ aspectRatio: '1 / 1' }}
                     className={`w-full rounded-xl text-xs font-bold transition-all border cursor-pointer active:scale-95 flex items-center justify-center ${
                       isCurrent
-                        ? 'bg-accent text-text border-accent shadow'
-                        : 'bg-input/40 hover:bg-input border-border/80 text-text'
+                        ? 'bg-accent text-[#1c1917] border-accent shadow'
+                        : 'bg-input/40 hover:bg-input border-border/80 text-[#1c1917]'
                     }`}
                   >
                     {ch}

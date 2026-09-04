@@ -125,7 +125,7 @@ export const BiblePage: React.FC<{ isActive?: boolean }> = ({ isActive = true })
   const nextStep = bibleData.getNextChapter(currentBookId, currentChapter)
 
   return (
-    <div className="h-full max-h-screen overflow-hidden bg-bg text-text flex flex-col font-sans selection:bg-accent/30 selection:text-text">
+    <div className="h-full max-h-screen overflow-hidden bg-bg text-text flex flex-col font-sans">
       {/* 1. Tela Inicial (Sem Navbar superior, 100% fiel ao print) */}
       {activeTab === 'home' && (
         <div className="flex-1 min-h-0 overflow-y-auto flex flex-col justify-center">

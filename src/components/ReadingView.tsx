@@ -3,6 +3,7 @@ import { bibleData } from '../services/bible-data'
 import { bibleStorage } from '../services/storage'
 import { RealisticBook } from './RealisticBook'
 import { QuickNavArrows } from './QuickNavArrows'
+import ContextMenu from './ContextMenu'
 import type { BibleVerse, RawBibleBook } from '../types/bible'
 
 interface ReadingViewProps {
@@ -31,6 +32,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
   // State for scroll mode verse interaction
   const [selectedVerseForAction, setSelectedVerseForAction] = useState<BibleVerse | null>(null)
   const [copyFeedback, setCopyFeedback] = useState(false)
+  const [verseMenu, setVerseMenu] = useState<{ x: number; y: number; verse: BibleVerse } | null>(null)
   const verseRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   // Update book and verses whenever bookId or chapter changes
@@ -198,16 +200,22 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
                 <span>{book.totalChapters} capítulos</span>
               </div>
 
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-text tracking-tight mb-2">
+              <h2
+                className="text-3xl sm:text-4xl font-serif font-bold text-black tracking-tight mb-2"
+                style={{ color: '#000000' }}
+              >
                 {book.name}
               </h2>
-              <p className="text-sm font-semibold text-text-muted">
+              <p className="text-sm font-semibold text-black" style={{ color: '#000000' }}>
                 Capítulo {chapter}
               </p>
             </header>
 
             {/* Verses Flow Layout */}
-            <div className="font-serif text-lg leading-loose text-text space-y-4 select-text">
+            <div
+              className="font-serif text-lg leading-loose text-black space-y-4 select-text"
+              style={{ color: '#000000' }}
+            >
               {verses.map((v) => {
                 const isHighlighted = highlightedVerse === v.verse
                 const isBookmarked = bookmarkedSet.has(v.verse)
@@ -226,25 +234,32 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
                     onContextMenu={(e) => {
                       e.preventDefault()
                       setSelectedVerseForAction(v)
+                      setVerseMenu({ x: e.clientX, y: e.clientY, verse: v })
                     }}
                     className={`relative group rounded-xl p-2 transition-all cursor-pointer ${
                       isHighlighted
-                        ? 'bg-accent/20 ring-1 ring-accent'
+                        ? 'bg-amber-300/60 ring-1 ring-amber-500'
                         : isSelected
-                          ? 'bg-input/60 ring-1 ring-border'
-                          : 'hover:bg-input/30'
+                          ? 'bg-black/10 ring-1 ring-black/30'
+                          : 'hover:bg-black/5'
                     }`}
                   >
                     <div className="flex items-baseline space-x-2">
                       <span
-                        className={`inline-block font-mono text-xs font-bold select-none min-w-[20px] ${
-                          isBookmarked ? 'text-accent' : 'text-text-muted group-hover:text-text'
+                        style={{ color: '#000000' }}
+                        className={`inline-block font-mono text-xs font-bold select-none min-w-[20px] text-black ${
+                          isBookmarked ? 'text-[#d97706]' : 'text-black'
                         }`}
                       >
                         {v.verse}
                       </span>
 
-                      <span className="flex-1 text-text leading-relaxed">{v.text}</span>
+                      <span
+                        className="flex-1 text-black leading-relaxed"
+                        style={{ color: '#000000' }}
+                      >
+                        {v.text}
+                      </span>
 
                       {isBookmarked && (
                         <span
@@ -306,6 +321,26 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
             onOpenDrawer={onOpenDrawer}
           />
         </>
+      )}
+      {verseMenu && (
+        <ContextMenu
+          x={verseMenu.x}
+          y={verseMenu.y}
+          onClose={() => setVerseMenu(null)}
+          items={[
+            {
+              id: 'copy',
+              label: 'Copiar versículo',
+              shortcut: 'Ctrl+C',
+              onClick: () => handleCopyVerse(verseMenu.verse)
+            },
+            {
+              id: 'bookmark',
+              label: bookmarkedSet.has(verseMenu.verse.verse) ? 'Desmarcar' : 'Marcar',
+              onClick: () => handleToggleBookmark(verseMenu.verse)
+            }
+          ]}
+        />
       )}
     </div>
   )

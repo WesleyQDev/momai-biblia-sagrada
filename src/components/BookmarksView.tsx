@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { bibleStorage } from '../services/storage'
+import ContextMenu from './ContextMenu'
 import type { BibleBookmark } from '../types/bookmarks'
 import type { Testament } from '../types/bible'
 
@@ -14,15 +15,30 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
 }) => {
   const [bookmarks, setBookmarks] = useState<BibleBookmark[]>([])
   const [filterTestament, setFilterTestament] = useState<Testament | 'ALL'>('ALL')
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; bookmark: BibleBookmark } | null>(null)
 
   useEffect(() => {
     setBookmarks(bibleStorage.getBookmarks())
   }, [])
 
-  const handleRemove = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
+  const handleCopy = (b: BibleBookmark) => {
+    const text = `"${b.text}" (${b.bookName} ${b.chapter}:${b.verse})`
+    try {
+      void navigator.clipboard?.writeText?.(text)
+    } catch {}
+    setContextMenu(null)
+  }
+
+  const handleOpen = (b: BibleBookmark) => {
+    onNavigateToPassage(b.bookId, b.chapter, b.verse)
+    setContextMenu(null)
+  }
+
+  const handleRemove = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation()
     bibleStorage.removeBookmark(id)
     setBookmarks(bibleStorage.getBookmarks())
+    setContextMenu(null)
   }
 
   const filtered = bookmarks.filter((b) => {
@@ -31,7 +47,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
   })
 
   return (
-    <div className="w-full space-y-6 animate-fade-in pb-16">
+    <div className="w-full space-y-6 animate-fade-in pb-16 text-text">
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
@@ -105,6 +121,11 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
             <div
               key={b.id}
               onClick={() => onNavigateToPassage(b.bookId, b.chapter, b.verse)}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setContextMenu({ x: e.clientX, y: e.clientY, bookmark: b })
+              }}
               className="group p-5 rounded-2xl border border-border bg-card hover:border-accent/40 shadow-glass-sm transition-all duration-300 cursor-pointer flex flex-col space-y-3"
             >
               <div className="flex items-center justify-between">
@@ -133,11 +154,11 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                 </div>
               </div>
 
-              <blockquote className="text-sm font-serif italic text-text-muted group-hover:text-text leading-relaxed transition-colors">
+              <blockquote className="text-sm font-serif italic text-text leading-relaxed transition-colors">
                 "{b.text}"
               </blockquote>
 
-              <div className="flex items-center text-xs font-semibold text-text group-hover:text-accent transition-colors pt-1">
+              <div className="flex items-center text-xs font-semibold text-text-muted group-hover:text-accent transition-colors pt-1">
                 <span>Abrir e ler no contexto</span>
                 <svg className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -146,6 +167,32 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
             </div>
           ))}
         </div>
+      )}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          items={[
+            {
+              id: 'open',
+              label: 'Abrir e ler no contexto',
+              onClick: () => handleOpen(contextMenu.bookmark)
+            },
+            {
+              id: 'copy',
+              label: 'Copiar versículo',
+              shortcut: 'Ctrl+C',
+              onClick: () => handleCopy(contextMenu.bookmark)
+            },
+            {
+              id: 'remove',
+              label: 'Remover marcador',
+              danger: true,
+              onClick: () => handleRemove(contextMenu.bookmark.id)
+            }
+          ]}
+        />
       )}
     </div>
   )

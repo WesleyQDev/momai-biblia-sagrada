@@ -967,15 +967,18 @@ const RenderBiblePage: React.FC<{
   // If this is a dedicated book title page (rendered once per book)
   if (page.isBookTitlePage) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-6 select-none">
+      <div className="h-full flex flex-col items-center justify-center text-center p-6 select-none" style={{ color: '#000000' }}>
         <h2
-          className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#111827] tracking-[0.2em] uppercase leading-tight select-none"
-          style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+          className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-black tracking-[0.2em] uppercase leading-tight select-none"
+          style={{ fontFamily: "'Georgia', 'Times New Roman', serif", color: '#000000' }}
         >
           {activeBookName}
         </h2>
         {/* Almeida Revista e Atualizada apenas abaixo do nome do livro */}
-        <span className="mt-3 text-xs sm:text-sm font-sans tracking-[0.16em] text-[#78716c] uppercase font-medium select-none">
+        <span
+          className="mt-3 text-xs sm:text-sm font-sans tracking-[0.16em] text-black uppercase font-medium select-none"
+          style={{ color: '#000000' }}
+        >
           Almeida Revista e Atualizada
         </span>
       </div>
@@ -993,9 +996,12 @@ const RenderBiblePage: React.FC<{
       : String(page.startChapter || 1)
 
   return (
-    <div className="flex-1 flex flex-col justify-start h-full overflow-hidden text-[#1c1917] font-serif select-none">
+    <div className="flex-1 flex flex-col justify-start h-full overflow-hidden text-black font-serif select-none" style={{ color: '#000000' }}>
       {/* Running Header */}
-      <div className="flex items-center justify-between pb-1 mb-2 border-b border-[#e5dfd2] text-[11px] font-bold text-[#57534e] uppercase tracking-wider select-none">
+      <div
+        className="flex items-center justify-between pb-1 mb-2 border-b border-[#e5dfd2] text-[11px] font-bold text-black uppercase tracking-wider select-none"
+        style={{ color: '#000000' }}
+      >
         <span>{pageNum % 2 !== 0 ? pageNum : ''}</span>
         <span className="tracking-widest">{activeBookName} {headerChapter}</span>
         <span>{pageNum % 2 === 0 ? pageNum : ''}</span>
@@ -1006,15 +1012,17 @@ const RenderBiblePage: React.FC<{
         style={{
           overflow: 'hidden',
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          color: '#000000'
         }}
-        className="flex-1 min-h-0 overflow-hidden flex flex-col justify-start select-none"
+        className="flex-1 min-h-0 overflow-hidden flex flex-col justify-start select-none text-black"
       >
         <div
-          className="columns-1 sm:columns-2 gap-5 text-[12px] sm:text-[13px] leading-[1.62] text-[#1c1917] text-justify select-none"
+          className="columns-1 sm:columns-2 gap-5 text-[12px] sm:text-[13px] leading-[1.62] text-black text-justify select-none"
           style={{
             fontFamily: "'Georgia', 'Times New Roman', serif",
-            hyphens: 'auto'
+            hyphens: 'auto',
+            color: '#000000'
           }}
         >
           {page.items.map((item, idx) => {
@@ -1022,15 +1030,18 @@ const RenderBiblePage: React.FC<{
               return (
                 <div key={`ch-${item.chapter}-${idx}`} className="break-inside-avoid mb-2 pt-1 first:pt-0 select-none">
                   {item.pericope && (
-                    <h4 className="text-[11px] font-serif font-bold text-[#111827] italic mb-0.5 select-none">
+                    <h4
+                      className="text-[11px] font-serif font-bold text-black italic mb-0.5 select-none"
+                      style={{ color: '#000000' }}
+                    >
                       {item.pericope}
                     </h4>
                   )}
                   {/* Apenas o número do capítulo limpo, sem texto ao lado */}
                   <div className="select-none">
                     <span
-                      className="text-3xl sm:text-4xl font-serif font-black text-[#111827] leading-none select-none tracking-tighter inline-block"
-                      style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+                      className="text-3xl sm:text-4xl font-serif font-black text-black leading-none select-none tracking-tighter inline-block"
+                      style={{ fontFamily: "'Georgia', 'Times New Roman', serif", color: '#000000' }}
                     >
                       {item.chapter}
                     </span>
@@ -1057,18 +1068,22 @@ const RenderBiblePage: React.FC<{
                   e.stopPropagation()
                   onVerseClick(v)
                 }}
-                className={`inline cursor-pointer transition-colors rounded px-0.5 select-none ${
+                style={{ color: '#000000' }}
+                className={`inline cursor-pointer transition-colors rounded px-0.5 select-none text-black ${
                   isHighlighted
                     ? 'bg-amber-300/60 ring-1 ring-amber-500 font-semibold'
                     : 'hover:bg-[#ede5cc]'
                 }`}
               >
                 {!item.isContinuation && (
-                  <b className="font-sans font-bold text-[10px] text-[#111827] mr-1 select-none">
+                  <b
+                    className="font-sans font-bold text-[10px] text-black mr-1 select-none"
+                    style={{ color: '#000000' }}
+                  >
                     {v.verse}
                   </b>
                 )}
-                <span className="select-none">{textToRender} </span>
+                <span className="select-none text-black" style={{ color: '#000000' }}>{textToRender} </span>
                 {isBookmarked && !item.isContinuation && (
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#d97706] ml-0.5 align-middle select-none" />
                 )}

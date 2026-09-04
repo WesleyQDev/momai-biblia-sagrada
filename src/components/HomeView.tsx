@@ -79,7 +79,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   }
 
   return (
-    <div className="relative max-w-2xl mx-auto w-full px-4 py-6 sm:py-8 flex flex-col justify-between min-h-[calc(100vh-20px)] animate-fade-in space-y-6 select-none">
+    <div className="relative max-w-2xl mx-auto w-full px-4 py-6 sm:py-8 flex flex-col justify-between min-h-[calc(100vh-20px)] animate-fade-in space-y-6 select-none text-text">
       {/* Botão de Busca da Lupa no Canto Superior Direito */}
       <div className="absolute top-4 right-4 z-40">
         <button
@@ -93,7 +93,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Modal / Popup de Busca Rápida ao clicar na Lupa */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div
             ref={searchModalRef}
             className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-slide-in-up"
@@ -120,7 +120,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               )}
               <button
                 onClick={() => setIsSearchOpen(false)}
-                className="px-2 py-1 rounded-lg text-xs font-semibold text-text-muted hover:text-text bg-input/40"
+                className="px-2 py-1 rounded-lg text-xs font-semibold text-text-muted hover:text-text bg-input/60"
               >
                 Esc
               </button>
