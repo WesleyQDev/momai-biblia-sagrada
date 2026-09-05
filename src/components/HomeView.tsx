@@ -8,6 +8,7 @@ import { BookRibbonIcon } from './icons/BookRibbonIcon'
 import { SearchGlassIcon } from './icons/SearchGlassIcon'
 import { bibleSearch } from '../services/search'
 import { randomVerseService } from '../services/random-verse'
+import { useBibleI18n } from '../services/i18n'
 import type { BibleVerse, SearchResult } from '../types/bible'
 import type { ReadingProgress } from '../types/reading'
 
@@ -22,6 +23,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onOpenBookmarks,
   lastReading
 }) => {
+  const { t, getBookName } = useBibleI18n()
   const [randomVerse, setRandomVerse] = useState<BibleVerse>(() => randomVerseService.getRandomVerse())
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -84,7 +86,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <div className="absolute top-4 right-4 z-40">
         <button
           onClick={() => setIsSearchOpen(true)}
-          title="Buscar versículo"
+          title={t('home.search_title')}
           className="p-2.5 rounded-2xl bg-input/60 hover:bg-input border border-border text-text hover:text-accent transition-all active:scale-95 shadow-sm cursor-pointer flex items-center justify-center"
         >
           <SearchGlassIcon className="w-5 h-5" />
@@ -105,7 +107,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Ex: João 3:16, amor, luz..."
+                placeholder={t('home.search_placeholder')}
                 className="flex-1 bg-transparent text-text text-sm placeholder:text-text-muted/70 focus:outline-none"
               />
               {searchQuery && (
@@ -122,7 +124,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => setIsSearchOpen(false)}
                 className="px-2 py-1 rounded-lg text-xs font-semibold text-text-muted hover:text-text bg-input/60"
               >
-                Esc
+                {t('home.esc')}
               </button>
             </div>
 
@@ -137,10 +139,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-text">
-                        {res.verse.bookName} {res.verse.chapter}:{res.verse.verse}
+                        {getBookName(res.verse.bookId, res.verse.bookName)} {res.verse.chapter}:{res.verse.verse}
                       </span>
                       <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-input text-text-muted border border-border">
-                        {res.matchType === 'exact_reference' ? 'Referência' : 'Trecho'}
+                        {res.matchType === 'exact_reference' ? t('home.search_reference') : t('home.search_excerpt')}
                       </span>
                     </div>
                     <p className="text-xs text-text-muted italic font-serif line-clamp-2">
@@ -152,7 +154,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             )}
             {searchQuery && searchResults.length === 0 && (
               <div className="p-6 text-center text-xs text-text-muted italic">
-                Nenhum versículo encontrado para "{searchQuery}"
+                {t('home.search_no_results', { query: searchQuery })}
               </div>
             )}
           </div>
@@ -163,7 +165,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <div className="flex items-center justify-center space-x-5 pt-4">
         <BibleExtensionIcon className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-md shrink-0 transition-transform hover:scale-105" />
         <h1 className="text-3xl sm:text-4xl font-serif font-bold text-text tracking-wide select-none">
-          Bíblia Sagrada
+          {t('home.title')}
         </h1>
       </div>
 
@@ -187,7 +189,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <WheatIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
           </div>
           <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
-            Novo testamento
+            {t('home.new_testament')}
           </span>
         </button>
 
@@ -200,7 +202,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <TenCommandmentsIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
           </div>
           <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
-            Velho Testamento
+            {t('home.old_testament')}
           </span>
         </button>
 
@@ -213,7 +215,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <StarBookmarkIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
           </div>
           <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
-            Marcadores
+            {t('home.bookmarks')}
           </span>
         </button>
 
@@ -226,7 +228,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <BookRibbonIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
           </div>
           <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
-            Continuar leitura
+            {t('home.continue_reading')}
           </span>
         </button>
       </section>

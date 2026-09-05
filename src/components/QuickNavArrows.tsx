@@ -1,4 +1,5 @@
 import React from 'react'
+import { useBibleI18n } from '../services/i18n'
 
 interface QuickNavArrowsProps {
   currentBook: string
@@ -19,8 +20,10 @@ export const QuickNavArrows: React.FC<QuickNavArrowsProps> = ({
   onNext,
   onOpenDrawer
 }) => {
+  const { t } = useBibleI18n()
+
   return (
-    <nav aria-label="Navegação entre capítulos" className="sticky bottom-0 z-20 w-full bg-card/90 backdrop-blur-md border-t border-border px-4 py-3 flex items-center justify-between shadow-glass-md">
+    <nav aria-label={t('reading.open_index')} className="sticky bottom-0 z-20 w-full bg-card/90 backdrop-blur-md border-t border-border px-4 py-3 flex items-center justify-between shadow-glass-md">
       <button
         onClick={onPrev}
         disabled={!hasPrev}
@@ -33,13 +36,13 @@ export const QuickNavArrows: React.FC<QuickNavArrowsProps> = ({
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="hidden sm:inline">Capítulo Anterior</span>
-        <span className="sm:hidden">Anterior</span>
+        <span className="hidden sm:inline">{t('reading.prev_chapter')}</span>
+        <span className="sm:hidden">{t('reading.prev')}</span>
       </button>
 
       <div
         onClick={onOpenDrawer}
-        title="Clique para abrir índice de livros e capítulos"
+        title={t('reading.open_index')}
         className="flex items-center space-x-1.5 px-4 py-1.5 rounded-xl bg-input/40 hover:bg-input/70 border border-border cursor-pointer transition-colors"
       >
         <span className="text-xs font-bold text-text">
@@ -59,8 +62,8 @@ export const QuickNavArrows: React.FC<QuickNavArrowsProps> = ({
             : 'opacity-30 text-text-muted cursor-not-allowed border border-transparent'
         }`}
       >
-        <span className="hidden sm:inline">Próximo Capítulo</span>
-        <span className="sm:hidden">Próximo</span>
+        <span className="hidden sm:inline">{t('reading.next_chapter')}</span>
+        <span className="sm:hidden">{t('reading.next')}</span>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>

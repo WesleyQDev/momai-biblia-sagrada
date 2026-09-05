@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { bibleStorage } from '../services/storage'
+import { useBibleI18n } from '../services/i18n'
 import ContextMenu from './ContextMenu'
 import type { BibleBookmark } from '../types/bookmarks'
 import type { Testament } from '../types/bible'
@@ -13,6 +14,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
   onNavigateToPassage,
   onStartReading
 }) => {
+  const { locale, t, getBookName } = useBibleI18n()
   const [bookmarks, setBookmarks] = useState<BibleBookmark[]>([])
   const [filterTestament, setFilterTestament] = useState<Testament | 'ALL'>('ALL')
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; bookmark: BibleBookmark } | null>(null)
@@ -22,7 +24,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
   }, [])
 
   const handleCopy = (b: BibleBookmark) => {
-    const text = `"${b.text}" (${b.bookName} ${b.chapter}:${b.verse})`
+    const text = `"${b.text}" (${getBookName(b.bookId, b.bookName)} ${b.chapter}:${b.verse})`
     try {
       void navigator.clipboard?.writeText?.(text)
     } catch {}
@@ -51,9 +53,11 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h2 className="text-2xl font-serif font-bold text-text">Marcadores e Favoritos</h2>
+          <h2 className="text-2xl font-serif font-bold text-text">{t('bookmarks.title')}</h2>
           <p className="text-xs text-text-muted">
-            {bookmarks.length} versículo{bookmarks.length === 1 ? '' : 's'} guardado{bookmarks.length === 1 ? '' : 's'} para estudo
+            {bookmarks.length === 1
+              ? t('bookmarks.subtitle_one')
+              : t('bookmarks.subtitle_other', { count: bookmarks.length })}
           </p>
         </div>
 
@@ -68,7 +72,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                   : 'text-text-muted hover:text-text'
               }`}
             >
-              Todos
+              {t('bookmarks.filter_all')}
             </button>
             <button
               onClick={() => setFilterTestament('AT')}
@@ -78,7 +82,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                   : 'text-text-muted hover:text-text'
               }`}
             >
-              Antigo
+              {t('bookmarks.filter_ot')}
             </button>
             <button
               onClick={() => setFilterTestament('NT')}
@@ -88,7 +92,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                   : 'text-text-muted hover:text-text'
               }`}
             >
-              Novo
+              {t('bookmarks.filter_nt')}
             </button>
           </div>
         </div>
@@ -102,17 +106,17 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
           </div>
-          <h3 className="text-sm font-bold text-text">Nenhum marcador encontrado</h3>
+          <h3 className="text-sm font-bold text-text">{t('bookmarks.empty_title')}</h3>
           <p className="text-xs text-text-muted max-w-sm">
             {filterTestament !== 'ALL'
-              ? 'Nenhum marcador neste testamento.'
-              : 'Na tela de leitura, clique em qualquer versículo e selecione "Marcar" para adicioná-lo aqui.'}
+              ? t('bookmarks.empty_filtered')
+              : t('bookmarks.empty_desc')}
           </p>
           <button
             onClick={onStartReading}
             className="mt-2 px-4 py-2 rounded-xl bg-input hover:bg-input/80 border border-border text-xs font-semibold text-text transition-colors"
           >
-            Ir para a leitura da Bíblia
+            {t('bookmarks.go_reading')}
           </button>
         </div>
       ) : (
@@ -131,20 +135,20 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-bold text-text">
-                    {b.bookName} {b.chapter}:{b.verse}
+                    {getBookName(b.bookId, b.bookName)} {b.chapter}:{b.verse}
                   </span>
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-input/60 text-text-muted border border-border">
-                    {b.testament === 'AT' ? 'Antigo' : 'Novo'}
+                    {b.testament === 'AT' ? t('bookmarks.filter_ot') : t('bookmarks.filter_nt')}
                   </span>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <span className="text-[11px] text-text-muted">
-                    {new Date(b.createdAt).toLocaleDateString('pt-BR')}
+                    {new Date(b.createdAt).toLocaleDateString(locale)}
                   </span>
                   <button
                     onClick={(e) => handleRemove(b.id, e)}
-                    title="Remover marcador"
+                    title={t('bookmarks.remove')}
                     className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-input transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -159,7 +163,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
               </blockquote>
 
               <div className="flex items-center text-xs font-semibold text-text-muted group-hover:text-accent transition-colors pt-1">
-                <span>Abrir e ler no contexto</span>
+                <span>{t('bookmarks.open_context')}</span>
                 <svg className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
@@ -176,18 +180,18 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
           items={[
             {
               id: 'open',
-              label: 'Abrir e ler no contexto',
+              label: t('bookmarks.open_context'),
               onClick: () => handleOpen(contextMenu.bookmark)
             },
             {
               id: 'copy',
-              label: 'Copiar versículo',
+              label: t('bookmarks.copy_verse'),
               shortcut: 'Ctrl+C',
               onClick: () => handleCopy(contextMenu.bookmark)
             },
             {
               id: 'remove',
-              label: 'Remover marcador',
+              label: t('bookmarks.remove'),
               danger: true,
               onClick: () => handleRemove(contextMenu.bookmark.id)
             }

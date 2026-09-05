@@ -1,4 +1,5 @@
 import React from 'react'
+import { useBibleI18n } from '../services/i18n'
 
 interface HeaderProps {
   activeTab: 'home' | 'reading' | 'bookmarks'
@@ -15,6 +16,8 @@ export const Header: React.FC<HeaderProps> = ({
   isReadingActive,
   currentReference
 }) => {
+  const { t } = useBibleI18n()
+
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-30 transition-colors">
       <div className="flex items-center space-x-3 cursor-pointer select-none" onClick={() => onSelectTab('home')}>
@@ -35,8 +38,8 @@ export const Header: React.FC<HeaderProps> = ({
           </svg>
         </div>
         <div>
-          <h1 className="text-lg font-bold text-text leading-tight">Bíblia Sagrada</h1>
-          <p className="text-xs text-text-muted">Tradução Almeida • 66 Livros</p>
+          <h1 className="text-lg font-bold text-text leading-tight">{t('header.title')}</h1>
+          <p className="text-xs text-text-muted">{t('header.subtitle')}</p>
         </div>
       </div>
 
@@ -49,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'text-text-muted hover:text-text hover:bg-card/50'
           }`}
         >
-          Início
+          {t('header.home')}
         </button>
         <button
           onClick={() => onSelectTab('reading')}
@@ -59,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'text-text-muted hover:text-text hover:bg-card/50'
           }`}
         >
-          <span>Leitura</span>
+          <span>{t('header.reading')}</span>
           {currentReference && activeTab === 'reading' && (
             <span className="text-[10px] opacity-75 font-normal px-1.5 py-0.5 rounded bg-input text-text-muted">
               {currentReference}
@@ -74,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'text-text-muted hover:text-text hover:bg-card/50'
           }`}
         >
-          Marcadores
+          {t('header.bookmarks')}
         </button>
       </nav>
 
@@ -82,13 +85,13 @@ export const Header: React.FC<HeaderProps> = ({
         {activeTab === 'reading' && onOpenDrawer && (
           <button
             onClick={onOpenDrawer}
-            title="Índice da Bíblia"
+            title={t('header.index_title')}
             className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-input/60 hover:bg-input text-text text-xs font-medium border border-border transition-colors shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
             </svg>
-            <span>Índice</span>
+            <span>{t('header.index')}</span>
           </button>
         )}
       </div>

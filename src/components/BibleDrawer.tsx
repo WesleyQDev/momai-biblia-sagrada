@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { bibleData } from '../services/bible-data'
+import { useBibleI18n } from '../services/i18n'
 import type { BibleBookInfo, Testament } from '../types/bible'
 
 interface BibleDrawerProps {
@@ -17,6 +18,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
   currentChapter,
   onSelectPassage
 }) => {
+  const { t, getBookName } = useBibleI18n()
   const [activeTestament, setActiveTestament] = useState<Testament>(() => {
     const current = bibleData.getBookById(currentBookId)
     return current ? current.testament : 'NT'
@@ -60,7 +62,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
         {/* Header Superior Limpo */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/70 bg-card shrink-0">
           <h2 className="text-base font-serif font-bold text-[#1c1917]">
-            {selectedBook ? selectedBook.name : 'Livros da Bíblia'}
+            {selectedBook ? getBookName(selectedBook.id, selectedBook.name) : t('drawer.title')}
           </h2>
 
           <div className="flex items-center space-x-2">
@@ -69,12 +71,12 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
                 onClick={() => setSelectedBook(null)}
                 className="text-xs text-text-muted hover:text-text px-2 py-1 rounded-lg bg-input/60 transition-colors cursor-pointer"
               >
-                ← Todos os livros
+                {t('drawer.all_books')}
               </button>
             )}
             <button
               onClick={onClose}
-              title="Fechar"
+              title={t('drawer.close')}
               className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-input transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -96,7 +98,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
                     : 'text-text-muted hover:text-text'
                 }`}
               >
-                Antigo Testamento ({bibleData.getOldTestamentBooks().length})
+                {t('drawer.ot_count', { count: bibleData.getOldTestamentBooks().length })}
               </button>
               <button
                 onClick={() => setActiveTestament('NT')}
@@ -106,7 +108,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
                     : 'text-text-muted hover:text-text'
                 }`}
               >
-                Novo Testamento ({bibleData.getNewTestamentBooks().length})
+                {t('drawer.nt_count', { count: bibleData.getNewTestamentBooks().length })}
               </button>
             </div>
           </div>
@@ -128,7 +130,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
                       : 'hover:bg-input/40 text-[#1c1917]'
                   }`}
                 >
-                  <span className="text-sm font-serif">{b.name}</span>
+                  <span className="text-sm font-serif">{getBookName(b.id, b.name)}</span>
                   <span className="text-xs text-text-muted/60">›</span>
                 </button>
               )
@@ -137,7 +139,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
         ) : (
           /* Matriz Estilo Calendário de Capítulos (Quadradinhos compactos lado a lado) */
           <div className="flex-1 overflow-y-auto p-6 flex flex-col">
-            <span className="text-xs text-text-muted mb-4 font-medium">Selecione o capítulo:</span>
+            <span className="text-xs text-text-muted mb-4 font-medium">{t('drawer.select_chapter')}</span>
             <div
               style={{
                 display: 'grid',

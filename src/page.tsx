@@ -5,10 +5,15 @@ import { BookmarksView } from './components/BookmarksView'
 import { BibleDrawer } from './components/BibleDrawer'
 import { bibleStorage } from './services/storage'
 import { bibleData } from './services/bible-data'
+import { useBibleI18n } from './services/i18n'
 import type { ReadingProgress } from './types/reading'
 import type { BibleVerse } from './types/bible'
 
-export const BiblePage: React.FC<{ isActive?: boolean }> = ({ isActive = true }) => {
+export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
+  isActive = true,
+  locale: propLocale
+}) => {
+  const { t, getBookName } = useBibleI18n(propLocale)
   const [activeTab, setActiveTab] = useState<'home' | 'reading' | 'bookmarks'>('home')
   const [lastReading, setLastReading] = useState<ReadingProgress>(() => bibleStorage.getLastReading())
 
@@ -114,7 +119,7 @@ export const BiblePage: React.FC<{ isActive?: boolean }> = ({ isActive = true })
   }
 
   const handleCopyVerse = (verse: BibleVerse) => {
-    const textToCopy = `"${verse.text}" (${verse.bookName} ${verse.chapter}:${verse.verse} - Almeida)`
+    const textToCopy = `"${verse.text}" (${getBookName(verse.bookId, verse.bookName)} ${verse.chapter}:${verse.verse} - Almeida)`
     navigator.clipboard.writeText(textToCopy)
   }
 
@@ -158,25 +163,21 @@ export const BiblePage: React.FC<{ isActive?: boolean }> = ({ isActive = true })
         </div>
       )}
 
-      {/* 3. Tela de Marcadores com Botão de Voltar e Scrollbar Visível */}
+      {/* 3. Tela de Marcadores e Favoritos */}
       {activeTab === 'bookmarks' && (
-        <div className="flex-1 h-full min-h-0 overflow-y-auto w-full bookmarks-scroll-container">
+        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
           <style>{`
-            .bookmarks-scroll-container {
-              scrollbar-width: thin;
-              scrollbar-color: rgba(150, 150, 150, 0.45) transparent;
-            }
-            .bookmarks-scroll-container::-webkit-scrollbar {
+            .custom-scrollbar::-webkit-scrollbar {
               width: 8px;
             }
-            .bookmarks-scroll-container::-webkit-scrollbar-track {
+            .custom-scrollbar::-webkit-scrollbar-track {
               background: transparent;
             }
-            .bookmarks-scroll-container::-webkit-scrollbar-thumb {
-              background: rgba(150, 150, 150, 0.45);
-              border-radius: 9999px;
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: rgba(100, 100, 100, 0.5);
+              border-radius: 4px;
             }
-            .bookmarks-scroll-container::-webkit-scrollbar-thumb:hover {
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
               background: rgba(150, 150, 150, 0.75);
             }
           `}</style>
@@ -192,7 +193,7 @@ export const BiblePage: React.FC<{ isActive?: boolean }> = ({ isActive = true })
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
-                <span>Voltar ao Início</span>
+                <span>{t('header.home')}</span>
               </button>
             </div>
 

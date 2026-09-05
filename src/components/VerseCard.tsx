@@ -1,4 +1,5 @@
 import React from 'react'
+import { useBibleI18n } from '../services/i18n'
 import type { BibleVerse } from '../types/bible'
 
 interface VerseCardProps {
@@ -8,6 +9,8 @@ interface VerseCardProps {
 }
 
 export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNavigate }) => {
+  const { t, getBookName } = useBibleI18n()
+
   return (
     <div
       onClick={() => onNavigate(verse)}
@@ -22,7 +25,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNaviga
 
           <button
             onClick={onRefresh}
-            title="Sortear outro versículo"
+            title={t('card.reroll')}
             className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-input/40 transition-all shrink-0"
           >
             <svg
@@ -44,7 +47,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNaviga
         {/* Reference aligned right: {Livro}, {Capítulo} : {Versículo} */}
         <div className="text-right">
           <span className="text-xs sm:text-sm font-semibold text-text-muted tracking-wide">
-            {verse.bookName}, {verse.chapter} : {verse.verse}
+            {getBookName(verse.bookId, verse.bookName)}, {verse.chapter} : {verse.verse}
           </span>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { bibleData } from '../services/bible-data'
 import { bibleStorage } from '../services/storage'
+import { useBibleI18n } from '../services/i18n'
 import { RealisticBook } from './RealisticBook'
 import { QuickNavArrows } from './QuickNavArrows'
 import ContextMenu from './ContextMenu'
@@ -23,6 +24,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
   onOpenDrawer,
   onBackToHome = () => {}
 }) => {
+  const { t, getBookName } = useBibleI18n()
   const [book, setBook] = useState<RawBibleBook | undefined>(() => bibleData.getBookById(bookId))
   const [verses, setVerses] = useState<BibleVerse[]>([])
   const [highlightedVerse, setHighlightedVerse] = useState<number | undefined>(initialVerse)
@@ -121,7 +123,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
   }
 
   const handleCopyVerse = (verse: BibleVerse) => {
-    const textToCopy = `"${verse.text}" (${verse.bookName} ${verse.chapter}:${verse.verse} - Almeida)`
+    const textToCopy = `"${verse.text}" (${getBookName(verse.bookId, verse.bookName)} ${verse.chapter}:${verse.verse} - Almeida)`
     navigator.clipboard.writeText(textToCopy)
     setCopyFeedback(true)
     setTimeout(() => {
@@ -133,7 +135,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
   if (!book) {
     return (
       <div className="p-8 text-center text-text-muted">
-        Livro não encontrado.
+        {t('reading.book_not_found')}
       </div>
     )
   }
@@ -154,7 +156,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
-            <span>Livro 3D</span>
+            <span>{t('reading.book_3d')}</span>
           </button>
           <button
             onClick={() => setViewMode('scroll')}
@@ -167,7 +169,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-            <span>Contínuo</span>
+            <span>{t('reading.scroll')}</span>
           </button>
         </div>
       </div>
@@ -195,7 +197,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
             {/* Chapter Header */}
             <header className="text-center mb-10 pb-6 border-b border-border/60">
               <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-input/40 text-text-muted mb-2 border border-border">
-                <span>{book.testament === 'AT' ? 'Antigo Testamento' : 'Novo Testamento'}</span>
+                <span>{book.testament === 'AT' ? t('bookmarks.filter_ot') : t('bookmarks.filter_nt')}</span>
                 <span>•</span>
                 <span>{book.totalChapters} capítulos</span>
               </div>
@@ -204,7 +206,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
                 className="text-3xl sm:text-4xl font-serif font-bold text-black tracking-tight mb-2"
                 style={{ color: '#000000' }}
               >
-                {book.name}
+                {getBookName(book.id, book.name)}
               </h2>
               <p className="text-sm font-semibold text-black" style={{ color: '#000000' }}>
                 Capítulo {chapter}
@@ -275,7 +277,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
                         className="mt-2 pt-2 border-t border-border flex items-center justify-between space-x-2 text-xs animate-fade-in"
                       >
                         <span className="font-sans font-semibold text-text-muted text-[11px]">
-                          {book.name} {chapter}:{v.verse}
+                          {getBookName(book.id, book.name)} {chapter}:{v.verse}
                         </span>
 
                         <div className="flex items-center space-x-2">
@@ -286,7 +288,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
-                            <span>{copyFeedback ? 'Copiado!' : 'Copiar'}</span>
+                            <span>{copyFeedback ? t('reading.copied') : t('reading.copy')}</span>
                           </button>
 
                           <button
@@ -300,7 +302,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                             </svg>
-                            <span>{isBookmarked ? 'Desmarcar' : 'Marcar'}</span>
+                            <span>{isBookmarked ? t('reading.unbookmark') : t('reading.bookmark')}</span>
                           </button>
                         </div>
                       </div>
@@ -312,7 +314,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
           </main>
 
           <QuickNavArrows
-            currentBook={book.name}
+            currentBook={getBookName(book.id, book.name)}
             currentChapter={chapter}
             hasPrev={Boolean(prevStep)}
             hasNext={Boolean(nextStep)}
@@ -330,13 +332,13 @@ export const ReadingView: React.FC<ReadingViewProps> = ({
           items={[
             {
               id: 'copy',
-              label: 'Copiar versículo',
+              label: t('reading.copy'),
               shortcut: 'Ctrl+C',
               onClick: () => handleCopyVerse(verseMenu.verse)
             },
             {
               id: 'bookmark',
-              label: bookmarkedSet.has(verseMenu.verse.verse) ? 'Desmarcar' : 'Marcar',
+              label: bookmarkedSet.has(verseMenu.verse.verse) ? t('reading.unbookmark') : t('reading.bookmark'),
               onClick: () => handleToggleBookmark(verseMenu.verse)
             }
           ]}

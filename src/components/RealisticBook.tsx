@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { bibleData } from '../services/bible-data'
+import { useBibleI18n } from '../services/i18n'
 import type { BibleVerse, RawBibleBook } from '../types/bible'
 
 interface RealisticBookProps {
@@ -85,6 +86,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
   onOpenDrawer,
   onBackToHome
 }) => {
+  const { t, getBookName } = useBibleI18n()
   // Monitoramento da altura da janela para que as folhas fiquem 100% cheias e responsivas
   const [windowHeight, setWindowHeight] = useState(
     typeof window !== 'undefined' ? window.innerHeight : 800
@@ -604,7 +606,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          <span>Início</span>
+          <span>{t('header.home')}</span>
         </button>
 
         <button
@@ -614,7 +616,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
           </svg>
-          <span>Índice</span>
+          <span>{t('header.index')}</span>
         </button>
       </div>
 
@@ -827,10 +829,10 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
                 }}
                 title={
                   currentSpread < totalSpreads - 1
-                    ? 'Clique para virar a página'
+                    ? t('reading.click_flip_next')
                     : book.id < 66
-                      ? 'Clique para o próximo livro'
-                      : 'Fim do livro'
+                      ? t('reading.click_flip_next_book')
+                      : t('reading.click_flip_end')
                 }
                 className="group absolute right-0 bottom-0 w-16 h-16 z-50 cursor-pointer flex items-end justify-end p-1 pointer-events-auto select-none"
               >
@@ -868,10 +870,10 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
                 }}
                 title={
                   currentSpread > 0
-                    ? 'Clique para voltar a página'
+                    ? t('reading.click_flip_prev')
                     : book.id > 1
-                      ? 'Clique para o livro anterior'
-                      : 'Início da Bíblia'
+                      ? t('reading.click_flip_prev_book')
+                      : t('reading.click_flip_start')
                 }
                 className="group absolute left-0 bottom-0 w-16 h-16 z-50 cursor-pointer flex items-end justify-start p-1 pointer-events-auto select-none"
               >
@@ -898,7 +900,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-card border border-border shadow-2xl rounded-2xl p-4 max-w-md w-[92vw] mx-auto animate-slide-in-up">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-text">
-              {selectedVerse.bookName || book.name} {selectedVerse.chapter}:{selectedVerse.verse}
+              {getBookName(selectedVerse.bookId, selectedVerse.bookName || book.name)} {selectedVerse.chapter}:{selectedVerse.verse}
             </span>
             <button
               onClick={() => setSelectedVerse(null)}
@@ -920,7 +922,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
-              <span>{copyFeedback ? 'Copiado!' : 'Copiar'}</span>
+              <span>{copyFeedback ? t('reading.copied') : t('reading.copy')}</span>
             </button>
 
             <button
@@ -937,7 +939,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
-              <span>{bookmarkedSet.has(selectedVerse.verse) ? 'Desmarcar' : 'Marcar'}</span>
+              <span>{bookmarkedSet.has(selectedVerse.verse) ? t('reading.unbookmark') : t('reading.bookmark')}</span>
             </button>
           </div>
         </div>
@@ -962,7 +964,8 @@ const RenderBiblePage: React.FC<{
   highlightedVerse,
   onVerseClick
 }) => {
-  const activeBookName = page.bookName || bookName || ''
+  const { t, getBookName } = useBibleI18n()
+  const activeBookName = getBookName(page.bookId, page.bookName || bookName || '')
 
   // If this is a dedicated book title page (rendered once per book)
   if (page.isBookTitlePage) {
@@ -979,7 +982,7 @@ const RenderBiblePage: React.FC<{
           className="mt-3 text-xs sm:text-sm font-sans tracking-[0.16em] text-black uppercase font-medium select-none"
           style={{ color: '#000000' }}
         >
-          Almeida Revista e Atualizada
+          {t('reading.almeida_version')}
         </span>
       </div>
     )
