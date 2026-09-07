@@ -6,6 +6,8 @@ import { BibleDrawer } from './components/BibleDrawer'
 import { bibleStorage } from './services/storage'
 import { bibleData } from './services/bible-data'
 import { useBibleI18n } from './services/i18n'
+import { useBibleLanguage } from './services/useBibleLanguage'
+import { getBibleLanguage } from './services/bible-languages'
 import type { ReadingProgress } from './types/reading'
 import type { BibleVerse } from './types/bible'
 
@@ -14,6 +16,9 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
   locale: propLocale
 }) => {
   const { t, getBookName } = useBibleI18n(propLocale)
+  // Re-renders reading state (book names, verses) on Bible language switches
+  const { languageId } = useBibleLanguage()
+  const translationShort = getBibleLanguage(languageId).translationShort
   const [activeTab, setActiveTab] = useState<'home' | 'reading' | 'bookmarks'>('home')
   const [lastReading, setLastReading] = useState<ReadingProgress>(() => bibleStorage.getLastReading())
 
@@ -119,7 +124,7 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
   }
 
   const handleCopyVerse = (verse: BibleVerse) => {
-    const textToCopy = `"${verse.text}" (${getBookName(verse.bookId, verse.bookName)} ${verse.chapter}:${verse.verse} - Almeida)`
+    const textToCopy = `"${verse.text}" (${getBookName(verse.bookId, verse.bookName)} ${verse.chapter}:${verse.verse} - ${translationShort})`
     navigator.clipboard.writeText(textToCopy)
   }
 

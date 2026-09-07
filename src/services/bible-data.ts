@@ -1,7 +1,17 @@
-import rawBooks from '../../assets/bible/almeida.json'
+import almeidaBooks from '../../assets/bible/almeida.json'
+import kjvBooks from '../../assets/bible/kjv.json'
+import rv1909Books from '../../assets/bible/rv1909.json'
+import lsgBooks from '../../assets/bible/lsg.json'
+import luth1912Books from '../../assets/bible/luth1912.json'
+import rivedutaBooks from '../../assets/bible/riveduta.json'
 import type { RawBibleBook, BibleBookInfo, BibleVerse, Testament } from '../types/bible'
+import {
+  DEFAULT_BIBLE_LANGUAGE_ID,
+  isBibleLanguageId,
+  type BibleLanguageId
+} from './bible-languages'
 
-const bibleBooks: RawBibleBook[] = rawBooks as RawBibleBook[]
+const bundledBooks = almeidaBooks as RawBibleBook[]
 
 // Pre-compute normalized book lookups for fast resolution
 function normalizeString(str: string): string {
@@ -10,13 +20,6 @@ function normalizeString(str: string): string {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]/g, '')
-}
-
-const bookLookup = new Map<string, RawBibleBook>()
-for (const b of bibleBooks) {
-  bookLookup.set(String(b.id), b)
-  bookLookup.set(normalizeString(b.name), b)
-  bookLookup.set(normalizeString(b.abbrev), b)
 }
 
 // Common aliases for Portuguese Bible books
@@ -60,16 +63,105 @@ const aliases: Record<string, string> = {
   '2cronicas': '2cr'
 }
 
-for (const [alias, targetAbbrev] of Object.entries(aliases)) {
-  const target = bookLookup.get(targetAbbrev)
-  if (target) {
-    bookLookup.set(alias, target)
+const datasetCache = new Map<BibleLanguageId, RawBibleBook[]>([
+  [DEFAULT_BIBLE_LANGUAGE_ID, bundledBooks],
+  ['en-US', kjvBooks as RawBibleBook[]],
+  ['es', rv1909Books as RawBibleBook[]],
+  ['fr', lsgBooks as RawBibleBook[]],
+  ['de', luth1912Books as RawBibleBook[]],
+  ['it', rivedutaBooks as RawBibleBook[]]
+])
+
+let activeLanguageId: BibleLanguageId = DEFAULT_BIBLE_LANGUAGE_ID
+let activeBooks: RawBibleBook[] = bundledBooks
+let bookLookup = new Map<string, RawBibleBook>()
+let datasetVersion = 0
+const listeners = new Set<() => void>()
+
+function rebuildLookup(): void {
+  const next = new Map<string, RawBibleBook>()
+  for (const b of activeBooks) {
+    next.set(String(b.id), b)
+    next.set(normalizeString(b.name), b)
+    next.set(normalizeString(b.abbrev), b)
   }
+  for (const [alias, targetAbbrev] of Object.entries(aliases)) {
+    const target = next.get(targetAbbrev)
+    if (target) {
+      next.set(alias, target)
+    }
+  }
+  bookLookup = next
 }
 
+function setActiveDataset(id: BibleLanguageId, books: RawBibleBook[]): void {
+  activeLanguageId = id
+  activeBooks = books
+  rebuildLookup()
+  datasetVersion += 1
+  emitChange()
+}
+
+function emitChange(): void {
+  listeners.forEach((listener) => {
+    try {
+      listener()
+    } catch {
+      // Ignore listener errors so one bad subscriber never breaks reading
+    }
+  })
+}
+
+function isValidDataset(books: unknown): books is RawBibleBook[] {
+  return (
+    Array.isArray(books) &&
+    books.length === 66 &&
+    books.every(
+      (b) =>
+        b &&
+        typeof b === 'object' &&
+        Array.isArray((b as RawBibleBook).chapters) &&
+        (b as RawBibleBook).chapters.length > 0
+    )
+  )
+}
+
+rebuildLookup()
+
 export const bibleData = {
+  getActiveLanguageId(): BibleLanguageId {
+    return activeLanguageId
+  },
+
+  getDatasetVersion(): number {
+    return datasetVersion
+  },
+
+  subscribe(listener: () => void): () => void {
+    listeners.add(listener)
+    return () => {
+      listeners.delete(listener)
+    }
+  },
+
+  loadBibleLanguage(id: BibleLanguageId): Promise<void> {
+    if (!isBibleLanguageId(id)) {
+      return Promise.reject(new Error(`Unknown Bible language: ${String(id)}`))
+    }
+    const cached = datasetCache.get(id)
+    if (cached && activeLanguageId === id) return Promise.resolve()
+    if (cached) {
+      if (!isValidDataset(cached)) {
+        return Promise.reject(new Error(`Invalid bundled Bible dataset for ${id}`))
+      }
+      setActiveDataset(id, cached)
+      return Promise.resolve()
+    }
+    return Promise.reject(new Error(`Bible translation for ${id} is not available`))
+  },
+
   getAllBooks(): BibleBookInfo[] {
-    return bibleBooks.map((b) => ({
+    return activeBooks.map((b) => ({
       id: b.id,
       name: b.name,
       abbrev: b.abbrev,
@@ -88,21 +180,21 @@ export const bibleData = {
 
   findBook(query: string | number): RawBibleBook | undefined {
     if (typeof query === 'number') {
-      return bibleBooks[query - 1]
+      return activeBooks[query - 1]
     }
     const clean = normalizeString(String(query))
     return bookLookup.get(clean)
   },
 
   getBookById(bookId: number): RawBibleBook | undefined {
-    return bibleBooks[bookId - 1]
+    return activeBooks[bookId - 1]
   },
 
   getChapterVerses(bookId: number, chapter: number): BibleVerse[] {
     const book = this.getBookById(bookId)
     if (!book) return []
     if (chapter < 1 || chapter > book.chapters.length) return []
-    
+
     const verseTexts = book.chapters[chapter - 1] || []
     return verseTexts.map((text, idx) => ({
       id: `${book.abbrev}-${chapter}-${idx + 1}`,
@@ -158,3 +250,5 @@ export const bibleData = {
     return null
   }
 }
+
+export type { Testament }

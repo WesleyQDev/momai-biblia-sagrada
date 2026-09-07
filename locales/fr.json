@@ -76,6 +76,12 @@
     "index": "Sommaire",
     "index_title": "Index biblique"
   },
+  "languages": {
+    "button": "Langues",
+    "title": "Langue de la Bible",
+    "loading": "Chargement de la traduction…",
+    "load_error": "Impossible de charger cette traduction. Réessayez."
+  },
   "books": {
     "1": { "name": "Genèse", "abbrev": "Gn" },
     "2": { "name": "Exode", "abbrev": "Ex" },

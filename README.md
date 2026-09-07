@@ -10,6 +10,7 @@ A Palavra do Senhor é lâmpada para os nossos pés e luz para os nossos caminho
 
 - **O Texto Sagrado Completo**: Contém os 66 livros da Bíblia Sagrada protestante, sendo 39 livros do Antigo Testamento (de Gênesis a Malaquias) e 27 livros do Novo Testamento (de Mateus a Apocalipse).
 - **Tradução Fiel e Reconhecida**: Texto baseado na consagrada tradução de João Ferreira de Almeida, clara e amplamente utilizada pelas igrejas evangélicas do Brasil.
+- **6 Idiomas com Traduções Evangélicas**: Troque na hora, pelo botão Idiomas ao lado do Índice, entre Português (Almeida), English (King James Version), Español (Reina-Valera 1909), Français (Louis Segond 1910), Deutsch (Lutherbibel 1912) e Italiano (Riveduta 1927). Ao mudar o idioma nas Configurações do MomAI, a Bíblia inteira acompanha automaticamente.
 - **Versículo do Dia e Meditação**: Toda vez que você abre a extensão, recebe uma passagem inspiradora com a citação completa e botão direto para ler o contexto do capítulo.
 - **Busca Rápida de Passagens**: Localize facilmente qualquer versículo ou livro digitando como você fala (por exemplo: João 3:16, Salmos 23 ou Romanos 8:28). Você também pode buscar por palavras e temas que desejar estudar.
 - **Leitura Fluida e Confortável**: Navegue pelos livros e capítulos com facilidade através do índice lateral ou pelas setas de navegação no rodapé e no teclado.
@@ -28,4 +29,4 @@ A Palavra do Senhor é lâmpada para os nossos pés e luz para os nossos caminho
 
 ## Tradução e Compromisso
 
-O texto bíblico utilizado nesta extensão segue a clássica tradução de João Ferreira de Almeida, em domínio público, preservando a fidelidade aos manuscritos e o respeito reverente às Sagradas Escrituras. Que esta ferramenta seja um canal de bênçãos e crescimento espiritual para a sua vida e para a sua família!
+O texto bíblico utilizado nesta extensão segue a clássica tradução de João Ferreira de Almeida, em domínio público, preservando a fidelidade aos manuscritos e o respeito reverente às Sagradas Escrituras. Para os demais idiomas, a extensão inclui as principais traduções evangélicas em domínio público de cada país: King James Version (inglês), Reina-Valera 1909 (espanhol), Louis Segond 1910 (francês), Lutherbibel 1912 (alemão) e Riveduta 1927 (italiano). Que esta ferramenta seja um canal de bênçãos e crescimento espiritual para a sua vida e para a sua família!

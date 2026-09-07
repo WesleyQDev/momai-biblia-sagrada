@@ -9,6 +9,7 @@ import { SearchGlassIcon } from './icons/SearchGlassIcon'
 import { bibleSearch } from '../services/search'
 import { randomVerseService } from '../services/random-verse'
 import { useBibleI18n } from '../services/i18n'
+import { useBibleLanguage } from '../services/useBibleLanguage'
 import type { BibleVerse, SearchResult } from '../types/bible'
 import type { ReadingProgress } from '../types/reading'
 
@@ -24,6 +25,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   lastReading
 }) => {
   const { t, getBookName } = useBibleI18n()
+  const { languageId } = useBibleLanguage()
   const [randomVerse, setRandomVerse] = useState<BibleVerse>(() => randomVerseService.getRandomVerse())
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -55,7 +57,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
     }, 180)
 
     return () => clearTimeout(timeout)
-  }, [searchQuery])
+  }, [searchQuery, languageId])
+
+  // Refresh the devotional verse whenever the Bible language changes
+  useEffect(() => {
+    setRandomVerse(randomVerseService.getRandomVerse())
+  }, [languageId])
 
   // Close search modal when clicking outside
   useEffect(() => {

@@ -1,8 +1,8 @@
 {
   "name": "momai-biblia-sagrada",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
-  "description": "Experiência de leitura, estudo e automações da Bíblia Sagrada (Almeida) para MomAI",
+  "description": "Experiência de leitura, estudo e automações da Bíblia Sagrada em 6 idiomas para MomAI",
   "author": "WesleyQDev",
   "license": "MIT",
   "main": "runtime.ts",

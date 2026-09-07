@@ -19,9 +19,11 @@ interface IndexedVerse {
 }
 
 let verseIndexCache: IndexedVerse[] | null = null
+let indexedDatasetVersion = -1
 
 function getVerseIndex(): IndexedVerse[] {
-  if (verseIndexCache) return verseIndexCache
+  const currentVersion = bibleData.getDatasetVersion()
+  if (verseIndexCache && indexedDatasetVersion === currentVersion) return verseIndexCache
 
   const allBooks = bibleData.getAllBooks()
   const indexed: IndexedVerse[] = []
@@ -59,6 +61,7 @@ function getVerseIndex(): IndexedVerse[] {
   }
 
   verseIndexCache = indexed
+  indexedDatasetVersion = currentVersion
   return verseIndexCache
 }
 

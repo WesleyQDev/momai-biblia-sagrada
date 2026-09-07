@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { bibleData } from '../services/bible-data'
 import { useBibleI18n } from '../services/i18n'
+import { useBibleLanguage } from '../services/useBibleLanguage'
+import { getBibleLanguage } from '../services/bible-languages'
+import { LanguageMenu } from './LanguageMenu'
 import type { BibleVerse, RawBibleBook } from '../types/bible'
 
 interface RealisticBookProps {
@@ -87,6 +90,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
   onBackToHome
 }) => {
   const { t, getBookName } = useBibleI18n()
+  const { languageId, datasetVersion } = useBibleLanguage()
   // Monitoramento da altura da janela para que as folhas fiquem 100% cheias e responsivas
   const [windowHeight, setWindowHeight] = useState(
     typeof window !== 'undefined' ? window.innerHeight : 800
@@ -117,7 +121,8 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
     for (const b of rawBooks) {
       allFlow.push({ type: 'book_title', book: { id: b.id, name: b.name } })
       for (let ch = 1; ch <= b.totalChapters; ch++) {
-        const pericope = chapterTitles[`${b.abbrev}-${ch}`]
+        // Pericope titles are only available in Portuguese
+        const pericope = languageId === 'pt-BR' ? chapterTitles[`${b.abbrev}-${ch}`] : undefined
         allFlow.push({
           type: 'chapter_head',
           bookId: b.id,
@@ -274,7 +279,7 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
     }
 
     return pages
-  }, [charsPerPage])
+  }, [charsPerPage, datasetVersion])
 
   const pagesData = allBiblePages
 
@@ -596,12 +601,12 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
   const prevRightPage = pagesData[(currentSpread - 1) * 2 + 1]
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden flex flex-col justify-between py-2 px-2 sm:px-4 select-none">
-      {/* 1. Top Bar: Início + Índice (Sem indicador de páginas no topo) */}
+    <div className="h-screen max-h-screen overflow-hidden flex flex-col justify-between py-2 px-2 sm:px-4 select-none relative">
+      {/* 1. Top Bar: Início + Idiomas + Índice (Sem indicador de páginas no topo) */}
       <div className="w-full max-w-6xl mx-auto px-2 h-9 shrink-0 flex items-center justify-between">
         <button
           onClick={onBackToHome}
-          className="flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-input/50 hover:bg-input border border-border text-xs font-semibold text-text transition-all active:scale-95 cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-input/50 hover:bg-input border border-border text-xs font-semibold text-text transition-all active:scale-95 cursor-pointer"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -609,15 +614,19 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
           <span>{t('header.home')}</span>
         </button>
 
-        <button
-          onClick={onOpenDrawer}
-          className="flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-input/50 hover:bg-input border border-border text-xs font-semibold text-text transition-all cursor-pointer"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
-          </svg>
-          <span>{t('header.index')}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <LanguageMenu />
+
+          <button
+            onClick={onOpenDrawer}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-input/50 hover:bg-input border border-border text-xs font-semibold text-text transition-all cursor-pointer"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+            <span>{t('header.index')}</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. Main 3D Book Stage: Centralizado Verticalmente */}
@@ -965,7 +974,9 @@ const RenderBiblePage: React.FC<{
   onVerseClick
 }) => {
   const { t, getBookName } = useBibleI18n()
+  const { languageId } = useBibleLanguage()
   const activeBookName = getBookName(page.bookId, page.bookName || bookName || '')
+  const translationName = getBibleLanguage(languageId).translationName
 
   // If this is a dedicated book title page (rendered once per book)
   if (page.isBookTitlePage) {
@@ -977,12 +988,12 @@ const RenderBiblePage: React.FC<{
         >
           {activeBookName}
         </h2>
-        {/* Almeida Revista e Atualizada apenas abaixo do nome do livro */}
+        {/* Active translation name below the book name */}
         <span
           className="mt-3 text-xs sm:text-sm font-sans tracking-[0.16em] text-black uppercase font-medium select-none"
           style={{ color: '#000000' }}
         >
-          {t('reading.almeida_version')}
+          {translationName}
         </span>
       </div>
     )

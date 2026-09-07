@@ -1,7 +1,33 @@
 import type { BibleBookmark } from '../types/bookmarks'
 import type { ReadingProgress } from '../types/reading'
+import { isBibleLanguageId, type BibleLanguageId } from './bible-languages'
 
 const PREFIX = 'momai_biblia_v1_'
+
+const memoryFallback = new Map<string, string>()
+
+function readValue(key: string): string | null {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem(key)
+    }
+  } catch {
+    // Private mode or unavailable storage falls through to memory
+  }
+  return memoryFallback.has(key) ? memoryFallback.get(key)! : null
+}
+
+function writeValue(key: string, value: string): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(key, value)
+      return
+    }
+  } catch (e) {
+    console.warn('[biblia:storage] Failed to save preference:', e)
+  }
+  memoryFallback.set(key, value)
+}
 
 export const bibleStorage = {
   getBookmarks(): BibleBookmark[] {
@@ -80,5 +106,15 @@ export const bibleStorage = {
     } catch (e) {
       console.warn('[biblia:storage] Failed to save last reading:', e)
     }
+  },
+
+  getBibleLanguageId(): BibleLanguageId | null {
+    const saved = readValue(`${PREFIX}bible_language`)
+    return isBibleLanguageId(saved) ? saved : null
+  },
+
+  setBibleLanguageId(id: BibleLanguageId): void {
+    if (!isBibleLanguageId(id)) return
+    writeValue(`${PREFIX}bible_language`, id)
   }
 }

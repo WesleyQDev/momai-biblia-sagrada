@@ -76,6 +76,12 @@
     "index": "Índice",
     "index_title": "Índice da Bíblia"
   },
+  "languages": {
+    "button": "Idiomas",
+    "title": "Idioma da Bíblia",
+    "loading": "Carregando tradução…",
+    "load_error": "Não foi possível carregar esta tradução. Tente novamente."
+  },
   "books": {
     "1": { "name": "Gênesis", "abbrev": "Gn" },
     "2": { "name": "Êxodo", "abbrev": "Êx" },

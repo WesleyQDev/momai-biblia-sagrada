@@ -20,7 +20,7 @@
   "locales": {
     "pt-BR": {
       "name": "Bíblia Sagrada",
-      "description": "Leitura, estudo devocional, busca avançada e automações da Bíblia Sagrada completa (tradução Almeida) para a MomAI. Use quando o usuario pedir versículo, passagem, capítulo, livro da Bíblia, estudo bíblico ou reflexão diária.",
+  "description": "Leitura, estudo devocional, busca avançada e automações da Bíblia Sagrada completa em 6 idiomas (Almeida, King James, Reina-Valera, Louis Segond, Lutherbibel, Riveduta) para a MomAI. Use quando o usuario pedir versículo, passagem, capítulo, livro da Bíblia, estudo bíblico ou reflexão diária.",
       "category": "lifestyle",
       "tags": ["bíblia", "biblia", "devocional", "leitura", "estudo", "escrituras"]
     },
@@ -65,7 +65,7 @@
   ],
   "sdkVersion": 1,
   "momai_compat": ">=1.11.0",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "ui": {
     "page": "dist/page.js",
     "pageType": "momai-biblia-page"

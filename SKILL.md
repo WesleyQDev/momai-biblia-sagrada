@@ -7,6 +7,8 @@ description: Leitura, estudo e pesquisa bíblica na tradução Almeida (66 livro
 
 Você tem acesso à Bíblia Sagrada completa (tradução Almeida em português do Brasil) através da extensão `momai-biblia-sagrada`.
 
+Na interface de leitura, o usuário pode trocar na hora entre 6 idiomas (Português/Almeida, English/KJV, Español/Reina-Valera 1909, Français/Louis Segond, Deutsch/Lutherbibel 1912, Italiano/Riveduta). As ferramentas abaixo respondem sempre a partir do texto Almeida em português.
+
 ## Ferramentas Disponíveis
 
 1. `search_bible(query, testament?, limit?)`: Pesquisa versículos por texto, frase, palavra-chave ou referência (ex: "amor de Deus", "João 3:16", "Salmos 23").

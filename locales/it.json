@@ -76,6 +76,12 @@
     "index": "Indice",
     "index_title": "Indice della Bibbia"
   },
+  "languages": {
+    "button": "Lingue",
+    "title": "Lingua della Bibbia",
+    "loading": "Caricamento della traduzione…",
+    "load_error": "Impossibile caricare questa traduzione. Riprova."
+  },
   "books": {
     "1": { "name": "Genesi", "abbrev": "Gen" },
     "2": { "name": "Esodo", "abbrev": "Es" },

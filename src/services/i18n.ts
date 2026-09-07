@@ -5,6 +5,9 @@ import es from '../../locales/es.json'
 import fr from '../../locales/fr.json'
 import de from '../../locales/de.json'
 import it from '../../locales/it.json'
+import { BIBLE_LANGUAGE_EVENT, isBibleLanguageId } from './bible-languages'
+import { bibleStorage } from './storage'
+import { bibleData } from './bible-data'
 
 export const dictionaries = {
   'pt-BR': ptBR,
@@ -35,6 +38,11 @@ export function normalizeLocale(val?: string | null): SupportedLocale {
 export function getCurrentLocale(): SupportedLocale {
   if (typeof window !== 'undefined') {
     const win = window as any
+    // An explicit Bible language choice wins over the host locale
+    try {
+      const bibleLanguage = bibleStorage.getBibleLanguageId()
+      if (bibleLanguage) return bibleLanguage
+    } catch {}
     const sdkLocale = win.MomAISDK?.i18n?.getLocale?.()
     if (sdkLocale) return normalizeLocale(sdkLocale)
     if (win.__MOMAI_LOCALE__) return normalizeLocale(win.__MOMAI_LOCALE__)
@@ -44,6 +52,23 @@ export function getCurrentLocale(): SupportedLocale {
     } catch {}
   }
   return DEFAULT_LOCALE
+}
+
+/**
+ * Applies a host (Settings) locale change to the whole Bible immediately:
+ * labels, book names, Bible text, search index, bookmarks display and
+ * continue-reading navigation all follow the active dataset. Persists the
+ * choice so reopening the Bible keeps the Settings language.
+ */
+export function applyHostLocale(rawLocale: unknown): SupportedLocale {
+  const next = normalizeLocale(typeof rawLocale === 'string' ? rawLocale : null)
+  try {
+    if (isBibleLanguageId(next) && next !== bibleData.getActiveLanguageId()) {
+      bibleStorage.setBibleLanguageId(next)
+      void bibleData.loadBibleLanguage(next)
+    }
+  } catch {}
+  return next
 }
 
 export function getTranslation(
@@ -94,9 +119,8 @@ export function useBibleI18n(propLocale?: string) {
   })
 
   useEffect(() => {
-    if (propLocale) {
-      setLocale(normalizeLocale(propLocale))
-    }
+    if (!propLocale) return
+    setLocale(applyHostLocale(propLocale))
   }, [propLocale])
 
   useEffect(() => {
@@ -108,29 +132,37 @@ export function useBibleI18n(propLocale?: string) {
     let unsubscribeSdk: (() => void) | undefined
     if (win.MomAISDK?.i18n?.onLocaleChange) {
       unsubscribeSdk = win.MomAISDK.i18n.onLocaleChange((newLocale: string) => {
-        setLocale(normalizeLocale(newLocale))
+        setLocale(applyHostLocale(newLocale))
       })
     }
 
     // 2. Listen via custom DOM event 'momai:locale-changed'
     const handleLocaleEvent = (e: any) => {
       const loc = e.detail?.locale || e.detail
-      if (loc) setLocale(normalizeLocale(loc))
+      if (loc) setLocale(applyHostLocale(loc))
     }
     window.addEventListener('momai:locale-changed', handleLocaleEvent)
 
     // 3. Listen via storage event (cross-tab or direct localStorage updates)
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'momai_locale' && e.newValue) {
-        setLocale(normalizeLocale(e.newValue))
+        setLocale(applyHostLocale(e.newValue))
       }
     }
     window.addEventListener('storage', handleStorage)
+
+    // 4. Listen to in-app Bible language switches (always wins)
+    const handleBibleLanguage = (e: any) => {
+      const loc = e.detail?.locale || e.detail
+      if (loc) setLocale(applyHostLocale(loc))
+    }
+    window.addEventListener(BIBLE_LANGUAGE_EVENT, handleBibleLanguage)
 
     return () => {
       if (unsubscribeSdk) unsubscribeSdk()
       window.removeEventListener('momai:locale-changed', handleLocaleEvent)
       window.removeEventListener('storage', handleStorage)
+      window.removeEventListener(BIBLE_LANGUAGE_EVENT, handleBibleLanguage)
     }
   }, [])
 

@@ -53,7 +53,12 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h2 className="text-2xl font-serif font-bold text-text">{t('bookmarks.title')}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-serif font-bold text-text">{t('bookmarks.title')}</h2>
+            <span aria-hidden="true" className="text-2xl leading-none select-none">
+              ⭐
+            </span>
+          </div>
           <p className="text-xs text-text-muted">
             {bookmarks.length === 1
               ? t('bookmarks.subtitle_one')
@@ -63,7 +68,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
 
         <div className="flex items-center space-x-2 w-full sm:w-auto">
           {/* Testament Filters */}
-          <div className="flex items-center p-1 rounded-xl bg-input/40 border border-border text-xs">
+          <div className="flex items-center gap-2 p-1 rounded-xl bg-input/40 border border-border text-xs">
             <button
               onClick={() => setFilterTestament('ALL')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
@@ -133,7 +138,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
               className="group p-5 rounded-2xl border border-border bg-card hover:border-accent/40 shadow-glass-sm transition-all duration-300 cursor-pointer flex flex-col space-y-3"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-text">
                     {getBookName(b.bookId, b.bookName)} {b.chapter}:{b.verse}
                   </span>
@@ -142,7 +147,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                   <span className="text-[11px] text-text-muted">
                     {new Date(b.createdAt).toLocaleDateString(locale)}
                   </span>

@@ -76,6 +76,12 @@
     "index": "Index",
     "index_title": "Bibelverzeichnis"
   },
+  "languages": {
+    "button": "Sprachen",
+    "title": "Bibelsprache",
+    "loading": "Übersetzung wird geladen…",
+    "load_error": "Diese Übersetzung konnte nicht geladen werden. Bitte erneut versuchen."
+  },
   "books": {
     "1": { "name": "Genesis", "abbrev": "Gen" },
     "2": { "name": "Exodus", "abbrev": "Ex" },

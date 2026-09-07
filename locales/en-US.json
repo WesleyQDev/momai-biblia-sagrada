@@ -76,6 +76,12 @@
     "index": "Index",
     "index_title": "Bible Index"
   },
+  "languages": {
+    "button": "Languages",
+    "title": "Bible Language",
+    "loading": "Loading translation…",
+    "load_error": "Could not load this translation. Please try again."
+  },
   "books": {
     "1": { "name": "Genesis", "abbrev": "Gen" },
     "2": { "name": "Exodus", "abbrev": "Exod" },
