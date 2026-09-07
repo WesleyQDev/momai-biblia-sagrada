@@ -5,7 +5,7 @@ import es from '../../locales/es.json'
 import fr from '../../locales/fr.json'
 import de from '../../locales/de.json'
 import it from '../../locales/it.json'
-import { BIBLE_LANGUAGE_EVENT, isBibleLanguageId } from './bible-languages'
+import { isBibleLanguageId } from './bible-languages'
 import { bibleStorage } from './storage'
 import { bibleData } from './bible-data'
 
@@ -38,11 +38,9 @@ export function normalizeLocale(val?: string | null): SupportedLocale {
 export function getCurrentLocale(): SupportedLocale {
   if (typeof window !== 'undefined') {
     const win = window as any
-    // An explicit Bible language choice wins over the host locale
-    try {
-      const bibleLanguage = bibleStorage.getBibleLanguageId()
-      if (bibleLanguage) return bibleLanguage
-    } catch {}
+    // UI labels always follow the host locale. The Bible translation
+    // (Old/New Testament text) is chosen separately in the Languages menu
+    // and never changes the interface language.
     const sdkLocale = win.MomAISDK?.i18n?.getLocale?.()
     if (sdkLocale) return normalizeLocale(sdkLocale)
     if (win.__MOMAI_LOCALE__) return normalizeLocale(win.__MOMAI_LOCALE__)
@@ -151,18 +149,14 @@ export function useBibleI18n(propLocale?: string) {
     }
     window.addEventListener('storage', handleStorage)
 
-    // 4. Listen to in-app Bible language switches (always wins)
-    const handleBibleLanguage = (e: any) => {
-      const loc = e.detail?.locale || e.detail
-      if (loc) setLocale(applyHostLocale(loc))
-    }
-    window.addEventListener(BIBLE_LANGUAGE_EVENT, handleBibleLanguage)
+    // Bible translation switches only reload the Old/New Testament
+    // dataset (via bibleData subscribers). They intentionally do NOT
+    // change the interface locale, so no listener is registered here.
 
     return () => {
       if (unsubscribeSdk) unsubscribeSdk()
       window.removeEventListener('momai:locale-changed', handleLocaleEvent)
       window.removeEventListener('storage', handleStorage)
-      window.removeEventListener(BIBLE_LANGUAGE_EVENT, handleBibleLanguage)
     }
   }, [])
 

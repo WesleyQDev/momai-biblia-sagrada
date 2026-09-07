@@ -17,15 +17,12 @@ describe('Registro de idiomas da Bíblia', () => {
     expect(ids).toEqual(['pt-BR', 'en-US', 'es', 'fr', 'de', 'it'])
   })
 
-  it('deve ter bandeira, rótulo, tradução e arquivo únicos por idioma', () => {
-    const flags = new Set(BIBLE_LANGUAGES.map((lang) => lang.flag))
+  it('deve ter rótulo, tradução e arquivo únicos por idioma', () => {
     const files = new Set(BIBLE_LANGUAGES.map((lang) => lang.file))
     const names = new Set(BIBLE_LANGUAGES.map((lang) => lang.translationName))
-    expect(flags.size).toBe(6)
     expect(files.size).toBe(6)
     expect(names.size).toBe(6)
     for (const lang of BIBLE_LANGUAGES) {
-      expect(lang.flag).toBeTruthy()
       expect(lang.label).toBeTruthy()
       expect(lang.translationName).toBeTruthy()
       expect(lang.translationShort).toBeTruthy()

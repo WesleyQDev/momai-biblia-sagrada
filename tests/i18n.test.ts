@@ -1,11 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   normalizeLocale,
   getTranslation,
   getLocalizedBook,
+  getCurrentLocale,
   dictionaries,
   SupportedLocale
 } from '../src/services/i18n'
+import { bibleStorage } from '../src/services/storage'
 
 describe('Bible Extension i18n System', () => {
   const allLocales: SupportedLocale[] = ['pt-BR', 'en-US', 'es', 'fr', 'de', 'it']
@@ -81,5 +83,26 @@ describe('Bible Extension i18n System', () => {
         expect(book?.abbrev).toBeTruthy()
       }
     })
+  })
+
+  it('deve manter o idioma da interface no host mesmo com outra tradução da Bíblia salva', () => {
+    const store = new Map<string, string>()
+    vi.stubGlobal('localStorage', {
+      getItem: (k: string) => (store.has(k) ? store.get(k)! : null),
+      setItem: (k: string, v: string) => {
+        store.set(k, v)
+      },
+      removeItem: (k: string) => {
+        store.delete(k)
+      }
+    })
+    vi.stubGlobal('window', { localStorage: (globalThis as any).localStorage })
+    try {
+      bibleStorage.setBibleLanguageId('es')
+      ;(globalThis as any).localStorage.setItem('momai_locale', 'en-US')
+      expect(getCurrentLocale()).toBe('en-US')
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 })

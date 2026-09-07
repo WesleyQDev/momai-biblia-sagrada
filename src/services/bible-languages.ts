@@ -2,7 +2,6 @@ export type BibleLanguageId = 'pt-BR' | 'en-US' | 'es' | 'fr' | 'de' | 'it'
 
 export interface BibleLanguage {
   id: BibleLanguageId
-  flag: string
   label: string
   translationName: string
   translationShort: string
@@ -16,7 +15,6 @@ export const DEFAULT_BIBLE_LANGUAGE_ID: BibleLanguageId = 'pt-BR'
 export const BIBLE_LANGUAGES: readonly BibleLanguage[] = [
   {
     id: 'pt-BR',
-    flag: '🇧🇷',
     label: 'Português',
     translationName: 'Almeida Revista e Atualizada',
     translationShort: 'Almeida',
@@ -24,7 +22,6 @@ export const BIBLE_LANGUAGES: readonly BibleLanguage[] = [
   },
   {
     id: 'en-US',
-    flag: '🇺🇸',
     label: 'English',
     translationName: 'King James Version',
     translationShort: 'KJV',
@@ -32,7 +29,6 @@ export const BIBLE_LANGUAGES: readonly BibleLanguage[] = [
   },
   {
     id: 'es',
-    flag: '🇪🇸',
     label: 'Español',
     translationName: 'Reina-Valera 1909',
     translationShort: 'RV1909',
@@ -40,7 +36,6 @@ export const BIBLE_LANGUAGES: readonly BibleLanguage[] = [
   },
   {
     id: 'fr',
-    flag: '🇫🇷',
     label: 'Français',
     translationName: 'Louis Segond 1910',
     translationShort: 'LSG',
@@ -48,7 +43,6 @@ export const BIBLE_LANGUAGES: readonly BibleLanguage[] = [
   },
   {
     id: 'de',
-    flag: '🇩🇪',
     label: 'Deutsch',
     translationName: 'Lutherbibel 1912',
     translationShort: 'LU1912',
@@ -56,7 +50,6 @@ export const BIBLE_LANGUAGES: readonly BibleLanguage[] = [
   },
   {
     id: 'it',
-    flag: '🇮🇹',
     label: 'Italiano',
     translationName: 'Riveduta 1927',
     translationShort: 'RIV',

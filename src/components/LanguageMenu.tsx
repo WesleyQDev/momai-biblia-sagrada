@@ -75,9 +75,6 @@ export const LanguageMenu: React.FC = () => {
                   isCurrent ? 'bg-accent/15' : 'hover:bg-input/50'
                 }`}
               >
-                <span aria-hidden="true" className="text-xl leading-none shrink-0 w-7 text-center">
-                  {lang.flag}
-                </span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-xs font-bold text-text truncate">{lang.label}</span>
                   <span className="block text-[11px] text-text-muted truncate">
