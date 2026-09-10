@@ -118,20 +118,70 @@ function getVerse(bookId: number, chapter: number, verse: number) {
   }
 }
 
-// Local persistent storage for bookmarks and reading progress in worker
+// Bookmarks and reading progress live in host-owned SQLite over IPC
+// (isolated per dev mode). Local JSON files stay as a one-time legacy source
+// and as the fallback for unit tests without an IPC channel.
 const storageFile = path.join(__dirname, 'bookmarks.json')
 const readingFile = path.join(__dirname, 'reading-progress.json')
+const BOOKMARKS_KEY = 'bookmarks'
+const READING_KEY = 'reading-progress'
 
-function loadLocalBookmarks(): any[] {
+let storageResponseListener: ((msg: any) => void) | null = null
+let ipcStorage: any = null
+function getIpcStorage(): any {
+  if (ipcStorage) return ipcStorage
+  const { createIpcBibliaStorage } = require('./storage-ipc.ts')
+  ipcStorage = createIpcBibliaStorage({
+    send: (msg: any) => safeSend(msg),
+    onResponse: (fn: (msg: any) => void) => {
+      storageResponseListener = fn
+    },
+    storageDir: 'momai-biblia-sagrada'
+  })
+  return ipcStorage
+}
+
+function useHostStorage(): boolean {
+  return typeof process.send === 'function'
+}
+
+function readLocalBookmarksFile(): any[] {
   try {
     if (fs.existsSync(storageFile)) {
-      return JSON.parse(fs.readFileSync(storageFile, 'utf8'))
+      const parsed = JSON.parse(fs.readFileSync(storageFile, 'utf8'))
+      if (Array.isArray(parsed)) return parsed
     }
   } catch {}
   return []
 }
 
-function saveLocalBookmarks(bms: any[]) {
+async function loadBookmarks(): Promise<any[]> {
+  if (useHostStorage()) {
+    try {
+      const stored = await getIpcStorage().storage.get(BOOKMARKS_KEY)
+      if (Array.isArray(stored)) return stored
+      const legacy = readLocalBookmarksFile()
+      if (legacy.length > 0) {
+        getIpcStorage().storage.set(BOOKMARKS_KEY, legacy).catch(() => {})
+        return legacy
+      }
+      return []
+    } catch {
+      return readLocalBookmarksFile()
+    }
+  }
+  return readLocalBookmarksFile()
+}
+
+async function saveBookmarks(bms: any[]): Promise<void> {
+  if (useHostStorage()) {
+    try {
+      await getIpcStorage().storage.set(BOOKMARKS_KEY, bms)
+      return
+    } catch {
+      /* fall through to local file */
+    }
+  }
   try {
     fs.writeFileSync(storageFile, JSON.stringify(bms, null, 2), 'utf8')
   } catch (e: any) {
@@ -139,12 +189,7 @@ function saveLocalBookmarks(bms: any[]) {
   }
 }
 
-function loadLastReading(): any {
-  try {
-    if (fs.existsSync(readingFile)) {
-      return JSON.parse(fs.readFileSync(readingFile, 'utf8'))
-    }
-  } catch {}
+function defaultReading(): any {
   return {
     bookId: 43,
     bookName: 'João',
@@ -154,6 +199,33 @@ function loadLastReading(): any {
     verse: 1,
     updatedAt: Date.now()
   }
+}
+
+async function loadReading(): Promise<any> {
+  if (useHostStorage()) {
+    try {
+      const stored = await getIpcStorage().storage.get(READING_KEY)
+      if (stored && typeof stored === 'object') return stored
+      try {
+        if (fs.existsSync(readingFile)) {
+          const parsed = JSON.parse(fs.readFileSync(readingFile, 'utf8'))
+          if (parsed && typeof parsed === 'object') {
+            getIpcStorage().storage.set(READING_KEY, parsed).catch(() => {})
+            return parsed
+          }
+        }
+      } catch {}
+      return defaultReading()
+    } catch {
+      /* fall through to local file */
+    }
+  }
+  try {
+    if (fs.existsSync(readingFile)) {
+      return JSON.parse(fs.readFileSync(readingFile, 'utf8'))
+    }
+  } catch {}
+  return defaultReading()
 }
 
 // Search parser & search logic for LLM tools
@@ -362,7 +434,7 @@ async function executeTool(toolName: string, args: any = {}): Promise<any> {
     }
 
     case 'get_last_reading': {
-      const reading = loadLastReading()
+      const reading = await loadReading()
       return {
         ok: true,
         reading,
@@ -371,7 +443,7 @@ async function executeTool(toolName: string, args: any = {}): Promise<any> {
     }
 
     case 'list_bookmarks': {
-      const bookmarks = loadLocalBookmarks()
+      const bookmarks = await loadBookmarks()
       const bookFilter = args?.book ? normalizeString(args.book) : null
       const filtered = bookFilter
         ? bookmarks.filter((b: any) => normalizeString(b.bookName) === bookFilter || normalizeString(b.bookAbbrev) === bookFilter)
@@ -395,7 +467,7 @@ async function executeTool(toolName: string, args: any = {}): Promise<any> {
       const verse = getVerse(book.id, ch, v)
       if (!verse) return { ok: false, error: `Versículo não encontrado.` }
 
-      const bookmarks = loadLocalBookmarks()
+      const bookmarks = await loadBookmarks()
       const newBm = {
         id: `${book.abbrev}-${ch}-${v}-${Date.now()}`,
         bookId: book.id,
@@ -411,7 +483,7 @@ async function executeTool(toolName: string, args: any = {}): Promise<any> {
 
       const updated = bookmarks.filter((b: any) => !(b.bookId === book.id && b.chapter === ch && b.verse === v))
       updated.unshift(newBm)
-      saveLocalBookmarks(updated)
+      await saveBookmarks(updated)
 
       safeSend({
         type: 'event',
@@ -432,9 +504,9 @@ async function executeTool(toolName: string, args: any = {}): Promise<any> {
 
     case 'remove_bookmark': {
       const id = args?.id || ''
-      const bookmarks = loadLocalBookmarks()
+      const bookmarks = await loadBookmarks()
       const updated = bookmarks.filter((b: any) => b.id !== id && `${b.bookAbbrev}-${b.chapter}-${b.verse}` !== id)
-      saveLocalBookmarks(updated)
+      await saveBookmarks(updated)
 
       safeSend({
         type: 'event',
@@ -456,6 +528,12 @@ async function executeTool(toolName: string, args: any = {}): Promise<any> {
 // Process incoming IPC messages from MomAI extension host
 process.on('message', async (msg: any) => {
   if (!msg || typeof msg !== 'object') return
+  if (msg.type === 'storage-response') {
+    try {
+      storageResponseListener?.(msg)
+    } catch {}
+    return
+  }
   if (msg.type === 'execute') {
     const { requestId, payload } = msg
     const { toolName, args } = payload || {}

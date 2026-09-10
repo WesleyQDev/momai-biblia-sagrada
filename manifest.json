@@ -55,7 +55,6 @@
       "tags": ["bibbia", "devozionale", "lettura", "studio", "scritture"]
     }
   },
-  "repo": "WesleyQDev/momai-biblia-sagrada",
   "sidebar": true,
   "background": true,
   "backgroundScript": "runtime.ts",
