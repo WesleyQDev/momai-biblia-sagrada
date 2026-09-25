@@ -1,22 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import { bibleStorage } from '../services/storage'
+import { harpaData } from '../services/harpa-data'
 import { useBibleI18n } from '../services/i18n'
+import { useHarpaLanguage } from '../services/useHarpaLanguage'
 import ContextMenu from './ContextMenu'
 import type { BibleBookmark } from '../types/bookmarks'
 import type { Testament } from '../types/bible'
+import type { HarpaHymn } from '../types/harpa'
 
 interface BookmarksViewProps {
   onNavigateToPassage: (bookId: number, chapter: number, verse: number) => void
   onStartReading: () => void
+  favoriteHymns: number[]
+  onNavigateToHymn: (hymnNumber: number) => void
+  onRemoveHymnFavorite: (hymnNumber: number) => void
 }
 
 export const BookmarksView: React.FC<BookmarksViewProps> = ({
   onNavigateToPassage,
-  onStartReading
+  onStartReading,
+  favoriteHymns,
+  onNavigateToHymn,
+  onRemoveHymnFavorite
 }) => {
   const { locale, t, getBookName } = useBibleI18n()
+  useHarpaLanguage()
   const [bookmarks, setBookmarks] = useState<BibleBookmark[]>([])
-  const [filterTestament, setFilterTestament] = useState<Testament | 'ALL'>('ALL')
+  const [filter, setFilter] = useState<Testament | 'ALL' | 'HARPA'>('ALL')
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; bookmark: BibleBookmark } | null>(null)
 
   useEffect(() => {
@@ -44,9 +54,18 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
   }
 
   const filtered = bookmarks.filter((b) => {
-    if (filterTestament !== 'ALL' && b.testament !== filterTestament) return false
+    if (filter === 'HARPA') return false
+    if (filter !== 'ALL' && b.testament !== filter) return false
     return true
   })
+
+  const showVerseList = filter !== 'HARPA'
+  const showHymns = filter === 'ALL' || filter === 'HARPA'
+
+  const favoriteHymnList = [...favoriteHymns]
+    .sort((a, b) => a - b)
+    .map((number) => harpaData.getHymn(number))
+    .filter((hymn): hymn is HarpaHymn => Boolean(hymn))
 
   return (
     <div className="w-full space-y-6 animate-fade-in pb-16 text-text">
@@ -67,64 +86,55 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
         </div>
 
         <div className="flex items-center space-x-2 w-full sm:w-auto">
-          {/* Testament Filters */}
+          {/* Testament and Harpa Filters */}
           <div className="flex items-center gap-2 p-1 rounded-xl bg-input/40 border border-border text-xs">
-            <button
-              onClick={() => setFilterTestament('ALL')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                filterTestament === 'ALL'
-                  ? 'bg-card text-text shadow-sm border border-border'
-                  : 'text-text-muted hover:text-text'
-              }`}
-            >
-              {t('bookmarks.filter_all')}
-            </button>
-            <button
-              onClick={() => setFilterTestament('AT')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                filterTestament === 'AT'
-                  ? 'bg-card text-text shadow-sm border border-border'
-                  : 'text-text-muted hover:text-text'
-              }`}
-            >
-              {t('bookmarks.filter_ot')}
-            </button>
-            <button
-              onClick={() => setFilterTestament('NT')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                filterTestament === 'NT'
-                  ? 'bg-card text-text shadow-sm border border-border'
-                  : 'text-text-muted hover:text-text'
-              }`}
-            >
-              {t('bookmarks.filter_nt')}
-            </button>
+            {(
+              [
+                { id: 'ALL', label: t('bookmarks.filter_all') },
+                { id: 'AT', label: t('bookmarks.filter_ot') },
+                { id: 'NT', label: t('bookmarks.filter_nt') },
+                { id: 'HARPA', label: t('bookmarks.filter_harpa') }
+              ] as const
+            ).map((option) => (
+              <button
+                key={option.id}
+                onClick={() => setFilter(option.id)}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  filter === option.id
+                    ? 'bg-card text-text shadow-sm border border-border'
+                    : 'text-text-muted hover:text-text'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Bookmarks List */}
-      {filtered.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed border-border bg-card/40 flex flex-col items-center justify-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-input/50 flex items-center justify-center text-text-muted">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
+      {showVerseList &&
+        (filtered.length === 0 ? (
+          <div className="p-12 text-center rounded-2xl border border-dashed border-border bg-card/40 flex flex-col items-center justify-center space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-input/50 flex items-center justify-center text-text-muted">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-bold text-text">{t('bookmarks.empty_title')}</h3>
+            <p className="text-xs text-text-muted max-w-sm">
+              {filter !== 'ALL'
+                ? t('bookmarks.empty_filtered')
+                : t('bookmarks.empty_desc')}
+            </p>
+            <button
+              onClick={onStartReading}
+              className="mt-2 px-4 py-2 rounded-xl bg-input hover:bg-input/80 border border-border text-xs font-semibold text-text transition-colors"
+            >
+              {t('bookmarks.go_reading')}
+            </button>
           </div>
-          <h3 className="text-sm font-bold text-text">{t('bookmarks.empty_title')}</h3>
-          <p className="text-xs text-text-muted max-w-sm">
-            {filterTestament !== 'ALL'
-              ? t('bookmarks.empty_filtered')
-              : t('bookmarks.empty_desc')}
-          </p>
-          <button
-            onClick={onStartReading}
-            className="mt-2 px-4 py-2 rounded-xl bg-input hover:bg-input/80 border border-border text-xs font-semibold text-text transition-colors"
-          >
-            {t('bookmarks.go_reading')}
-          </button>
-        </div>
-      ) : (
+        ) : (
         <div className="space-y-3">
           {filtered.map((b) => (
             <div
@@ -176,7 +186,54 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
             </div>
           ))}
         </div>
+        ))}
+
+      {/* Harpa Cristã favorite hymns */}
+      {showHymns && (
+        <section className="space-y-3 pt-6 border-t border-border">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-serif font-bold text-text">{t('bookmarks.hymns_title')}</h3>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-input/60 text-text-muted border border-border">
+            {favoriteHymnList.length}
+          </span>
+        </div>
+
+        {favoriteHymnList.length === 0 ? (
+          <p className="text-xs text-text-muted">{t('bookmarks.hymns_empty')}</p>
+        ) : (
+          <div className="space-y-2">
+            {favoriteHymnList.map((hymn) => (
+              <div
+                key={hymn.number}
+                onClick={() => onNavigateToHymn(hymn.number)}
+                className="group flex items-center justify-between gap-3 p-3 rounded-xl border border-border bg-card hover:border-accent/40 shadow-glass-sm transition-all duration-300 cursor-pointer"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm font-bold text-text shrink-0">
+                    {t('harpa.hymn_label')} {hymn.number}
+                  </span>
+                  <span className="text-sm text-text-muted truncate">{hymn.title}</span>
+                </div>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onRemoveHymnFavorite(hymn.number)
+                  }}
+                  title={t('bookmarks.remove_hymn')}
+                  className="p-1 shrink-0 rounded-lg text-text-muted hover:text-text hover:bg-input transition-colors cursor-pointer"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        </section>
       )}
+
       {contextMenu && (
         <ContextMenu
           x={contextMenu.x}

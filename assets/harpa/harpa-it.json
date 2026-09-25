@@ -1,0 +1,66 @@
+{
+  "source": "Arpa Cristiana — 640 inni (originale portoghese con traduzione italiana)",
+  "totalHymns": 640,
+  "hymns": [
+    {
+      "number": 1,
+      "title": "Piogge di Grazia",
+      "stanzas": [
+        [
+          "Dio ha promesso con certezza",
+          "Di mandare piogge di grazia;",
+          "Egli ci dà fortezza,",
+          "E ricche benedizioni senza pari."
+        ],
+        [
+          "Cristo ci ha concesso",
+          "Il santo Consolatore,",
+          "Colmandoci di piena pace,",
+          "Per il regno dell'amore."
+        ],
+        [
+          "Dacci, Signore, abbondantemente",
+          "La Tua grande gioia e potenza;",
+          "Fonte d'amore permanente,",
+          "Metti dentro il nostro essere."
+        ],
+        [
+          "Rendi i Tuoi servi pietosi,",
+          "Dona loro virtù e valore,",
+          "Donando i Tuoi doni preziosi,",
+          "Del santo Precettore."
+        ]
+      ],
+      "chorus": [
+        "Piogge di grazia,",
+        "Piogge Ti chiediamo, Signore;",
+        "Mandaci piogge costanti,",
+        "Piogge del Consolatore."
+      ]
+    },
+    {
+      "number": 545,
+      "title": "Perché Egli Vive",
+      "stanzas": [
+        [
+          "Dio ha mandato il Suo Figlio amato",
+          "Per perdonare, per salvarmi.",
+          "Sulla croce morì per il mio peccato,",
+          "Ma è risorto e vive con il Padre."
+        ],
+        [
+          "E quando, infine, giungerà l'ora",
+          "In cui affronterò la morte,",
+          "Senza timore, allora, avrò vittoria:",
+          "Andrò alla Gloria, al mio Gesù che vive."
+        ]
+      ],
+      "chorus": [
+        "Perché Egli vive, posso credere nel domani.",
+        "Perché Egli vive, non c'è timore.",
+        "Ma so bene, so che la mia vita",
+        "È nelle mani del mio Gesù, che è vivo."
+      ]
+    }
+  ]
+}

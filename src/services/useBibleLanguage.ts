@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { bibleData } from './bible-data'
+import { harpaData } from './harpa-data'
 import { bibleStorage } from './storage'
 import { notifyBibleLanguageChanged, type BibleLanguageId } from './bible-languages'
 
@@ -21,11 +22,18 @@ export function useBibleLanguage() {
     if (preferred && preferred !== bibleData.getActiveLanguageId()) {
       bibleData
         .loadBibleLanguage(preferred)
+        .then(() => harpaData.loadHarpaLanguage(preferred))
         .then(() => {
           notifyBibleLanguageChanged(preferred)
         })
         .catch((err) => {
           console.error('[biblia] Failed to restore Bible language:', err)
+        })
+    } else if (harpaData.getActiveLanguageId() !== bibleData.getActiveLanguageId()) {
+      void harpaData
+        .loadHarpaLanguage(bibleData.getActiveLanguageId())
+        .catch((err) => {
+          console.error('[harpa] Failed to sync Harpa language:', err)
         })
     }
 
@@ -34,9 +42,14 @@ export function useBibleLanguage() {
 
   const changeLanguage = useCallback(
     async (id: BibleLanguageId): Promise<boolean> => {
-      if (id === bibleData.getActiveLanguageId()) return true
+      if (
+        id === bibleData.getActiveLanguageId() &&
+        id === harpaData.getActiveLanguageId()
+      )
+        return true
       try {
         await bibleData.loadBibleLanguage(id)
+        await harpaData.loadHarpaLanguage(id)
         bibleStorage.setBibleLanguageId(id)
         notifyBibleLanguageChanged(id)
         return true

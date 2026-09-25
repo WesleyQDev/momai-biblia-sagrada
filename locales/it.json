@@ -7,18 +7,90 @@
     "NT": "Nuovo Testamento",
     "ALL": "Tutti i Testamenti"
   },
+  "widget": {
+    "tracker": {
+      "title": "Lettura Biblica",
+      "subtitle": "Obiettivi Giornalieri",
+      "goal_badge": "Obiettivo",
+      "goal_badge_progress": "Obiettivo: {completed}/{goal}",
+      "goal_badge_tooltip_done": "Obiettivo giornaliero completato ({count} capitoli letti oggi). Fai clic per i dettagli.",
+      "goal_badge_tooltip_progress": "Fai clic per visualizzare i progressi di lettura",
+      "goal_completed_title": "Congratulazioni! Hai completato il tuo obiettivo giornaliero.",
+      "goal_completed_desc_one": "{count} capitolo completato oggi.",
+      "goal_completed_desc_other": "{count} capitoli completati oggi.",
+      "read_extra_button": "Leggi capitolo extra",
+      "restart_reading_button": "Ricomincia Lettura",
+      "restart_all_button": "Ripristina Tutto",
+      "restart_reading_tooltip": "Ricomincia l'intero percorso di lettura biblica da Genesi 1",
+      "restart_modal_title": "Ricomincia Lettura Biblica",
+      "restart_modal_desc": "Vuoi ricominciare l'intera lettura biblica dall'inizio ({genesis})? Tutti i progressi dei capitoli verranno azzerati.",
+      "streak_days": "{count}g",
+      "streak_tooltip": "{count} giorni consecutivi",
+      "details_title_done_one": "Obiettivo giornaliero completato ({count} capitolo letto oggi)",
+      "details_title_done_other": "Obiettivo giornaliero completato ({count} capitoli letti oggi)",
+      "details_title_progress_one": "Obiettivo giornaliero: {completed} su {goal} capitolo",
+      "details_title_progress_other": "Obiettivo giornaliero: {completed} su {goal} capitoli",
+      "details_overall": "{percent}% • {read}/1189 capitoli letti nella Bibbia",
+      "details_close_tooltip": "Fai clic per chiudere i dettagli",
+      "prev_chapter_tooltip": "Capitolo precedente",
+      "next_chapter_tooltip": "Capitolo successivo",
+      "select_book_tooltip": "Seleziona libro della Bibbia",
+      "select_book_title": "Seleziona Libro",
+      "loading_text": "Caricamento testo biblico...",
+      "mark_as_read": "Segna come letto",
+      "confirm_title": "Conferma Lettura",
+      "confirm_desc": "Vuoi segnare {book} {chapter} come letto?",
+      "confirm_button": "Conferma",
+      "cancel_button": "Annulla",
+      "close": "Chiudi"
+    }
+  },
   "home": {
     "title": "Sacra Bibbia",
-    "search_placeholder": "Es: Giovanni 3:16, amore, luce...",
-    "search_title": "Cerca versetto",
+    "search_placeholder": "Es: Giovanni 3:16, Inno 545, amore, luce...",
+    "search_title": "Cerca nella Bibbia e nell'Arpa",
     "search_no_results": "Nessun versetto trovato per \"{query}\"",
     "search_reference": "Riferimento",
     "search_excerpt": "Estratto",
+    "search_harpa_badge": "Arpa",
+    "search_filter_all": "Tutti",
+    "search_filter_at": "Antico Testamento",
+    "search_filter_nt": "Nuovo Testamento",
+    "search_filter_harpa": "Arpa Cristiana",
+    "search_section_verses": "Versetti",
+    "search_section_harpa": "Arpa Cristiana",
     "esc": "Esc",
     "new_testament": "Nuovo Testamento",
     "old_testament": "Antico Testamento",
     "bookmarks": "Segnalibri",
-    "continue_reading": "Continua la lettura"
+    "continue_reading": "Continua la lettura",
+    "harpa": "Arpa Cristiana",
+    "harpa_hint": "640 inni"
+  },
+  "harpa": {
+    "title": "Arpa Cristiana",
+    "subtitle": "640 inni • Nella tua lingua, originale in portoghese",
+    "index_title": "Indice dell'Arpa Cristiana",
+    "search_placeholder": "Es: 545, Perché Egli Vive, piogge...",
+    "search_no_results": "Nessun inno trovato per \"{query}\"",
+    "filter_all": "Tutti gli inni",
+    "filter_favorites": "Preferiti",
+    "empty_favorites": "Nessun inno preferito ancora.",
+    "hymn_label": "Inno",
+    "stanza": "Strofa",
+    "chorus": "Coro",
+    "copy": "Copia",
+    "copied": "Copiato!",
+    "bookmark": "Segnalibro",
+    "unbookmark": "Rimuovi segnalibro",
+    "select_all": "Seleziona tutto",
+    "original_note": "Titolo, strofe e coro seguono la lingua selezionata. Il portoghese è l’originale ed è usato quando manca una traduzione.",
+    "not_found": "Inno non trovato.",
+    "total": "{count} inni",
+    "click_flip_next": "Clicca per girare la pagina",
+    "click_flip_prev": "Clicca per tornare indietro",
+    "click_flip_end": "Fine dell'Arpa Cristiana",
+    "click_flip_start": "Inizio dell'Arpa Cristiana"
   },
   "card": {
     "reroll": "Estrai un altro versetto"
@@ -42,6 +114,7 @@
     "copy": "Copia",
     "copied": "Copiato!",
     "bookmark": "Segna",
+    "select_all": "Seleziona tutto",
     "unbookmark": "Rimuovi segno",
     "click_flip_next": "Clicca per voltare pagina",
     "click_flip_next_book": "Clicca per il prossimo libro",
@@ -59,13 +132,17 @@
     "filter_all": "Tutti",
     "filter_ot": "Antico",
     "filter_nt": "Nuovo",
+    "filter_harpa": "Arpa",
     "empty_title": "Nessun segnalibro trovato",
     "empty_filtered": "Nessun segnalibro in questo testamento.",
     "empty_desc": "Nella schermata di lettura, clicca su qualsiasi versetto e seleziona \"Segna\" per aggiungerlo qui.",
     "go_reading": "Vai alla lettura della Bibbia",
     "open_context": "Apri e leggi nel contesto",
     "copy_verse": "Copia versetto",
-    "remove": "Rimuovi segnalibro"
+    "remove": "Rimuovi segnalibro",
+    "hymns_title": "Inni preferiti",
+    "hymns_empty": "Nessun inno preferito ancora.",
+    "remove_hymn": "Rimuovi inno dai preferiti"
   },
   "header": {
     "title": "Sacra Bibbia",
@@ -83,71 +160,269 @@
     "load_error": "Impossibile caricare questa traduzione. Riprova."
   },
   "books": {
-    "1": { "name": "Genesi", "abbrev": "Gen" },
-    "2": { "name": "Esodo", "abbrev": "Es" },
-    "3": { "name": "Levitico", "abbrev": "Lev" },
-    "4": { "name": "Numeri", "abbrev": "Num" },
-    "5": { "name": "Deuteronomio", "abbrev": "Dt" },
-    "6": { "name": "Giosuè", "abbrev": "Gs" },
-    "7": { "name": "Giudici", "abbrev": "Gdc" },
-    "8": { "name": "Rut", "abbrev": "Rt" },
-    "9": { "name": "1 Samuele", "abbrev": "1Sam" },
-    "10": { "name": "2 Samuele", "abbrev": "2Sam" },
-    "11": { "name": "1 Re", "abbrev": "1Re" },
-    "12": { "name": "2 Re", "abbrev": "2Re" },
-    "13": { "name": "1 Cronache", "abbrev": "1Cr" },
-    "14": { "name": "2 Cronache", "abbrev": "2Cr" },
-    "15": { "name": "Esdra", "abbrev": "Esd" },
-    "16": { "name": "Neemia", "abbrev": "Ne" },
-    "17": { "name": "Ester", "abbrev": "Est" },
-    "18": { "name": "Giobbe", "abbrev": "Gb" },
-    "19": { "name": "Salmi", "abbrev": "Sal" },
-    "20": { "name": "Proverbi", "abbrev": "Pr" },
-    "21": { "name": "Ecclesiaste", "abbrev": "Qo" },
-    "22": { "name": "Cantico dei Cantici", "abbrev": "Ct" },
-    "23": { "name": "Isaia", "abbrev": "Is" },
-    "24": { "name": "Geremia", "abbrev": "Ger" },
-    "25": { "name": "Lamentazioni", "abbrev": "Lam" },
-    "26": { "name": "Ezechiele", "abbrev": "Ez" },
-    "27": { "name": "Daniele", "abbrev": "Dn" },
-    "28": { "name": "Osea", "abbrev": "Os" },
-    "29": { "name": "Gioele", "abbrev": "Gl" },
-    "30": { "name": "Amos", "abbrev": "Am" },
-    "31": { "name": "Abdia", "abbrev": "Abd" },
-    "32": { "name": "Giona", "abbrev": "Gna" },
-    "33": { "name": "Michea", "abbrev": "Mi" },
-    "34": { "name": "Nahum", "abbrev": "Na" },
-    "35": { "name": "Abacuc", "abbrev": "Ab" },
-    "36": { "name": "Sofonia", "abbrev": "Sof" },
-    "37": { "name": "Aggeo", "abbrev": "Ag" },
-    "38": { "name": "Zaccaria", "abbrev": "Zc" },
-    "39": { "name": "Malachia", "abbrev": "Ml" },
-    "40": { "name": "Matteo", "abbrev": "Mt" },
-    "41": { "name": "Marco", "abbrev": "Mc" },
-    "42": { "name": "Luca", "abbrev": "Lc" },
-    "43": { "name": "Giovanni", "abbrev": "Gv" },
-    "44": { "name": "Atti", "abbrev": "At" },
-    "45": { "name": "Romani", "abbrev": "Rm" },
-    "46": { "name": "1 Corinzi", "abbrev": "1Cor" },
-    "47": { "name": "2 Corinzi", "abbrev": "2Cor" },
-    "48": { "name": "Galati", "abbrev": "Gal" },
-    "49": { "name": "Efesini", "abbrev": "Ef" },
-    "50": { "name": "Filippesi", "abbrev": "Fil" },
-    "51": { "name": "Colossesi", "abbrev": "Col" },
-    "52": { "name": "1 Tessalonicesi", "abbrev": "1Ts" },
-    "53": { "name": "2 Tessalonicesi", "abbrev": "2Ts" },
-    "54": { "name": "1 Timoteo", "abbrev": "1Tm" },
-    "55": { "name": "2 Timoteo", "abbrev": "2Tm" },
-    "56": { "name": "Tito", "abbrev": "Tt" },
-    "57": { "name": "Filemone", "abbrev": "Fm" },
-    "58": { "name": "Ebrei", "abbrev": "Eb" },
-    "59": { "name": "Giacomo", "abbrev": "Gc" },
-    "60": { "name": "1 Pietro", "abbrev": "1Pt" },
-    "61": { "name": "2 Pietro", "abbrev": "2Pt" },
-    "62": { "name": "1 Giovanni", "abbrev": "1Gv" },
-    "63": { "name": "2 Giovanni", "abbrev": "2Gv" },
-    "64": { "name": "3 Giovanni", "abbrev": "3Gv" },
-    "65": { "name": "Giuda", "abbrev": "Gd" },
-    "66": { "name": "Apocalisse", "abbrev": "Ap" }
+    "1": {
+      "name": "Genesi",
+      "abbrev": "Gen"
+    },
+    "2": {
+      "name": "Esodo",
+      "abbrev": "Es"
+    },
+    "3": {
+      "name": "Levitico",
+      "abbrev": "Lev"
+    },
+    "4": {
+      "name": "Numeri",
+      "abbrev": "Num"
+    },
+    "5": {
+      "name": "Deuteronomio",
+      "abbrev": "Dt"
+    },
+    "6": {
+      "name": "Giosuè",
+      "abbrev": "Gs"
+    },
+    "7": {
+      "name": "Giudici",
+      "abbrev": "Gdc"
+    },
+    "8": {
+      "name": "Rut",
+      "abbrev": "Rt"
+    },
+    "9": {
+      "name": "1 Samuele",
+      "abbrev": "1Sam"
+    },
+    "10": {
+      "name": "2 Samuele",
+      "abbrev": "2Sam"
+    },
+    "11": {
+      "name": "1 Re",
+      "abbrev": "1Re"
+    },
+    "12": {
+      "name": "2 Re",
+      "abbrev": "2Re"
+    },
+    "13": {
+      "name": "1 Cronache",
+      "abbrev": "1Cr"
+    },
+    "14": {
+      "name": "2 Cronache",
+      "abbrev": "2Cr"
+    },
+    "15": {
+      "name": "Esdra",
+      "abbrev": "Esd"
+    },
+    "16": {
+      "name": "Neemia",
+      "abbrev": "Ne"
+    },
+    "17": {
+      "name": "Ester",
+      "abbrev": "Est"
+    },
+    "18": {
+      "name": "Giobbe",
+      "abbrev": "Gb"
+    },
+    "19": {
+      "name": "Salmi",
+      "abbrev": "Sal"
+    },
+    "20": {
+      "name": "Proverbi",
+      "abbrev": "Pr"
+    },
+    "21": {
+      "name": "Ecclesiaste",
+      "abbrev": "Qo"
+    },
+    "22": {
+      "name": "Cantico dei Cantici",
+      "abbrev": "Ct"
+    },
+    "23": {
+      "name": "Isaia",
+      "abbrev": "Is"
+    },
+    "24": {
+      "name": "Geremia",
+      "abbrev": "Ger"
+    },
+    "25": {
+      "name": "Lamentazioni",
+      "abbrev": "Lam"
+    },
+    "26": {
+      "name": "Ezechiele",
+      "abbrev": "Ez"
+    },
+    "27": {
+      "name": "Daniele",
+      "abbrev": "Dn"
+    },
+    "28": {
+      "name": "Osea",
+      "abbrev": "Os"
+    },
+    "29": {
+      "name": "Gioele",
+      "abbrev": "Gl"
+    },
+    "30": {
+      "name": "Amos",
+      "abbrev": "Am"
+    },
+    "31": {
+      "name": "Abdia",
+      "abbrev": "Abd"
+    },
+    "32": {
+      "name": "Giona",
+      "abbrev": "Gna"
+    },
+    "33": {
+      "name": "Michea",
+      "abbrev": "Mi"
+    },
+    "34": {
+      "name": "Nahum",
+      "abbrev": "Na"
+    },
+    "35": {
+      "name": "Abacuc",
+      "abbrev": "Ab"
+    },
+    "36": {
+      "name": "Sofonia",
+      "abbrev": "Sof"
+    },
+    "37": {
+      "name": "Aggeo",
+      "abbrev": "Ag"
+    },
+    "38": {
+      "name": "Zaccaria",
+      "abbrev": "Zc"
+    },
+    "39": {
+      "name": "Malachia",
+      "abbrev": "Ml"
+    },
+    "40": {
+      "name": "Matteo",
+      "abbrev": "Mt"
+    },
+    "41": {
+      "name": "Marco",
+      "abbrev": "Mc"
+    },
+    "42": {
+      "name": "Luca",
+      "abbrev": "Lc"
+    },
+    "43": {
+      "name": "Giovanni",
+      "abbrev": "Gv"
+    },
+    "44": {
+      "name": "Atti",
+      "abbrev": "At"
+    },
+    "45": {
+      "name": "Romani",
+      "abbrev": "Rm"
+    },
+    "46": {
+      "name": "1 Corinzi",
+      "abbrev": "1Cor"
+    },
+    "47": {
+      "name": "2 Corinzi",
+      "abbrev": "2Cor"
+    },
+    "48": {
+      "name": "Galati",
+      "abbrev": "Gal"
+    },
+    "49": {
+      "name": "Efesini",
+      "abbrev": "Ef"
+    },
+    "50": {
+      "name": "Filippesi",
+      "abbrev": "Fil"
+    },
+    "51": {
+      "name": "Colossesi",
+      "abbrev": "Col"
+    },
+    "52": {
+      "name": "1 Tessalonicesi",
+      "abbrev": "1Ts"
+    },
+    "53": {
+      "name": "2 Tessalonicesi",
+      "abbrev": "2Ts"
+    },
+    "54": {
+      "name": "1 Timoteo",
+      "abbrev": "1Tm"
+    },
+    "55": {
+      "name": "2 Timoteo",
+      "abbrev": "2Tm"
+    },
+    "56": {
+      "name": "Tito",
+      "abbrev": "Tt"
+    },
+    "57": {
+      "name": "Filemone",
+      "abbrev": "Fm"
+    },
+    "58": {
+      "name": "Ebrei",
+      "abbrev": "Eb"
+    },
+    "59": {
+      "name": "Giacomo",
+      "abbrev": "Gc"
+    },
+    "60": {
+      "name": "1 Pietro",
+      "abbrev": "1Pt"
+    },
+    "61": {
+      "name": "2 Pietro",
+      "abbrev": "2Pt"
+    },
+    "62": {
+      "name": "1 Giovanni",
+      "abbrev": "1Gv"
+    },
+    "63": {
+      "name": "2 Giovanni",
+      "abbrev": "2Gv"
+    },
+    "64": {
+      "name": "3 Giovanni",
+      "abbrev": "3Gv"
+    },
+    "65": {
+      "name": "Giuda",
+      "abbrev": "Gd"
+    },
+    "66": {
+      "name": "Apocalisse",
+      "abbrev": "Ap"
+    }
   }
 }

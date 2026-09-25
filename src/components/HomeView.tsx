@@ -1,27 +1,47 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Fragment } from 'react'
 import { VerseCard } from './VerseCard'
-import { BibleExtensionIcon } from './icons/BibleExtensionIcon'
 import { WheatIcon } from './icons/WheatIcon'
 import { TenCommandmentsIcon } from './icons/TenCommandmentsIcon'
 import { StarBookmarkIcon } from './icons/StarBookmarkIcon'
 import { BookRibbonIcon } from './icons/BookRibbonIcon'
 import { SearchGlassIcon } from './icons/SearchGlassIcon'
+import { HarpIcon } from './icons/HarpIcon'
 import { bibleSearch } from '../services/search'
 import { randomVerseService } from '../services/random-verse'
+import { harpaData } from '../services/harpa-data'
 import { useBibleI18n } from '../services/i18n'
 import { useBibleLanguage } from '../services/useBibleLanguage'
-import type { BibleVerse, SearchResult } from '../types/bible'
+import type { BibleVerse, SearchResult, SearchScope } from '../types/bible'
 import type { ReadingProgress } from '../types/reading'
 
 interface HomeViewProps {
   onNavigateToPassage: (bookId: number, chapter: number, verse?: number) => void
   onOpenBookmarks: () => void
+  onOpenHarpa: () => void
+  onNavigateToHymn?: (hymnNumber: number) => void
   lastReading: ReadingProgress
 }
+
+// Height-aware sizing keeps the whole home screen inside the window without
+// scrolling: type and icons grow with the viewport height and clamp so very
+// short or very tall windows stay readable.
+const TITLE_SIZE = 'clamp(1.25rem, 3vh + 0.7rem, 2.6rem)'
+const LABEL_SIZE = 'clamp(0.8rem, 1.4vh + 0.5rem, 1.35rem)'
+const HINT_SIZE = 'clamp(0.65rem, 0.9vh + 0.4rem, 0.92rem)'
+const ICON_BOX_SIZE = 'clamp(2.5rem, 8vh, 5.25rem)'
+const BUTTON_PADDING = 'clamp(0.25rem, 1vh + 0.15rem, 1.05rem)'
+const ROOT_GAP = 'clamp(0.5rem, 2vh, 1rem)'
+const ROOT_PADDING_Y = 'clamp(0.5rem, 2vh, 1rem)'
+const HEADER_PADDING_TOP = 'clamp(0.25rem, 1vh, 0.5rem)'
+const ICON_LABEL_GAP = 'clamp(0.25rem, 1vh, 0.5rem)'
+const GRID_GAP_Y = 'clamp(0.25rem, 1vh, 0.5rem)'
+const GRID_PADDING_Y = 'clamp(0.25rem, 1vh, 0.5rem)'
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onNavigateToPassage,
   onOpenBookmarks,
+  onOpenHarpa,
+  onNavigateToHymn,
   lastReading
 }) => {
   const { t, getBookName } = useBibleI18n()
@@ -29,6 +49,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const [randomVerse, setRandomVerse] = useState<BibleVerse>(() => randomVerseService.getRandomVerse())
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchScope, setSearchScope] = useState<SearchScope>('ALL')
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchModalRef = useRef<HTMLDivElement>(null)
@@ -40,6 +61,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     } else {
       setSearchQuery('')
       setSearchResults([])
+      setSearchScope('ALL')
     }
   }, [isSearchOpen])
 
@@ -52,29 +74,38 @@ export const HomeView: React.FC<HomeViewProps> = ({
     }
 
     const timeout = setTimeout(() => {
-      const results = bibleSearch.search(q, { limit: 8 })
+      const results = bibleSearch.search(q, { scope: searchScope, limit: 16 })
       setSearchResults(results)
     }, 180)
 
     return () => clearTimeout(timeout)
-  }, [searchQuery, languageId])
+  }, [searchQuery, searchScope, languageId])
 
   // Refresh the devotional verse whenever the Bible language changes
   useEffect(() => {
     setRandomVerse(randomVerseService.getRandomVerse())
   }, [languageId])
 
-  // Close search modal when clicking outside
+  // Close search modal when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchModalRef.current && !searchModalRef.current.contains(e.target as Node)) {
         setIsSearchOpen(false)
       }
     }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false)
+      }
+    }
     if (isSearchOpen) {
       document.addEventListener('mousedown', handleClickOutside)
+      window.addEventListener('keydown', handleKeyDown)
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [isSearchOpen])
 
   const handleRefreshVerse = (e: React.MouseEvent) => {
@@ -83,12 +114,23 @@ export const HomeView: React.FC<HomeViewProps> = ({
   }
 
   const handleSelectSearchResult = (result: SearchResult) => {
-    onNavigateToPassage(result.verse.bookId, result.verse.chapter, result.verse.verse)
+    if (result.type === 'hymn' && result.hymn) {
+      if (onNavigateToHymn) {
+        onNavigateToHymn(result.hymn.number)
+      } else {
+        onOpenHarpa()
+      }
+    } else if (result.verse) {
+      onNavigateToPassage(result.verse.bookId, result.verse.chapter, result.verse.verse)
+    }
     setIsSearchOpen(false)
   }
 
   return (
-    <div className="relative max-w-2xl mx-auto w-full px-4 py-6 sm:py-8 flex flex-col justify-between min-h-[calc(100vh-20px)] animate-fade-in space-y-6 select-none text-text">
+    <div
+      className="relative w-full max-w-2xl mx-auto px-5 flex flex-1 min-h-0 flex-col justify-between animate-fade-in overflow-hidden select-none text-text"
+      style={{ gap: ROOT_GAP, paddingTop: ROOT_PADDING_Y, paddingBottom: ROOT_PADDING_Y }}
+    >
       {/* Botão de Busca da Lupa no Canto Superior Direito */}
       <div className="absolute top-4 right-4 z-40">
         <button
@@ -114,70 +156,168 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setIsSearchOpen(false)
+                  }
+                }}
                 placeholder={t('home.search_placeholder')}
                 className="flex-1 bg-transparent text-text text-sm placeholder:text-text-muted/70 focus:outline-none"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="p-1 text-text-muted hover:text-text rounded-lg"
+                  className="p-1 text-text-muted hover:text-text rounded-lg cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               )}
+            </div>
+
+            {/* Filtros de Escopo */}
+            <div className="flex items-center px-3 py-1.5 gap-1.5 border-b border-border/50 bg-input/20 text-xs overflow-x-auto">
               <button
-                onClick={() => setIsSearchOpen(false)}
-                className="px-2 py-1 rounded-lg text-xs font-semibold text-text-muted hover:text-text bg-input/60"
+                type="button"
+                onClick={() => setSearchScope('ALL')}
+                className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                  searchScope === 'ALL'
+                    ? 'bg-accent/20 text-accent font-semibold border border-accent/30'
+                    : 'text-text-muted hover:text-text hover:bg-input/60'
+                }`}
               >
-                {t('home.esc')}
+                {t('home.search_filter_all')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchScope('AT')}
+                className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                  searchScope === 'AT'
+                    ? 'bg-accent/20 text-accent font-semibold border border-accent/30'
+                    : 'text-text-muted hover:text-text hover:bg-input/60'
+                }`}
+              >
+                {t('home.search_filter_at')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchScope('NT')}
+                className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                  searchScope === 'NT'
+                    ? 'bg-accent/20 text-accent font-semibold border border-accent/30'
+                    : 'text-text-muted hover:text-text hover:bg-input/60'
+                }`}
+              >
+                {t('home.search_filter_nt')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchScope('HARPA')}
+                className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer flex items-center space-x-1 ${
+                  searchScope === 'HARPA'
+                    ? 'bg-accent/20 text-accent font-semibold border border-accent/30'
+                    : 'text-text-muted hover:text-text hover:bg-input/60'
+                }`}
+              >
+                <HarpIcon className="w-3 h-3 shrink-0" />
+                <span>{t('home.search_filter_harpa')}</span>
               </button>
             </div>
 
             {/* Resultados */}
             {searchResults.length > 0 && (
-              <div className="max-h-72 overflow-y-auto divide-y divide-border/50">
-                {searchResults.map((res) => (
-                  <div
-                    key={res.verse.id}
-                    onClick={() => handleSelectSearchResult(res)}
-                    className="p-3.5 hover:bg-input/50 cursor-pointer transition-colors flex flex-col space-y-1"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-text">
-                        {getBookName(res.verse.bookId, res.verse.bookName)} {res.verse.chapter}:{res.verse.verse}
-                      </span>
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-input text-text-muted border border-border">
-                        {res.matchType === 'exact_reference' ? t('home.search_reference') : t('home.search_excerpt')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-text-muted italic font-serif line-clamp-2">
-                      "{res.verse.text}"
-                    </p>
-                  </div>
-                ))}
+              <div className="max-h-72 sm:max-h-80 overflow-y-auto divide-y divide-border/50">
+                {searchResults.map((res, index) => {
+                  const hymn = res.type === 'hymn' ? res.hymn : undefined
+                  const verse = res.type === 'verse' ? res.verse : undefined
+                  const key = hymn ? `hymn-${hymn.number}` : `verse-${verse?.id || res.score}`
+
+                  const hasBothTypes =
+                    searchScope === 'ALL' &&
+                    searchResults.some((r) => r.type === 'verse') &&
+                    searchResults.some((r) => r.type === 'hymn')
+                  const isFirstVerse =
+                    res.type === 'verse' && (index === 0 || searchResults[index - 1].type !== 'verse')
+                  const isFirstHymn =
+                    res.type === 'hymn' && (index === 0 || searchResults[index - 1].type !== 'hymn')
+
+                  return (
+                    <Fragment key={key}>
+                      {hasBothTypes && isFirstVerse && (
+                        <div className="sticky top-0 z-10 px-3.5 py-1.5 bg-card/95 backdrop-blur-sm border-b border-border/40 text-[10px] font-bold text-text-muted uppercase tracking-wider flex items-center justify-between">
+                          <span>{t('home.search_section_verses')}</span>
+                          <span className="text-[10px] font-mono font-normal">
+                            {searchResults.filter((r) => r.type === 'verse').length}
+                          </span>
+                        </div>
+                      )}
+                      {hasBothTypes && isFirstHymn && (
+                        <div className="sticky top-0 z-10 px-3.5 py-1.5 bg-card/95 backdrop-blur-sm border-b border-border/40 text-[10px] font-bold text-text-muted uppercase tracking-wider flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <HarpIcon className="w-3 h-3 text-accent" />
+                            <span>{t('home.search_section_harpa')}</span>
+                          </span>
+                          <span className="text-[10px] font-mono font-normal">
+                            {searchResults.filter((r) => r.type === 'hymn').length}
+                          </span>
+                        </div>
+                      )}
+                      <div
+                        onClick={() => handleSelectSearchResult(res)}
+                        className="p-3.5 hover:bg-input/50 cursor-pointer transition-colors flex flex-col space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-text flex items-center gap-1.5">
+                            {hymn ? (
+                              <>
+                                <HarpIcon className="w-3.5 h-3.5 text-accent shrink-0" />
+                                <span>{t('harpa.hymn_label')} {hymn.number} • {hymn.title}</span>
+                              </>
+                            ) : (
+                              verse && `${getBookName(verse.bookId, verse.bookName)} ${verse.chapter}:${verse.verse}`
+                            )}
+                          </span>
+                          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-input text-text-muted border border-border">
+                            {hymn
+                              ? t('home.search_harpa_badge')
+                              : res.matchType === 'exact_reference'
+                                ? t('home.search_reference')
+                                : t('home.search_excerpt')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-text-muted italic font-serif line-clamp-2">
+                          {hymn ? res.snippet : `"${verse?.text || ''}"`}
+                        </p>
+                      </div>
+                    </Fragment>
+                  )
+                })}
               </div>
             )}
             {searchQuery && searchResults.length === 0 && (
               <div className="p-6 text-center text-xs text-text-muted italic">
-                {t('home.search_no_results', { query: searchQuery })}
+                {searchScope === 'HARPA'
+                  ? t('harpa.search_no_results', { query: searchQuery })
+                  : t('home.search_no_results', { query: searchQuery })}
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* 1. Header: Ícone da Bíblia + Espaço Generoso + Título Centralizado */}
-      <div className="flex items-center justify-center space-x-5 pt-4">
-        <BibleExtensionIcon className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-md shrink-0 transition-transform hover:scale-105" />
-        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-text tracking-wide select-none">
+      {/* 1. Header: Título Centralizado */}
+      <div className="flex items-center justify-center min-h-0 shrink-0 text-center" style={{ paddingTop: HEADER_PADDING_TOP }}>
+        <h1
+          className="font-serif font-bold text-text tracking-wide select-none"
+          style={{ fontSize: TITLE_SIZE }}
+        >
           {t('home.title')}
         </h1>
       </div>
 
       {/* 2. Card do Versículo Aleatório (Limpo, sem fundos) */}
-      <section className="w-full my-auto">
+      <section className="w-full min-h-0 shrink-0">
         <VerseCard
           verse={randomVerse}
           onRefresh={handleRefreshVerse}
@@ -185,17 +325,27 @@ export const HomeView: React.FC<HomeViewProps> = ({
         />
       </section>
 
-      {/* 3. Os 4 Cards Transparentes Sem Fundo e Sem Bordas */}
-      <section className="w-full grid grid-cols-2 gap-4 sm:gap-6 py-2">
+      {/* 3. Os 4 Cards Transparentes Sem Fundo e Sem Bordas, com a Harpa Cristã ao Centro */}
+      <section
+        className="w-fit mx-auto grid grid-cols-3 gap-x-3 sm:gap-x-5 min-h-0 items-center justify-items-center"
+        style={{ rowGap: GRID_GAP_Y, paddingTop: GRID_PADDING_Y, paddingBottom: GRID_PADDING_Y }}
+      >
         {/* Card 1: Novo testamento */}
         <button
           onClick={() => onNavigateToPassage(40, 1)}
-          className="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
+          style={{ gridColumnStart: 1, gridRowStart: 1, padding: BUTTON_PADDING }}
+          className="group flex flex-col items-center justify-center rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
         >
-          <div className="mb-2 transition-transform duration-200 group-hover:-translate-y-1">
-            <WheatIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
+          <div
+            className="transition-transform duration-200 group-hover:-translate-y-1"
+            style={{ width: ICON_BOX_SIZE, height: ICON_BOX_SIZE, marginBottom: ICON_LABEL_GAP }}
+          >
+            <WheatIcon className="w-full h-full drop-shadow-sm" />
           </div>
-          <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
+          <span
+            className="font-bold text-text tracking-tight group-hover:text-accent transition-colors"
+            style={{ fontSize: LABEL_SIZE }}
+          >
             {t('home.new_testament')}
           </span>
         </button>
@@ -203,38 +353,83 @@ export const HomeView: React.FC<HomeViewProps> = ({
         {/* Card 2: Velho Testamento */}
         <button
           onClick={() => onNavigateToPassage(1, 1)}
-          className="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
+          style={{ gridColumnStart: 3, gridRowStart: 1, padding: BUTTON_PADDING }}
+          className="group flex flex-col items-center justify-center rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
         >
-          <div className="mb-2 transition-transform duration-200 group-hover:-translate-y-1">
-            <TenCommandmentsIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
+          <div
+            className="transition-transform duration-200 group-hover:-translate-y-1"
+            style={{ width: ICON_BOX_SIZE, height: ICON_BOX_SIZE, marginBottom: ICON_LABEL_GAP }}
+          >
+            <TenCommandmentsIcon className="w-full h-full drop-shadow-sm" />
           </div>
-          <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
+          <span
+            className="font-bold text-text tracking-tight group-hover:text-accent transition-colors"
+            style={{ fontSize: LABEL_SIZE }}
+          >
             {t('home.old_testament')}
+          </span>
+        </button>
+
+        {/* Centro: Harpa Cristã — 640 hinos com o mesmo leitor da Bíblia */}
+        <button
+          onClick={onOpenHarpa}
+          title={t('harpa.total', { count: harpaData.getTotalHymns() })}
+          style={{ gridColumnStart: 2, gridRowStart: 2, padding: BUTTON_PADDING }}
+          className="group flex flex-col items-center justify-center rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
+        >
+          <div
+            className="transition-transform duration-200 group-hover:-translate-y-1"
+            style={{ width: ICON_BOX_SIZE, height: ICON_BOX_SIZE, marginBottom: ICON_LABEL_GAP }}
+          >
+            <HarpIcon className="w-full h-full drop-shadow-sm" />
+          </div>
+          <span
+            className="font-bold text-text tracking-tight group-hover:text-accent transition-colors"
+            style={{ fontSize: LABEL_SIZE }}
+          >
+            {t('home.harpa')}
+          </span>
+          <span className="text-text-muted font-medium" style={{ fontSize: HINT_SIZE }}>
+            {t('home.harpa_hint')}
           </span>
         </button>
 
         {/* Card 3: Marcadores */}
         <button
           onClick={onOpenBookmarks}
-          className="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
+          style={{ gridColumnStart: 1, gridRowStart: 3, padding: BUTTON_PADDING }}
+          className="group flex flex-col items-center justify-center rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
         >
-          <div className="mb-2 transition-transform duration-200 group-hover:-translate-y-1">
-            <StarBookmarkIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
+          <div
+            className="transition-transform duration-200 group-hover:-translate-y-1"
+            style={{ width: ICON_BOX_SIZE, height: ICON_BOX_SIZE, marginBottom: ICON_LABEL_GAP }}
+          >
+            <StarBookmarkIcon className="w-full h-full drop-shadow-sm" />
           </div>
-          <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
+          <span
+            className="font-bold text-text tracking-tight group-hover:text-accent transition-colors"
+            style={{ fontSize: LABEL_SIZE }}
+          >
             {t('home.bookmarks')}
           </span>
         </button>
 
         {/* Card 4: Continuar leitura */}
         <button
-          onClick={() => onNavigateToPassage(lastReading.bookId, lastReading.chapter, lastReading.verse)}
-          className="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
+          onClick={() => onNavigateToPassage(lastReading.bookId, lastReading.chapter, undefined)}
+          style={{ gridColumnStart: 3, gridRowStart: 3, padding: BUTTON_PADDING }}
+          className="group flex flex-col items-center justify-center rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer bg-transparent border-0 shadow-none text-center"
         >
-          <div className="mb-2 transition-transform duration-200 group-hover:-translate-y-1">
-            <BookRibbonIcon className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-sm" />
+          <div
+            className="transition-transform duration-200 group-hover:-translate-y-1"
+            style={{ width: ICON_BOX_SIZE, height: ICON_BOX_SIZE, marginBottom: ICON_LABEL_GAP }}
+          >
+            <BookRibbonIcon className="w-full h-full drop-shadow-sm" />
           </div>
-          <span className="text-sm sm:text-base font-bold text-text tracking-tight group-hover:text-accent transition-colors">
+          <span
+            className="font-bold text-text tracking-tight group-hover:text-accent transition-colors"
+            style={{ fontSize: LABEL_SIZE }}
+          >
             {t('home.continue_reading')}
           </span>
         </button>

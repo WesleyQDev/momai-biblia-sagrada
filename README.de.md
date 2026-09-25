@@ -15,6 +15,7 @@ Das Wort des Herrn ist eine Leuchte für unsere Füße und ein Licht auf unserem
 - **Flüssiges und angenehmes Lesen**: Blättern Sie mühelos durch Bücher und Kapitel über das seitliche Verzeichnis oder die Navigationspfeile in der Fußzeile und auf der Tastatur.
 - **Weiterlesen, wo Sie aufgehört haben**: Der Leser merkt sich automatisch das letzte Kapitel und den letzten Vers, bei dem Sie waren, damit Sie in Ihrem Leseplan nie den Faden verlieren.
 - **Vers-Lesezeichen**: Heben Sie Ihre Lieblingsverse hervor und speichern Sie sie, kopieren Sie sie mühelos, um sie mit der Familie oder in den Gemeindegruppen zu teilen.
+- **Vollständige Christliche Harfe**: Alle 640 Lieder des Gesangbuchs mit Register von 1 bis 640, Suche nach Nummer, Titel oder Liedtextausschnitt, Favoriten und demselben realistischen Buchleser wie die Bibel.
 - **Funktioniert 100 % offline**: Der gesamte Bibeltext ist mit der Erweiterung installiert. Sie benötigen keine Internetverbindung, um das Wort zu lesen, zu suchen oder darüber nachzusinnen.
 - **Gebets- und Studienbegleitung mit MomAI**: In Ihren Gesprächen können Sie die Assistentin bitten, Schriftstellen zu suchen, Kapitel vorzulesen oder beim Verstehen des biblischen Zusammenhangs zu helfen.
 
@@ -29,3 +30,15 @@ Das Wort des Herrn ist eine Leuchte für unsere Füße und ein Licht auf unserem
 ## Übersetzung und Verpflichtung
 
 Der in dieser Erweiterung verwendete Bibeltext folgt der klassischen Übersetzung von João Ferreira de Almeida, die gemeinfrei ist, und bewahrt die Treue zu den Handschriften sowie die ehrfürchtige Achtung vor der Heiligen Schrift. Möge dieses Werkzeug ein Kanal des Segens und des geistlichen Wachstums für Ihr Leben und Ihre Familie sein!
+
+## Christliche Harfe
+
+Der Startbildschirm der Erweiterung enthält auch die **vollständige Christliche Harfe** (*Harpa Cristã*): alle 640 Lieder des Gesangbuchs, mit Register von 1 bis 640, Suche nach Nummer, Titel oder Liedtextausschnitt und Favoriten.
+
+- **Dasselbe Leseerlebnis**: Die Lieder öffnen sich im selben realistischen Buch wie die Bibel, mit Umblättern, zwei Spalten und Navigation über das seitliche Register.
+- **Vollständiges Register**: Finden Sie jedes Lied über die Nummer (z. B. 545), den Titel (z. B. „Weil er lebt") oder einen Ausschnitt des Refrains.
+- **Favoriten der Harfe**: Markieren Sie die Lieder, die Sie am meisten singen, und kehren Sie jederzeit zu ihnen zurück.
+- **Weiter beim letzten Lied**: Die Erweiterung merkt sich das Lied, bei dem Sie aufgehört haben.
+- **In deiner Sprache, Original auf Portugiesisch**: Titel, Strophen und Refrain folgen der gewählten Sprache (Einstellungen, Startbildschirm oder Sprachen-Button); Portugiesisch ist das Original und wird verwendet, wenn eine Übersetzung fehlt.
+
+Klicken Sie auf die mittlere Schaltfläche der Christlichen Harfe zwischen den vier Hauptsymbolen des Startbildschirms, um sie zu öffnen.

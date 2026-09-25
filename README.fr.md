@@ -15,6 +15,7 @@ La Parole du Seigneur est une lampe à nos pieds et une lumière sur notre senti
 - **Lecture fluide et confortable** : Parcourez les livres et les chapitres avec aisance grâce à l'index latéral ou aux flèches de navigation dans le pied de page et au clavier.
 - **Reprenez où vous vous êtes arrêté** : Le lecteur mémorise automatiquement le dernier chapitre et verset où vous étiez, pour ne jamais vous perdre dans votre plan de lecture.
 - **Marque-pages de versets** : Mettez en évidence et enregistrez vos versets préférés, copiez-les facilement pour les partager avec votre famille ou dans les groupes de l'église.
+- **Harpe Chrétienne complète** : Les 640 cantiques du recueil avec index de 1 à 640, recherche par numéro, titre ou extrait de parole, favoris, et la même lecture en livre réaliste que la Bible.
 - **Fonctionne 100 % hors ligne** : Tout le texte biblique est installé avec l'extension. Vous n'avez pas besoin de connexion internet pour lire, chercher ou méditer la Parole.
 - **Compagnie de prière et d'étude avec MomAI** : Pendant vos conversations, vous pouvez demander à l'assistante de chercher des passages, de lire des chapitres pour vous ou d'aider à comprendre le contexte biblique.
 
@@ -29,3 +30,15 @@ La Parole du Seigneur est une lampe à nos pieds et une lumière sur notre senti
 ## Traduction et engagement
 
 Le texte biblique utilisé dans cette extension suit la traduction classique de João Ferreira de Almeida, dans le domaine public, en préservant la fidélité aux manuscrits et le respect révérencieux dû aux Saintes Écritures. Que cet outil soit un canal de bénédictions et de croissance spirituelle pour votre vie et pour votre famille !
+
+## Harpe Chrétienne
+
+L'écran d'accueil de l'extension propose également la **Harpe Chrétienne complète** (*Harpa Cristã*) : les 640 cantiques du recueil, avec index de 1 à 640, recherche par numéro, titre ou extrait de parole, et favoris.
+
+- **La même expérience de lecture** : les cantiques s'ouvrent dans le même livre réaliste que la Bible, avec tournement de page, deux colonnes et navigation par l'index latéral.
+- **Index complet** : retrouvez un cantique par son numéro (ex. 545), son titre (ex. « Parce qu'il vit ») ou un extrait du refrain.
+- **Favoris de la Harpe** : marquez les cantiques que vous chantez le plus et revenez-y quand vous voulez.
+- **Reprenez au dernier cantique** : l'extension mémorise le cantique où vous vous êtes arrêté.
+- **Original en portugais** : les cantiques sont toujours présentés dans leur texte original en portugais, quelle que soit la langue de l'interface.
+
+Pour l'ouvrir, cliquez sur le bouton central de la Harpe Chrétienne, entre les quatre icônes principales de l'écran d'accueil.

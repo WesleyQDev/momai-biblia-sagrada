@@ -5,6 +5,7 @@ export interface ContextMenuOption {
   id?: string
   label: string
   shortcut?: string
+  emoji?: string
   onClick: () => void
   danger?: boolean
   disabled?: boolean
@@ -110,9 +111,9 @@ export default function ContextMenu({
                 className="flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-text-muted/40 cursor-not-allowed rounded-md select-none"
               >
                 <span className="truncate">{item.label}</span>
-                {item.shortcut && (
+                {(item.shortcut || item.emoji) && (
                   <span className="text-[10px] text-text-muted/30 font-mono tracking-wider shrink-0 ml-2">
-                    {item.shortcut}
+                    {item.emoji ?? item.shortcut}
                   </span>
                 )}
               </div>
@@ -131,9 +132,9 @@ export default function ContextMenu({
               className="flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-text hover:bg-input/80 hover:text-accent rounded-md transition-colors cursor-pointer text-left w-full group focus:outline-none focus:bg-input/80 focus:text-accent"
             >
               <span className="truncate">{item.label}</span>
-              {item.shortcut && (
+              {(item.shortcut || item.emoji) && (
                 <span className="text-[10px] text-text-muted/60 group-hover:text-accent/80 font-mono tracking-wider shrink-0 ml-2">
-                  {item.shortcut}
+                  {item.emoji ?? item.shortcut}
                 </span>
               )}
             </button>

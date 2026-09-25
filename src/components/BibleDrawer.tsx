@@ -25,6 +25,23 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
   })
   const [selectedBook, setSelectedBook] = useState<BibleBookInfo | null>(null)
 
+  React.useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation()
+        if (selectedBook) {
+          setSelectedBook(null)
+        } else {
+          onClose()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
+  }, [isOpen, selectedBook, onClose])
+
   if (!isOpen) return null
 
   const books =
@@ -38,7 +55,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
 
   const handleSelectChapter = (ch: number) => {
     if (!selectedBook) return
-    onSelectPassage(selectedBook.id, ch, 1)
+    onSelectPassage(selectedBook.id, ch, undefined)
     onClose()
   }
 

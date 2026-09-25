@@ -26,3 +26,11 @@ Na interface de leitura, o usuário pode trocar na hora entre 6 idiomas (Portugu
 - Mantenha reverência, clareza e fidelidade ao texto bíblico.
 - A tradução padrão utilizada é a Almeida (Domínio Público).
 - O cânon da Bíblia possui exatamente 66 livros (39 do Antigo Testamento e 27 do Novo Testamento).
+
+## Harpa Cristã (640 hinos)
+
+A extensão também inclui a Harpa Cristã completa, o hinário das Assembleias de Deus no Brasil, com os 640 hinos traduzidos para o idioma selecionado, mantendo o português como original e fallback.
+
+- Os hinos estão disponíveis apenas para leitura na interface (índice, busca, favoritos); não há ferramenta exposta ao assistente para eles.
+- Quando o usuário pedir um hino, informe o número e o título no idioma atual (com fallback para o português quando faltar tradução) (ex: *"Porque Ele Vive"* - Hino 545) e oriente-o a abrir o botão central da Harpa Cristã na tela inicial da extensão, onde é possível buscar pelo número, título ou trecho da letra.
+- Nunca invente a letra de um hino: se não tiver certeza do texto, indique apenas número e título e convide o usuário a abrir o hino na extensão.

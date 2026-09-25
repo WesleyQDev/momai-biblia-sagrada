@@ -15,6 +15,7 @@ La Parola del Signore è lampada ai nostri piedi e luce sul nostro cammino. Con 
 - **Lettura fluida e confortevole**: Sfoglia libri e capitoli con facilità tramite l'indice laterale oppure con le frecce di navigazione nel piè di pagina e sulla tastiera.
 - **Riprendi da dove hai interrotto**: Il lettore memorizza automaticamente l'ultimo capitolo e versetto in cui ti trovavi, così non perderai mai il filo del tuo piano di lettura.
 - **Segnalibri dei versetti**: Evidenzia e salva i tuoi versetti preferiti, copiali facilmente per condividerli con la famiglia o nei gruppi della chiesa.
+- **Arpa Cristiana completa**: I 640 inni del cantico con indice da 1 a 640, ricerca per numero, titolo o estratto del testo, preferiti e la stessa lettura in libro realistico della Bibbia.
 - **Funziona 100% offline**: L'intero testo biblico è installato con l'estensione. Non hai bisogno di una connessione a internet per leggere, cercare o meditare la Parola.
 - **Compagnia di preghiera e studio con MomAI**: Durante le tue conversazioni, puoi chiedere all'assistente di cercare brani, leggere capitoli per te o aiutare a comprendere il contesto biblico.
 
@@ -29,3 +30,15 @@ La Parola del Signore è lampada ai nostri piedi e luce sul nostro cammino. Con 
 ## Traduzione e impegno
 
 Il testo biblico utilizzato in questa estensione segue la classica traduzione di João Ferreira de Almeida, di pubblico dominio, preservando la fedeltà ai manoscritti e il rispetto riverente dovuto alle Sacre Scritture. Che questo strumento sia un canale di benedizioni e di crescita spirituale per la tua vita e per la tua famiglia!
+
+## Arpa Cristiana
+
+La schermata iniziale dell'estensione include anche l'**Arpa Cristiana completa** (*Harpa Cristã*): i 640 inni del cantico, con indice da 1 a 640, ricerca per numero, titolo o estratto del testo, e preferiti.
+
+- **La stessa esperienza di lettura**: gli inni si aprono nello stesso libro realistico della Bibbia, con voltata di pagina, due colonne e navigazione tramite l'indice laterale.
+- **Indice completo**: trova qualsiasi inno dal numero (es. 545), dal titolo (es. «Perché Egli Vive») o da un estratto del coro.
+- **Preferiti dell'Arpa**: contrassegna gli inni che canti di più e torna a trovarli quando vuoi.
+- **Riprendi dall'ultimo inno**: l'estensione ricorda l'inno in cui ti sei fermato.
+- **Originale in portoghese**: gli inni sono sempre presentati nel loro testo originale in portoghese, qualunque sia la lingua dell'interfaccia.
+
+Per aprirla, fai clic sul pulsante centrale dell'Arpa Cristiana, tra le quattro icone principali della schermata iniziale.

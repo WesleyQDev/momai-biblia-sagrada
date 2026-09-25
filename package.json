@@ -1,6 +1,6 @@
 {
   "name": "momai-biblia-sagrada",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "private": true,
   "description": "Experiência de leitura, estudo e automações da Bíblia Sagrada em 6 idiomas para MomAI",
   "author": "WesleyQDev",
@@ -13,13 +13,15 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.runtime.json"
   },
-  "dependencies": {},
   "devDependencies": {
     "@heroicons/react": "^2.2.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "esbuild": "^0.25.0",
+    "jsdom": "^30.1.1",
     "typescript": "^5.8.0",
     "vitest": "^3.0.0"
   },

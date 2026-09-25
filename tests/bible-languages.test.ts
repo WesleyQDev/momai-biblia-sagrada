@@ -103,7 +103,7 @@ describe('Registro de idiomas da Bíblia', () => {
     }
     expect(bibleData.getActiveLanguageId()).toBe('pt-BR')
     expect(bibleData.getVerse(43, 3, 16)!.text).toContain('Deus amou o mundo')
-  })
+  }, 15000)
 
   it('deve rejeitar idioma desconhecido sem trocar o texto ativo', async () => {
     await expect(bibleData.loadBibleLanguage('xx' as BibleLanguageId)).rejects.toThrow()

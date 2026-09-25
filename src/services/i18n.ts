@@ -8,6 +8,7 @@ import it from '../../locales/it.json'
 import { isBibleLanguageId } from './bible-languages'
 import { bibleStorage } from './storage'
 import { bibleData } from './bible-data'
+import { harpaData } from './harpa-data'
 
 export const dictionaries = {
   'pt-BR': ptBR,
@@ -53,17 +54,22 @@ export function getCurrentLocale(): SupportedLocale {
 }
 
 /**
- * Applies a host (Settings) locale change to the whole Bible immediately:
- * labels, book names, Bible text, search index, bookmarks display and
- * continue-reading navigation all follow the active dataset. Persists the
- * choice so reopening the Bible keeps the Settings language.
+ * Applies a host (Settings/Welcome) locale change to the whole Bible and the
+ * Harpa immediately: labels, book names, Bible text, hymn title/stanzas/chorus,
+ * search indexes, bookmarks display and continue-reading navigation all follow
+ * the active datasets. Persists the choice so reopening keeps the language.
  */
 export function applyHostLocale(rawLocale: unknown): SupportedLocale {
   const next = normalizeLocale(typeof rawLocale === 'string' ? rawLocale : null)
   try {
-    if (isBibleLanguageId(next) && next !== bibleData.getActiveLanguageId()) {
-      bibleStorage.setBibleLanguageId(next)
-      void bibleData.loadBibleLanguage(next)
+    if (isBibleLanguageId(next)) {
+      if (next !== bibleData.getActiveLanguageId()) {
+        bibleStorage.setBibleLanguageId(next)
+        void bibleData.loadBibleLanguage(next)
+      }
+      if (next !== harpaData.getActiveLanguageId()) {
+        void harpaData.loadHarpaLanguage(next)
+      }
     }
   } catch {}
   return next

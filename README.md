@@ -16,6 +16,8 @@ A Palavra do Senhor é lâmpada para os nossos pés e luz para os nossos caminho
 - **Leitura Fluida e Confortável**: Navegue pelos livros e capítulos com facilidade através do índice lateral ou pelas setas de navegação no rodapé e no teclado.
 - **Continue de Onde Parou**: O leitor memoriza automaticamente o último capítulo e versículo em que você esteve, para você nunca se perder no seu plano de leitura.
 - **Marcadores de Versículos**: Destaque e salve seus versículos preferidos, copie facilmente para compartilhar com a família ou nos grupos da igreja.
+- **Widget de Metas Diárias**: Acompanhe seu progresso sequencial de leitura direto na área de widgets do MomAI, com metas diárias em checklist, ofensiva de dias e abertura instantânea do capítulo no leitor.
+- **Harpa Cristã Completa**: Os 640 hinos do hinário com índice de 1 a 640, busca por número, título ou trecho da letra, favoritos e a mesma leitura em livro realista da Bíblia.
 - **Funciona 100% Offline**: Todo o texto bíblico está instalado com a extensão. Você não precisa de conexão com a internet para ler, buscar ou meditar na Palavra.
 - **Companhia de Oração e Estudo com a MomAI**: Durante suas conversas, você pode pedir à assistente para buscar passagens, ler capítulos para você ou auxiliar na compreensão do contexto bíblico.
 
@@ -30,3 +32,15 @@ A Palavra do Senhor é lâmpada para os nossos pés e luz para os nossos caminho
 ## Tradução e Compromisso
 
 O texto bíblico utilizado nesta extensão segue a clássica tradução de João Ferreira de Almeida, em domínio público, preservando a fidelidade aos manuscritos e o respeito reverente às Sagradas Escrituras. Para os demais idiomas, a extensão inclui as principais traduções evangélicas em domínio público de cada país: King James Version (inglês), Reina-Valera 1909 (espanhol), Louis Segond 1910 (francês), Lutherbibel 1912 (alemão) e Riveduta 1927 (italiano). Que esta ferramenta seja um canal de bênçãos e crescimento espiritual para a sua vida e para a sua família!
+
+## Harpa Cristã
+
+A tela inicial da extensão também traz a **Harpa Cristã completa**: os 640 hinos do hinário, com índice de 1 a 640, busca por número, título ou trecho da letra e favoritos.
+
+- **Mesma experiência de leitura**: os hinos abrem no mesmo livro realista da Bíblia, com virada de página, duas colunas e navegação pelo índice lateral.
+- **Índice completo**: localize qualquer hino pelo número (ex: 545), pelo título (ex: "Porque Ele Vive") ou por um trecho do coro.
+- **Favoritos da Harpa**: marque os hinos que você mais canta e volte a eles quando quiser.
+- **Continue no último hino**: a extensão guarda o hino em que você parou.
+- **No seu idioma, original em português**: título, estrofes e coro acompanham o idioma selecionado (Configurações, boas-vindas ou botão Idiomas); o português é o original e é usado quando falta tradução.
+
+Para abrir, clique no botão central da Harpa Cristã, entre os quatro ícones principais da tela inicial.
