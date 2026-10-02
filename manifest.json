@@ -156,8 +156,8 @@
   "backgroundScript": "runtime.ts",
   "permissions": [],
   "sdkVersion": 1,
-  "momai_compat": ">=1.11.0",
-  "version": "1.3.0",
+  "momai_compat": ">=1.15.0",
+  "version": "1.4.0",
   "ui": {
     "page": "dist/page.js",
     "pageType": "momai-biblia-page",
@@ -169,7 +169,25 @@
         "entry": "dist/widget-tracker.js",
         "type": "momai-biblia-tracker-widget",
         "defaultSize": "compact_2x1",
-        "supportsTransparency": true
+        "supportsTransparency": true,
+        "galleryPreview": [
+          {
+            "type": "text",
+            "text": "Gênesis 1",
+            "variant": "title"
+          },
+          {
+            "type": "progress",
+            "label": "Meta de hoje",
+            "value": 67,
+            "detail": "2 de 3 capítulos"
+          },
+          {
+            "type": "text",
+            "text": "No princípio, criou Deus os céus e a terra.",
+            "variant": "body"
+          }
+        ]
       }
     ]
   },
