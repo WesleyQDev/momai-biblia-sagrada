@@ -7,6 +7,8 @@ import { bibleStorage } from '../services/storage'
 import { useBibleI18n } from '../services/i18n'
 import { useHarpaLanguage } from '../services/useHarpaLanguage'
 import ContextMenu from './ContextMenu'
+import { ShareIcon } from './icons/ShareIcon'
+import { shareHymn } from '../services/share-verse'
 import { BookStage, BOOK_PAPER, type BookPageRenderArgs } from './book/BookStage'
 import { useBookPageCapacity } from './book/useBookPageCapacity'
 import { LanguageMenu } from './LanguageMenu'
@@ -18,6 +20,7 @@ interface HarpaBookProps {
   onNavigateHymn: (hymnNumber: number) => void
   onToggleFavorite: (hymn: HarpaHymn) => void
   onCopyHymn: (hymn: HarpaHymn) => void
+  onShareHymn?: (hymn: HarpaHymn) => void
   onOpenDrawer: () => void
   onBackToHome: () => void
 }
@@ -28,11 +31,20 @@ export const HarpaBook: React.FC<HarpaBookProps> = ({
   onNavigateHymn,
   onToggleFavorite,
   onCopyHymn,
+  onShareHymn,
   onOpenDrawer,
   onBackToHome
 }) => {
   const { t } = useBibleI18n()
   const { datasetVersion } = useHarpaLanguage()
+
+  const handleShareHymn = (hymn: HarpaHymn) => {
+    if (onShareHymn) {
+      onShareHymn(hymn)
+      return
+    }
+    shareHymn(hymn, t('harpa.hymn_label'), t('harpa.chorus'))
+  }
   const [zoomScale, setZoomScale] = useState(0.95)
   const handleZoomChange = useCallback((updater: (prev: number) => number) => {
     setZoomScale((prev) => updater(prev))
@@ -268,6 +280,12 @@ export const HarpaBook: React.FC<HarpaBookProps> = ({
                     id: 'select-all',
                     label: t('harpa.select_all'),
                     onClick: handleSelectPage
+                  },
+                  {
+                    id: 'share',
+                    label: t('harpa.share'),
+                    icon: <ShareIcon className="w-3.5 h-3.5" />,
+                    onClick: () => handleShareHymn(contextHymn)
                   }
                 ]
           }

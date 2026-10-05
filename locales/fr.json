@@ -90,10 +90,12 @@
     "click_flip_next": "Cliquez pour tourner la page",
     "click_flip_prev": "Cliquez pour revenir en arrière",
     "click_flip_end": "Fin de la Harpe Chrétienne",
-    "click_flip_start": "Début de la Harpe Chrétienne"
+    "click_flip_start": "Début de la Harpe Chrétienne",
+    "share": "Partager"
   },
   "card": {
-    "reroll": "Tirer un autre verset"
+    "reroll": "Tirer un autre verset",
+    "share": "Partager le verset sur WhatsApp"
   },
   "drawer": {
     "title": "Livres de la Bible",
@@ -123,7 +125,8 @@
     "click_flip_prev_book": "Cliquer pour le livre précédent",
     "click_flip_start": "Début de la Bible",
     "almeida_version": "Almeida Revue et Corrigée",
-    "book_not_found": "Livre non trouvé."
+    "book_not_found": "Livre non trouvé.",
+    "share": "Partager"
   },
   "bookmarks": {
     "title": "Signets et favoris",

@@ -90,10 +90,12 @@
     "click_flip_next": "Klicken, um die Seite umzublättern",
     "click_flip_prev": "Klicken, um zurückzublättern",
     "click_flip_end": "Ende der Christlichen Harfe",
-    "click_flip_start": "Anfang der Christlichen Harfe"
+    "click_flip_start": "Anfang der Christlichen Harfe",
+    "share": "Teilen"
   },
   "card": {
-    "reroll": "Anderen Vers ziehen"
+    "reroll": "Anderen Vers ziehen",
+    "share": "Vers auf WhatsApp teilen"
   },
   "drawer": {
     "title": "Bücher der Bibel",
@@ -123,7 +125,8 @@
     "click_flip_prev_book": "Klicken für vorheriges Buch",
     "click_flip_start": "Anfang der Bibel",
     "almeida_version": "Almeida Revidiert & Aktualisiert",
-    "book_not_found": "Buch nicht gefunden."
+    "book_not_found": "Buch nicht gefunden.",
+    "share": "Teilen"
   },
   "bookmarks": {
     "title": "Lesezeichen & Favoriten",

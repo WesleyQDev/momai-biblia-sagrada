@@ -77,10 +77,50 @@ describe('VerseCard text selection vs navigation', () => {
       <VerseCard verse={mockVerse} onNavigate={onNavigate} onRefresh={onRefresh} />
     )
 
-    const button = container.querySelector('button') as HTMLButtonElement
+    const button = container.querySelector(
+      'button[title="Sortear outro versículo"]'
+    ) as HTMLButtonElement
     fireEvent.click(button)
 
     expect(onRefresh).toHaveBeenCalled()
     expect(onNavigate).not.toHaveBeenCalled()
+  })
+
+  it('renders a share button at the end of the random verse', () => {
+    const onNavigate = vi.fn()
+    const onRefresh = vi.fn()
+    const { container } = render(
+      <VerseCard verse={mockVerse} onNavigate={onNavigate} onRefresh={onRefresh} />
+    )
+
+    const buttons = container.querySelectorAll('button')
+    expect(buttons).toHaveLength(2)
+    const shareButton = container.querySelector(
+      'button[aria-label="Compartilhar versículo no WhatsApp"]'
+    ) as HTMLButtonElement
+    expect(shareButton).not.toBeNull()
+  })
+
+  it('calls onShare without navigating when the share button is clicked', () => {
+    const onNavigate = vi.fn()
+    const onRefresh = vi.fn()
+    const onShare = vi.fn()
+    const { container } = render(
+      <VerseCard
+        verse={mockVerse}
+        onNavigate={onNavigate}
+        onRefresh={onRefresh}
+        onShare={onShare}
+      />
+    )
+
+    const shareButton = container.querySelector(
+      'button[aria-label="Compartilhar versículo no WhatsApp"]'
+    ) as HTMLButtonElement
+    fireEvent.click(shareButton)
+
+    expect(onShare).toHaveBeenCalledWith(mockVerse)
+    expect(onNavigate).not.toHaveBeenCalled()
+    expect(onRefresh).not.toHaveBeenCalled()
   })
 })

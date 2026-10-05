@@ -90,10 +90,12 @@
     "click_flip_next": "Click to turn the page",
     "click_flip_prev": "Click to go back a page",
     "click_flip_end": "End of the Christian Harp",
-    "click_flip_start": "Beginning of the Christian Harp"
+    "click_flip_start": "Beginning of the Christian Harp",
+    "share": "Share"
   },
   "card": {
-    "reroll": "Draw another verse"
+    "reroll": "Draw another verse",
+    "share": "Share verse on WhatsApp"
   },
   "drawer": {
     "title": "Books of the Bible",
@@ -123,7 +125,8 @@
     "click_flip_prev_book": "Click for previous book",
     "click_flip_start": "Start of the Bible",
     "almeida_version": "Almeida Revised & Updated",
-    "book_not_found": "Book not found."
+    "book_not_found": "Book not found.",
+    "share": "Share"
   },
   "bookmarks": {
     "title": "Bookmarks & Favorites",

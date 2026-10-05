@@ -15,6 +15,7 @@ afterEach(() => {
 function renderBook() {
   const onToggleBookmark = vi.fn()
   const onCopyVerse = vi.fn()
+  const onShareVerse = vi.fn()
   const book = bibleData.getBookById(43)!
   const { container } = render(
     <RealisticBook
@@ -23,12 +24,13 @@ function renderBook() {
       bookmarkedSet={new Set()}
       onToggleBookmark={onToggleBookmark}
       onCopyVerse={onCopyVerse}
+      onShareVerse={onShareVerse}
       onNavigateChapter={() => {}}
       onOpenDrawer={() => {}}
       onBackToHome={() => {}}
     />
   )
-  return { container, onToggleBookmark, onCopyVerse }
+  return { container, onToggleBookmark, onCopyVerse, onShareVerse }
 }
 
 async function settle() {
@@ -67,7 +69,7 @@ describe('Bible verse right-click context menu', () => {
     expect(container.querySelector('.animate-slide-in-up')).toBeNull()
   })
 
-  it('soft-selects the verse and offers copy/bookmark/select-all on right click', async () => {
+  it('soft-selects the verse and offers copy/bookmark/select-all/share on right click', async () => {
     const { container } = renderBook()
     await settle()
     const menu = await openMenuOnVerse(container)
@@ -77,10 +79,22 @@ describe('Bible verse right-click context menu', () => {
     expect(menu.textContent).toContain('Marcar')
     expect(menu.textContent).toContain('⭐')
     expect(menu.textContent).toContain('Selecionar tudo')
+    expect(menu.textContent).toContain('Compartilhar')
 
     const selected = container.querySelector('[data-context-selected="true"]')
     expect(selected).toBeTruthy()
     expect(selected!.textContent).toContain('princípio')
+  })
+
+  it('shares the clicked verse from the menu', async () => {
+    const { container, onShareVerse } = renderBook()
+    await settle()
+    const menu = await openMenuOnVerse(container)
+    await act(async () => {
+      fireEvent.click(within(menu).getByText('Compartilhar'))
+    })
+
+    expect(onShareVerse).toHaveBeenCalledWith(expect.objectContaining({ verse: 1 }))
   })
 
   it('bookmarks the clicked verse from the menu and clears the selection', async () => {

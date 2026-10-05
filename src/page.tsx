@@ -6,6 +6,7 @@ import { BibleDrawer } from './components/BibleDrawer'
 import { HarpaBook } from './components/HarpaBook'
 import { HarpaDrawer } from './components/HarpaDrawer'
 import { bibleStorage } from './services/storage'
+import { shareVerse, shareHymn } from './services/share-verse'
 import { bibleData } from './services/bible-data'
 import { harpaData } from './services/harpa-data'
 import pageBackground from '../assets/backgrounds/page-bg.png'
@@ -190,6 +191,10 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
     }
   }
 
+  const handleShareVerse = (verse: BibleVerse) => {
+    shareVerse(verse, getBookName(verse.bookId, verse.bookName), translationShort)
+  }
+
   const handleCopyVerse = (verse: BibleVerse) => {
     const textToCopy = `"${verse.text}" (${getBookName(verse.bookId, verse.bookName)} ${verse.chapter}:${verse.verse} - ${translationShort})`
     try {
@@ -225,6 +230,10 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
       next.delete(hymnNumber)
       return next
     })
+  }
+
+  const handleShareHymn = (hymn: HarpaHymn) => {
+    shareHymn(hymn, t('harpa.hymn_label'), t('harpa.chorus'))
   }
 
   const handleCopyHymn = (hymn: HarpaHymn) => {
@@ -295,6 +304,7 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
             bookmarkedSet={bookmarkedSet}
             onToggleBookmark={handleToggleBookmark}
             onCopyVerse={handleCopyVerse}
+            onShareVerse={handleShareVerse}
             onNavigateChapter={handleNavigateChapter}
             onOpenDrawer={() => setIsDrawerOpen(true)}
             onBackToHome={() => {
@@ -314,6 +324,7 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
             onNavigateHymn={handleNavigateToHymn}
             onToggleFavorite={handleToggleHymnFavorite}
             onCopyHymn={handleCopyHymn}
+            onShareHymn={handleShareHymn}
             onOpenDrawer={() => setIsHarpaDrawerOpen(true)}
             onBackToHome={() => setActiveTab('home')}
           />

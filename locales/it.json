@@ -90,10 +90,12 @@
     "click_flip_next": "Clicca per girare la pagina",
     "click_flip_prev": "Clicca per tornare indietro",
     "click_flip_end": "Fine dell'Arpa Cristiana",
-    "click_flip_start": "Inizio dell'Arpa Cristiana"
+    "click_flip_start": "Inizio dell'Arpa Cristiana",
+    "share": "Condividi"
   },
   "card": {
-    "reroll": "Estrai un altro versetto"
+    "reroll": "Estrai un altro versetto",
+    "share": "Condividi il versetto su WhatsApp"
   },
   "drawer": {
     "title": "Libri della Bibbia",
@@ -123,7 +125,8 @@
     "click_flip_prev_book": "Clicca per il libro precedente",
     "click_flip_start": "Inizio della Bibbia",
     "almeida_version": "Almeida Riveduta e Aggiornata",
-    "book_not_found": "Libro non trovato."
+    "book_not_found": "Libro non trovato.",
+    "share": "Condividi"
   },
   "bookmarks": {
     "title": "Segnalibri e Preferiti",

@@ -11,6 +11,8 @@ import { useBookPageCapacity } from './book/useBookPageCapacity'
 import { copyPageText } from '../services/page-text'
 import { bibleStorage } from '../services/storage'
 import ContextMenu from './ContextMenu'
+import { ShareIcon } from './icons/ShareIcon'
+import { shareVerse } from '../services/share-verse'
 import type { BibleVerse, RawBibleBook } from '../types/bible'
 
 interface RealisticBookProps {
@@ -21,6 +23,7 @@ interface RealisticBookProps {
   bookmarkedSet: Set<number>
   onToggleBookmark: (verse: BibleVerse) => void
   onCopyVerse: (verse: BibleVerse) => void
+  onShareVerse?: (verse: BibleVerse) => void
   onNavigateChapter: (bookId: number, chapter: number, verse?: number) => void
   onOpenDrawer: () => void
   onBackToHome: () => void
@@ -103,12 +106,23 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
   bookmarkedSet,
   onToggleBookmark,
   onCopyVerse,
+  onShareVerse,
   onNavigateChapter,
   onOpenDrawer,
   onBackToHome
 }) => {
-  const { t } = useBibleI18n()
+  const { t, getBookName } = useBibleI18n()
   const { languageId, datasetVersion } = useBibleLanguage()
+  const langMeta = getBibleLanguage(languageId)
+  const translationShort = langMeta?.translationShort || langMeta?.translationName
+
+  const handleShareVerse = (verse: BibleVerse) => {
+    if (onShareVerse) {
+      onShareVerse(verse)
+      return
+    }
+    shareVerse(verse, getBookName(verse.bookId, verse.bookName), translationShort)
+  }
   const [zoomScale, setZoomScale] = useState(0.95)
   const handleZoomChange = useCallback((updater: (prev: number) => number) => {
     setZoomScale((prev) => updater(prev))
@@ -660,6 +674,12 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
                     id: 'select-all',
                     label: t('reading.select_all'),
                     onClick: handleSelectPage
+                  },
+                  {
+                    id: 'share',
+                    label: t('reading.share'),
+                    icon: <ShareIcon className="w-3.5 h-3.5" />,
+                    onClick: () => handleShareVerse(contextVerse)
                   }
                 ]
           }

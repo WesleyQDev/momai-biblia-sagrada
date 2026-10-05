@@ -12,6 +12,7 @@ function renderHarpa() {
   const onToggleFavorite = vi.fn()
   const onCopyHymn = vi.fn()
   const onNavigateHymn = vi.fn()
+  const onShareHymn = vi.fn()
   const { container } = render(
     <HarpaBook
       hymnNumber={1}
@@ -19,11 +20,12 @@ function renderHarpa() {
       onNavigateHymn={onNavigateHymn}
       onToggleFavorite={onToggleFavorite}
       onCopyHymn={onCopyHymn}
+      onShareHymn={onShareHymn}
       onOpenDrawer={() => {}}
       onBackToHome={() => {}}
     />
   )
-  return { container, onToggleFavorite, onCopyHymn, onNavigateHymn }
+  return { container, onToggleFavorite, onCopyHymn, onNavigateHymn, onShareHymn }
 }
 
 async function settle() {
@@ -63,7 +65,7 @@ describe('Harpa hymn right-click context menu', () => {
     expect(container.querySelector('.animate-slide-in-up')).toBeNull()
   })
 
-  it('offers copy/marker/select-all without highlighting the paragraph', async () => {
+  it('offers copy/marker/select-all/share without highlighting the paragraph', async () => {
     const { container } = renderHarpa()
     await settle()
     const menu = await openMenuOnStanza(container)
@@ -72,9 +74,21 @@ describe('Harpa hymn right-click context menu', () => {
     expect(menu.textContent).toContain('Marcador')
     expect(menu.textContent).toContain('⭐')
     expect(menu.textContent).toContain('Selecionar tudo')
+    expect(menu.textContent).toContain('Compartilhar')
 
     // The marker bookmarks the hymn, so no paragraph selection appears
     expect(container.querySelectorAll('[data-context-selected="true"]').length).toBe(0)
+  })
+
+  it('shares the clicked hymn from the menu', async () => {
+    const { container, onShareHymn } = renderHarpa()
+    await settle()
+    const menu = await openMenuOnStanza(container)
+    await act(async () => {
+      fireEvent.click(within(menu).getByText('Compartilhar'))
+    })
+
+    expect(onShareHymn).toHaveBeenCalledWith(expect.objectContaining({ number: 1 }))
   })
 
   it('marks the clicked hymn from the menu and closes it', async () => {
@@ -122,6 +136,7 @@ describe('Harpa hymn right-click context menu', () => {
     expect(menuAgain.textContent).toContain('Copiar')
     expect(menuAgain.textContent).toContain('Selecionar tudo')
     expect(menuAgain.textContent).not.toContain('Marcador')
+    expect(menuAgain.textContent).not.toContain('Compartilhar')
   })
 
   it('does not start a page drag from a right-button press', async () => {

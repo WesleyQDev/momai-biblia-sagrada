@@ -6,6 +6,7 @@ export interface ContextMenuOption {
   label: string
   shortcut?: string
   emoji?: string
+  icon?: React.ReactNode
   onClick: () => void
   danger?: boolean
   disabled?: boolean
@@ -111,11 +112,15 @@ export default function ContextMenu({
                 className="flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-text-muted/40 cursor-not-allowed rounded-md select-none"
               >
                 <span className="truncate">{item.label}</span>
-                {(item.shortcut || item.emoji) && (
+                {item.icon ? (
+                  <span className="shrink-0 text-text-muted/40 ml-2 flex items-center">
+                    {item.icon}
+                  </span>
+                ) : (item.shortcut || item.emoji) ? (
                   <span className="text-[10px] text-text-muted/30 font-mono tracking-wider shrink-0 ml-2">
                     {item.emoji ?? item.shortcut}
                   </span>
-                )}
+                ) : null}
               </div>
             )
           }
@@ -132,11 +137,15 @@ export default function ContextMenu({
               className="flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-text hover:bg-input/80 hover:text-accent rounded-md transition-colors cursor-pointer text-left w-full group focus:outline-none focus:bg-input/80 focus:text-accent"
             >
               <span className="truncate">{item.label}</span>
-              {(item.shortcut || item.emoji) && (
+              {item.icon ? (
+                <span className="shrink-0 text-text-muted/60 group-hover:text-accent/80 transition-colors ml-2 flex items-center">
+                  {item.icon}
+                </span>
+              ) : (item.shortcut || item.emoji) ? (
                 <span className="text-[10px] text-text-muted/60 group-hover:text-accent/80 font-mono tracking-wider shrink-0 ml-2">
                   {item.emoji ?? item.shortcut}
                 </span>
-              )}
+              ) : null}
             </button>
           )
         })}

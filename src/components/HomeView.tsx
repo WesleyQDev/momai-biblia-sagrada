@@ -8,6 +8,8 @@ import { SearchGlassIcon } from './icons/SearchGlassIcon'
 import { HarpIcon } from './icons/HarpIcon'
 import { bibleSearch } from '../services/search'
 import { randomVerseService } from '../services/random-verse'
+import { getBibleLanguage } from '../services/bible-languages'
+import { buildVerseShareText, requestWhatsAppShare } from '../services/share-verse'
 import { harpaData } from '../services/harpa-data'
 import { useBibleI18n } from '../services/i18n'
 import { useBibleLanguage } from '../services/useBibleLanguage'
@@ -46,6 +48,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 }) => {
   const { t, getBookName } = useBibleI18n()
   const { languageId } = useBibleLanguage()
+  const translationShort = getBibleLanguage(languageId).translationShort
   const [randomVerse, setRandomVerse] = useState<BibleVerse>(() => randomVerseService.getRandomVerse())
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -111,6 +114,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const handleRefreshVerse = (e: React.MouseEvent) => {
     e.stopPropagation()
     setRandomVerse(randomVerseService.getRandomVerse())
+  }
+
+  const handleShareVerse = (v: BibleVerse) => {
+    requestWhatsAppShare(
+      buildVerseShareText(v, getBookName(v.bookId, v.bookName), translationShort)
+    )
   }
 
   const handleSelectSearchResult = (result: SearchResult) => {
@@ -321,6 +330,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <VerseCard
           verse={randomVerse}
           onRefresh={handleRefreshVerse}
+          onShare={handleShareVerse}
           onNavigate={(v) => onNavigateToPassage(v.bookId, v.chapter, v.verse)}
         />
       </section>

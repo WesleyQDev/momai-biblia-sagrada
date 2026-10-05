@@ -1,11 +1,14 @@
 import React, { useRef } from 'react'
 import { useBibleI18n } from '../services/i18n'
+import { shareVerse } from '../services/share-verse'
+import { ShareIcon } from './icons/ShareIcon'
 import type { BibleVerse } from '../types/bible'
 
 interface VerseCardProps {
   verse: BibleVerse
   onRefresh: (e: React.MouseEvent) => void
   onNavigate: (verse: BibleVerse) => void
+  onShare?: (verse: BibleVerse) => void
 }
 
 // Height-aware sizing keeps the devotional verse inside the home screen
@@ -15,7 +18,7 @@ const VERSE_REF_SIZE = 'clamp(0.7rem, 1vh + 0.45rem, 1.05rem)'
 const VERSE_PADDING_Y = 'clamp(0.5rem, 2vh, 1rem)'
 const VERSE_GAP = 'clamp(0.25rem, 1vh, 0.5rem)'
 
-export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNavigate }) => {
+export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNavigate, onShare }) => {
   const { t, getBookName } = useBibleI18n()
   const dragStartPos = useRef<{ x: number; y: number } | null>(null)
 
@@ -41,6 +44,15 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNaviga
     }
 
     onNavigate(verse)
+  }
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onShare) {
+      onShare(verse)
+      return
+    }
+    shareVerse(verse, getBookName(verse.bookId, verse.bookName))
   }
 
   return (
@@ -85,14 +97,24 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse, onRefresh, onNaviga
           </button>
         </div>
 
-        {/* Reference aligned right: {Livro}, {Capítulo} : {Versículo} */}
-        <div className="text-right">
+        {/* Reference with share action at the end of the random verse */}
+        <div className="flex items-center justify-end gap-1">
           <span
             className="font-semibold text-text-muted tracking-wide"
             style={{ fontSize: VERSE_REF_SIZE }}
           >
             {getBookName(verse.bookId, verse.bookName)}, {verse.chapter} : {verse.verse}
           </span>
+
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={handleShare}
+            title={t('card.share')}
+            aria-label={t('card.share')}
+            className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-input/40 transition-all shrink-0"
+          >
+            <ShareIcon className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>

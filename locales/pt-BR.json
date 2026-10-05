@@ -90,10 +90,12 @@
     "click_flip_next": "Clique para virar a página",
     "click_flip_prev": "Clique para voltar a página",
     "click_flip_end": "Fim da Harpa Cristã",
-    "click_flip_start": "Início da Harpa Cristã"
+    "click_flip_start": "Início da Harpa Cristã",
+    "share": "Compartilhar"
   },
   "card": {
-    "reroll": "Sortear outro versículo"
+    "reroll": "Sortear outro versículo",
+    "share": "Compartilhar versículo no WhatsApp"
   },
   "drawer": {
     "title": "Livros da Bíblia",
@@ -123,7 +125,8 @@
     "click_flip_prev_book": "Clique para o livro anterior",
     "click_flip_start": "Início da Bíblia",
     "almeida_version": "Almeida Revista e Atualizada",
-    "book_not_found": "Livro não encontrado."
+    "book_not_found": "Livro não encontrado.",
+    "share": "Compartilhar"
   },
   "bookmarks": {
     "title": "Marcadores e Favoritos",
