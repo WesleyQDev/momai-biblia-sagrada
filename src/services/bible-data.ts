@@ -1,103 +1,44 @@
 import almeidaBooks from '../../assets/bible/almeida.json'
-import kjvBooks from '../../assets/bible/kjv.json'
-import rv1909Books from '../../assets/bible/rv1909.json'
-import lsgBooks from '../../assets/bible/lsg.json'
-import luth1912Books from '../../assets/bible/luth1912.json'
-import rivedutaBooks from '../../assets/bible/riveduta.json'
 import type { RawBibleBook, BibleBookInfo, BibleVerse, Testament } from '../types/bible'
 import {
   DEFAULT_BIBLE_LANGUAGE_ID,
   isBibleLanguageId,
   type BibleLanguageId
 } from './bible-languages'
+import {
+  buildBookLookup,
+  findBook as findBookInLookup,
+  getChapterFromBooks,
+  getVerseFromBooks,
+  type BookLookup
+} from './bible-search-core'
 
-const bundledBooks = almeidaBooks as RawBibleBook[]
-
-// Pre-compute normalized book lookups for fast resolution
-function normalizeString(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '')
-}
-
-// Common aliases for Portuguese Bible books
-const aliases: Record<string, string> = {
-  genesis: 'gn',
-  exodo: 'ex',
-  salmo: 'sl',
-  salmos: 'sl',
-  proverbio: 'pv',
-  proverbios: 'pv',
-  cantico: 'ct',
-  canticos: 'ct',
-  cantares: 'ct',
-  lamentacoes: 'lm',
-  apocalipse: 'ap',
-  mateus: 'mt',
-  marcos: 'mc',
-  lucas: 'lc',
-  joao: 'jo',
-  atos: 'atos',
-  romanos: 'rm',
-  hebreus: 'hb',
-  tiago: 'tg',
-  judas: 'jd',
-  '1joao': '1jo',
-  '2joao': '2jo',
-  '3joao': '3jo',
-  '1pedro': '1pe',
-  '2pedro': '2pe',
-  '1corintios': '1co',
-  '2corintios': '2co',
-  '1tessalonicenses': '1ts',
-  '2tessalonicenses': '2ts',
-  '1timoteo': '1tm',
-  '2timoteo': '2tm',
-  '1samuel': '1sm',
-  '2samuel': '2sm',
-  '1reis': '1rs',
-  '2reis': '2rs',
-  '1cronicas': '1cr',
-  '2cronicas': '2cr'
+// Only the default translation ships in the initial bundle. The other five are
+// code-split and fetched the first time the reader (or the widget) selects
+// them, so opening the Bible no longer parses every translation up front.
+const datasetLoaders: Record<BibleLanguageId, () => Promise<{ default: RawBibleBook[] }>> = {
+  'pt-BR': async () => ({ default: almeidaBooks as RawBibleBook[] }),
+  'en-US': async () => ({ default: (await import('../../assets/bible/kjv.json')).default as RawBibleBook[] }),
+  es: async () => ({ default: (await import('../../assets/bible/rv1909.json')).default as RawBibleBook[] }),
+  fr: async () => ({ default: (await import('../../assets/bible/lsg.json')).default as RawBibleBook[] }),
+  de: async () => ({ default: (await import('../../assets/bible/luth1912.json')).default as RawBibleBook[] }),
+  it: async () => ({ default: (await import('../../assets/bible/riveduta.json')).default as RawBibleBook[] })
 }
 
 const datasetCache = new Map<BibleLanguageId, RawBibleBook[]>([
-  [DEFAULT_BIBLE_LANGUAGE_ID, bundledBooks],
-  ['en-US', kjvBooks as RawBibleBook[]],
-  ['es', rv1909Books as RawBibleBook[]],
-  ['fr', lsgBooks as RawBibleBook[]],
-  ['de', luth1912Books as RawBibleBook[]],
-  ['it', rivedutaBooks as RawBibleBook[]]
+  [DEFAULT_BIBLE_LANGUAGE_ID, almeidaBooks as RawBibleBook[]]
 ])
 
 let activeLanguageId: BibleLanguageId = DEFAULT_BIBLE_LANGUAGE_ID
-let activeBooks: RawBibleBook[] = bundledBooks
-let bookLookup = new Map<string, RawBibleBook>()
+let activeBooks: RawBibleBook[] = almeidaBooks as RawBibleBook[]
+let bookLookup: BookLookup = buildBookLookup(activeBooks)
 let datasetVersion = 0
 const listeners = new Set<() => void>()
-
-function rebuildLookup(): void {
-  const next = new Map<string, RawBibleBook>()
-  for (const b of activeBooks) {
-    next.set(String(b.id), b)
-    next.set(normalizeString(b.name), b)
-    next.set(normalizeString(b.abbrev), b)
-  }
-  for (const [alias, targetAbbrev] of Object.entries(aliases)) {
-    const target = next.get(targetAbbrev)
-    if (target) {
-      next.set(alias, target)
-    }
-  }
-  bookLookup = next
-}
 
 function setActiveDataset(id: BibleLanguageId, books: RawBibleBook[]): void {
   activeLanguageId = id
   activeBooks = books
-  rebuildLookup()
+  bookLookup = buildBookLookup(books)
   datasetVersion += 1
   emitChange()
 }
@@ -125,8 +66,6 @@ function isValidDataset(books: unknown): books is RawBibleBook[] {
     )
   )
 }
-
-rebuildLookup()
 
 export const bibleData = {
   getActiveLanguageId(): BibleLanguageId {
@@ -157,7 +96,22 @@ export const bibleData = {
       setActiveDataset(id, cached)
       return Promise.resolve()
     }
-    return Promise.reject(new Error(`Bible translation for ${id} is not available`))
+    const load = datasetLoaders[id]
+    if (!load) {
+      return Promise.reject(new Error(`Bible translation for ${id} is not available`))
+    }
+    return load()
+      .then((mod) => {
+        const books = mod.default
+        if (!isValidDataset(books)) {
+          throw new Error(`Invalid bundled Bible dataset for ${id}`)
+        }
+        datasetCache.set(id, books)
+        setActiveDataset(id, books)
+      })
+      .catch((err) => {
+        throw err instanceof Error ? err : new Error(`Failed to load Bible dataset for ${id}`)
+      })
   },
 
   getAllBooks(): BibleBookInfo[] {
@@ -179,11 +133,15 @@ export const bibleData = {
   },
 
   findBook(query: string | number): RawBibleBook | undefined {
-    if (typeof query === 'number') {
-      return activeBooks[query - 1]
-    }
-    const clean = normalizeString(String(query))
-    return bookLookup.get(clean)
+    return findBookInLookup(bookLookup, query, activeBooks)
+  },
+
+  getLookup(): BookLookup {
+    return bookLookup
+  },
+
+  getActiveBooks(): RawBibleBook[] {
+    return activeBooks
   },
 
   getBookById(bookId: number): RawBibleBook | undefined {
@@ -191,26 +149,11 @@ export const bibleData = {
   },
 
   getChapterVerses(bookId: number, chapter: number): BibleVerse[] {
-    const book = this.getBookById(bookId)
-    if (!book) return []
-    if (chapter < 1 || chapter > book.chapters.length) return []
-
-    const verseTexts = book.chapters[chapter - 1] || []
-    return verseTexts.map((text, idx) => ({
-      id: `${book.abbrev}-${chapter}-${idx + 1}`,
-      bookId: book.id,
-      bookName: book.name,
-      bookAbbrev: book.abbrev,
-      testament: book.testament,
-      chapter,
-      verse: idx + 1,
-      text
-    }))
+    return getChapterFromBooks(activeBooks, bookId, chapter)
   },
 
   getVerse(bookId: number, chapter: number, verse: number): BibleVerse | undefined {
-    const verses = this.getChapterVerses(bookId, chapter)
-    return verses.find((v) => v.verse === verse)
+    return getVerseFromBooks(activeBooks, bookId, chapter, verse)
   },
 
   getNextChapter(bookId: number, chapter: number): { bookId: number; chapter: number } | null {

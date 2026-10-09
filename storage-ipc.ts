@@ -37,7 +37,7 @@ function createIpcBibliaStorage({ send, onResponse, storageDir, timeoutMs = 3000
       if (timer.unref) timer.unref()
       pending.set(requestId, { resolve, reject, timer })
       try {
-        send({ type: 'storage-request', requestId, method, args })
+        send({ type: 'storage-request', requestId, method, args, extensionId: 'momai-biblia-sagrada' })
       } catch (err) {
         pending.delete(requestId)
         clearTimeout(timer)

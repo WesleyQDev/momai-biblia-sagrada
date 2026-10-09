@@ -1,32 +1,23 @@
 import { bibleData } from './bible-data'
 import { harpaData } from './harpa-data'
+import {
+  buildVerseIndex,
+  clampSearchLimit,
+  parseVerseReference,
+  searchReference,
+  searchVerseIndex,
+  type IndexedVerse
+} from './bible-search-core'
 import type {
   BibleVerse,
   SearchResult,
   ParsedReference,
-  Testament,
   SearchOptions,
-  SearchScope,
-  SearchMatchType
+  SearchScope
 } from '../types/bible'
 
-function normalizeText(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-// Flat cache of all 31,104 verses with normalized search text
-interface IndexedVerse {
-  verse: BibleVerse
-  normText: string
-  words: Set<string>
-}
-
+// Flat cache of the active translation's verses with normalized search text.
+// Rebuilt only when the reader switches translation.
 let verseIndexCache: IndexedVerse[] | null = null
 let indexedDatasetVersion = -1
 
@@ -34,119 +25,31 @@ function getVerseIndex(): IndexedVerse[] {
   const currentVersion = bibleData.getDatasetVersion()
   if (verseIndexCache && indexedDatasetVersion === currentVersion) return verseIndexCache
 
-  const allBooks = bibleData.getAllBooks()
-  const indexed: IndexedVerse[] = []
-
-  for (const bookInfo of allBooks) {
-    const rawBook = bibleData.getBookById(bookInfo.id)
-    if (!rawBook) continue
-
-    for (let cIdx = 0; cIdx < rawBook.chapters.length; cIdx++) {
-      const chapterNum = cIdx + 1
-      const verses = rawBook.chapters[cIdx]
-
-      for (let vIdx = 0; vIdx < verses.length; vIdx++) {
-        const verseNum = vIdx + 1
-        const text = verses[vIdx]
-        const normText = normalizeText(text)
-        const words = new Set(normText.split(' ').filter(Boolean))
-
-        indexed.push({
-          verse: {
-            id: `${rawBook.abbrev}-${chapterNum}-${verseNum}`,
-            bookId: rawBook.id,
-            bookName: rawBook.name,
-            bookAbbrev: rawBook.abbrev,
-            testament: rawBook.testament,
-            chapter: chapterNum,
-            verse: verseNum,
-            text
-          },
-          normText,
-          words
-        })
-      }
-    }
-  }
-
-  verseIndexCache = indexed
+  verseIndexCache = buildVerseIndex(bibleData.getActiveBooks())
   indexedDatasetVersion = currentVersion
   return verseIndexCache
 }
 
+function toSearchResult(hit: { verse: BibleVerse; score: number; matchType: SearchResult['matchType']; snippet: string }): SearchResult {
+  return {
+    type: 'verse',
+    verse: hit.verse,
+    score: hit.score,
+    matchType: hit.matchType,
+    snippet: hit.snippet
+  }
+}
+
 export const bibleSearch = {
   parseReference(query: string): ParsedReference | null {
-    const clean = query.trim()
-    if (!clean) return null
-
-    // Regex 1: "João 3:16", "1 Jo 3:16", "Sl 23:1", "1 Co 13:4-7", "Jo 3 16"
-    const refMatch = clean.match(/^([1-3]?\s*[a-zA-Záàâãéèêíïóôõöúçñ]+)\s+(\d+)[:\s]+(\d+)(?:-(\d+))?$/i)
-    if (refMatch) {
-      const bookQuery = refMatch[1].trim()
-      const book = bibleData.findBook(bookQuery)
-      if (book) {
-        return {
-          bookQuery,
-          book: {
-            id: book.id,
-            name: book.name,
-            abbrev: book.abbrev,
-            testament: book.testament,
-            totalChapters: book.totalChapters
-          },
-          chapter: parseInt(refMatch[2], 10),
-          verse: parseInt(refMatch[3], 10),
-          endVerse: refMatch[4] ? parseInt(refMatch[4], 10) : undefined
-        }
-      }
-    }
-
-    // Regex 2: "Salmos 23", "Jo 3", "Gênesis 1"
-    const chapMatch = clean.match(/^([1-3]?\s*[a-zA-Záàâãéèêíïóôõöúçñ]+)\s+(\d+)$/i)
-    if (chapMatch) {
-      const bookQuery = chapMatch[1].trim()
-      const book = bibleData.findBook(bookQuery)
-      if (book) {
-        return {
-          bookQuery,
-          book: {
-            id: book.id,
-            name: book.name,
-            abbrev: book.abbrev,
-            testament: book.testament,
-            totalChapters: book.totalChapters
-          },
-          chapter: parseInt(chapMatch[2], 10)
-        }
-      }
-    }
-
-    // Regex 3: Just book name e.g. "Gênesis", "Romanos", "Salmos"
-    const bookOnly = bibleData.findBook(clean)
-    if (bookOnly) {
-      return {
-        bookQuery: clean,
-        book: {
-          id: bookOnly.id,
-          name: bookOnly.name,
-          abbrev: bookOnly.abbrev,
-          testament: bookOnly.testament,
-          totalChapters: bookOnly.totalChapters
-        }
-      }
-    }
-
-    return null
+    return parseVerseReference(query, bibleData.getLookup())
   },
 
-  search(
-    query: string,
-    options: SearchOptions = {}
-  ): SearchResult[] {
+  search(query: string, options: SearchOptions = {}): SearchResult[] {
     const rawQuery = query.trim()
     if (!rawQuery) return []
 
-    const limit = options.limit || 20
+    const limit = clampSearchLimit(options.limit ?? 20)
     let scope: SearchScope = options.scope || 'ALL'
     if (options.testament) {
       if (options.testament === 'AT') scope = 'AT'
@@ -154,65 +57,16 @@ export const bibleSearch = {
       else if (options.testament === 'HARPA') scope = 'HARPA'
       else if (options.testament === 'ALL') scope = 'ALL'
     }
-    const verseResults: SearchResult[] = []
+    let verseResults: SearchResult[] = []
     const hymnResults: SearchResult[] = []
 
-    // 1. Try parsing as exact biblical reference first (when scope includes Bible)
+    // 1. Exact biblical reference first (when the scope includes the Bible)
     if (scope !== 'HARPA') {
       const ref = this.parseReference(rawQuery)
       if (ref && ref.book) {
-        const bookTestament = ref.book.testament
-        const matchesScope = scope === 'ALL' || bookTestament === scope
+        const matchesScope = scope === 'ALL' || ref.book.testament === scope
         if (matchesScope) {
-          if (ref.chapter && ref.verse) {
-            const verse = bibleData.getVerse(ref.book.id, ref.chapter, ref.verse)
-            if (verse) {
-              verseResults.push({
-                type: 'verse',
-                verse,
-                score: 1000,
-                matchType: 'exact_reference',
-                snippet: verse.text
-              })
-            }
-            if (ref.endVerse && ref.endVerse > ref.verse) {
-              for (let v = ref.verse + 1; v <= ref.endVerse; v++) {
-                const rangeVerse = bibleData.getVerse(ref.book.id, ref.chapter, v)
-                if (rangeVerse) {
-                  verseResults.push({
-                    type: 'verse',
-                    verse: rangeVerse,
-                    score: 950 - v,
-                    matchType: 'exact_reference',
-                    snippet: rangeVerse.text
-                  })
-                }
-              }
-            }
-          } else if (ref.chapter) {
-            const chapterVerses = bibleData.getChapterVerses(ref.book.id, ref.chapter)
-            for (const cv of chapterVerses.slice(0, Math.min(limit, 10))) {
-              verseResults.push({
-                type: 'verse',
-                verse: cv,
-                score: 800 - cv.verse,
-                matchType: 'exact_reference',
-                snippet: cv.text
-              })
-            }
-          } else {
-            const bookVerses = bibleData.getChapterVerses(ref.book.id, 1)
-            for (const bv of bookVerses.slice(0, Math.min(limit, 5))) {
-              verseResults.push({
-                type: 'verse',
-                verse: bv,
-                score: 700 - bv.verse,
-                matchType: 'exact_reference',
-                snippet: bv.text
-              })
-            }
-          }
-
+          verseResults = searchReference(bibleData.getActiveBooks(), ref, limit).map(toSearchResult)
           if (verseResults.length > 0 && scope !== 'ALL') {
             return verseResults.slice(0, limit)
           }
@@ -220,85 +74,11 @@ export const bibleSearch = {
       }
     }
 
-    // 2. Full text smart search for Bible verses
-    const normQuery = normalizeText(rawQuery)
-    const paddedQuery = ` ${normQuery} `
-    const queryTokens = normQuery.split(' ').filter((t) => t.length > 0)
-    if (queryTokens.length === 0) return []
-
+    // 2. Full-text search over the active translation
     if (scope !== 'HARPA') {
-      const index = getVerseIndex()
-
-      for (const item of index) {
-        if (scope !== 'ALL' && item.verse.testament !== scope) {
-          continue
-        }
-
-        const paddedNormText = ` ${item.normText} `
-        const hasExactWordOrPhrase = paddedNormText.includes(paddedQuery)
-
-        // 1. Exact whole word or exact phrase match
-        if (hasExactWordOrPhrase) {
-          verseResults.push({
-            type: 'verse',
-            verse: item.verse,
-            score: 550 + (100 / (item.normText.length + 1)),
-            matchType: 'exact_phrase',
-            snippet: item.verse.text
-          })
-          continue
-        }
-
-        // 2. Check if all words are present as whole words
-        let exactWordsCount = 0
-        let partialWordsCount = 0
-
-        for (const token of queryTokens) {
-          if (item.words.has(token)) {
-            exactWordsCount++
-          } else {
-            for (const w of item.words) {
-              if (w.includes(token)) {
-                partialWordsCount++
-                break
-              }
-            }
-          }
-        }
-
-        if (exactWordsCount === queryTokens.length) {
-          verseResults.push({
-            type: 'verse',
-            verse: item.verse,
-            score: 400 + exactWordsCount * 10,
-            matchType: 'all_words',
-            snippet: item.verse.text
-          })
-          continue
-        }
-
-        if (exactWordsCount + partialWordsCount >= queryTokens.length) {
-          verseResults.push({
-            type: 'verse',
-            verse: item.verse,
-            score: 250 + exactWordsCount * 10 + partialWordsCount * 5,
-            matchType: 'all_words',
-            snippet: item.verse.text
-          })
-          continue
-        }
-
-        // 3. Substring inside another word (e.g. "cabo" inside "acabou" or "cabom")
-        if (item.normText.includes(normQuery)) {
-          verseResults.push({
-            type: 'verse',
-            verse: item.verse,
-            score: 80 + (50 / (item.normText.length + 1)),
-            matchType: 'partial',
-            snippet: item.verse.text
-          })
-        }
-      }
+      const testament = scope === 'AT' || scope === 'NT' ? scope : 'ALL'
+      const textHits = searchVerseIndex(getVerseIndex(), rawQuery, { testament, limit })
+      verseResults = [...verseResults, ...textHits.map(toSearchResult)]
     }
 
     // 3. Harpa Cristã search (when scope is ALL or HARPA)
@@ -309,14 +89,29 @@ export const bibleSearch = {
         let score = 250
         let snippet = ''
 
-        const normTitle = normalizeText(hRes.hymn.title)
+        const normTitle = hRes.hymn.title
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^\w\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+        const normRhyme = rawQuery
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^\w\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
         const paddedTitle = ` ${normTitle} `
+        const paddedQuery = ` ${normRhyme} `
+        const queryTokens = normRhyme.split(' ').filter(Boolean)
 
         if (hRes.matchType === 'number') {
           score = 1000
           snippet = hRes.hymn.stanzas[0]?.[0] || (hRes.hymn.chorus?.[0] ? `Coro: ${hRes.hymn.chorus[0]}` : hRes.hymn.title)
         } else if (hRes.matchType === 'title') {
-          if (normTitle === normQuery) {
+          if (normTitle === normRhyme) {
             score = 950
           } else if (paddedTitle.includes(paddedQuery)) {
             score = 850
@@ -326,20 +121,19 @@ export const bibleSearch = {
           snippet = hRes.hymn.stanzas[0]?.[0] || (hRes.hymn.chorus?.[0] ? `Coro: ${hRes.hymn.chorus[0]}` : hRes.hymn.title)
         } else if (hRes.matchType === 'chorus') {
           const matchedLine = hRes.hymn.chorus?.find((line) => {
-            const nl = normalizeText(line)
-            return nl.includes(normQuery) || queryTokens.some((tok) => nl.includes(tok))
+            const nl = normalizeHymnText(line)
+            return nl.includes(normRhyme) || queryTokens.some((tok) => nl.includes(tok))
           })
-          const isExactWord = matchedLine ? ` ${normalizeText(matchedLine)} `.includes(paddedQuery) : false
+          const isExactWord = matchedLine ? ` ${normalizeHymnText(matchedLine)} `.includes(paddedQuery) : false
           score = isExactWord ? 700 : 500
           snippet = matchedLine ? `Coro: "${matchedLine.trim()}"` : `Coro: "${(hRes.hymn.chorus?.[0] || '').trim()}"`
         } else {
-          // lyric
           const allLines = hRes.hymn.stanzas.flat()
           const matchedLine = allLines.find((line) => {
-            const nl = normalizeText(line)
-            return nl.includes(normQuery) || queryTokens.some((tok) => nl.includes(tok))
+            const nl = normalizeHymnText(line)
+            return nl.includes(normRhyme) || queryTokens.some((tok) => nl.includes(tok))
           })
-          const isExactWord = matchedLine ? ` ${normalizeText(matchedLine)} `.includes(paddedQuery) : false
+          const isExactWord = matchedLine ? ` ${normalizeHymnText(matchedLine)} `.includes(paddedQuery) : false
           score = isExactWord ? 600 : 400
           snippet = matchedLine ? `"${matchedLine.trim()}"` : `"${(allLines[0] || '').trim()}"`
         }
@@ -348,7 +142,7 @@ export const bibleSearch = {
           type: 'hymn',
           hymn: hRes.hymn,
           score,
-          matchType: `hymn_${hRes.matchType}` as SearchMatchType,
+          matchType: `hymn_${hRes.matchType}` as SearchResult['matchType'],
           snippet
         })
       }
@@ -381,4 +175,14 @@ export const bibleSearch = {
 
     return [...topVerses, ...topHymns]
   }
+}
+
+function normalizeHymnText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }

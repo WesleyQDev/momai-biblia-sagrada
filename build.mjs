@@ -26,12 +26,6 @@ if (Array.isArray(manifest.ui?.widgets)) {
   }
 }
 
-
-if (entries.length === 0) {
-  console.log('[momai-biblia-sagrada:build] No UI entries in manifest. Nothing to do.')
-  process.exit(0)
-}
-
 mkdirSync(path.join(__dirname, 'dist'), { recursive: true })
 
 const makeHostGlobalsPlugin = {
@@ -65,10 +59,13 @@ if (!existsSync(momaiSrcDir)) {
 }
 
 /** @type {import('esbuild').BuildOptions} */
-const options = {
+const uiOptions = {
   entryPoints: entries.map((e) => ({ in: e.in, out: e.out })),
   bundle: true,
   format: 'esm',
+  // Enables lazy translation chunks: the six Bible datasets are only fetched
+  // when the reader selects them instead of being inlined in every entry.
+  splitting: true,
   jsx: 'automatic',
   jsxImportSource: 'react',
   target: 'es2022',
@@ -93,11 +90,40 @@ const options = {
   }
 }
 
+// The packager excludes src/ and lib/ from the ZIP, so the background worker
+// is bundled into a self-contained dist/runtime.js (the manifest points at it).
+// Assets stay external because the worker reads them from disk at runtime.
+const workerOptions = {
+  entryPoints: [path.join(__dirname, 'runtime.ts')],
+  bundle: true,
+  format: 'cjs',
+  platform: 'node',
+  target: 'node20',
+  outfile: path.join(__dirname, 'dist/runtime.js'),
+  sourcemap: true,
+  logLevel: 'info',
+  nodePaths: [path.join(__dirname, 'node_modules')]
+}
+
+async function buildAll() {
+  if (entries.length > 0) {
+    await build(uiOptions)
+  } else {
+    console.log('[momai-biblia-sagrada:build] No UI entries in manifest.')
+  }
+  await build(workerOptions)
+  console.log(
+    '[momai-biblia-sagrada:build] Built →',
+    [...entries.map((e) => e.out + '.js'), 'runtime.js'].join(', ')
+  )
+}
+
 if (process.argv.includes('--watch')) {
-  const ctx = await context(options)
-  await ctx.watch()
+  const contexts = []
+  if (entries.length > 0) contexts.push(await context(uiOptions))
+  contexts.push(await context(workerOptions))
+  await Promise.all(contexts.map((ctx) => ctx.watch()))
   console.log('[momai-biblia-sagrada:build] Watching for changes...')
 } else {
-  await build(options)
-  console.log('[momai-biblia-sagrada:build] Built →', entries.map((e) => e.out + '.js').join(', '))
+  await buildAll()
 }

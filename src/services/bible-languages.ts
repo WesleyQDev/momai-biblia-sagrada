@@ -68,6 +68,9 @@ export function getBibleLanguage(id: BibleLanguageId): BibleLanguage {
 }
 
 export function notifyBibleLanguageChanged(id: BibleLanguageId): void {
-  if (typeof window === 'undefined') return
-  window.dispatchEvent(new CustomEvent(BIBLE_LANGUAGE_EVENT, { detail: id }))
+  // Kept free of DOM globals so the worker can import this module too.
+  const globalObject = globalThis as any
+  const targetWindow = globalObject?.window
+  if (!targetWindow || typeof globalObject.CustomEvent !== 'function') return
+  targetWindow.dispatchEvent(new globalObject.CustomEvent(BIBLE_LANGUAGE_EVENT, { detail: id }))
 }

@@ -15,9 +15,6 @@ importers:
         specifier: ^19.0.0
         version: 19.2.8(react@19.2.8)
     devDependencies:
-      '@heroicons/react':
-        specifier: ^2.2.0
-        version: 2.2.0(react@19.2.8)
       '@testing-library/dom':
         specifier: ^10.4.2
         version: 10.4.2
@@ -428,11 +425,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@heroicons/react@2.2.0':
-    resolution: {integrity: sha512-LMcepvRaS9LYHJGsF0zzmgKCUim/X3N/DQKc4jepAXJ7l8QxJ1PmxJzqplF2Z3FE4PqBAIGyJAQ/w4B5dsqbtQ==}
-    peerDependencies:
-      react: '>= 16 || ^19.0.0-rc'
 
   '@jridgewell/sourcemap-codec@1.6.0':
     resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
@@ -1241,10 +1233,6 @@ snapshots:
     optional: true
 
   '@exodus/bytes@1.15.2': {}
-
-  '@heroicons/react@2.2.0(react@19.2.8)':
-    dependencies:
-      react: 19.2.8
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
 

@@ -1,6 +1,11 @@
 // runtime.ts
-// MomAI Bíblia Sagrada persistent background worker
-// Handles IPC tool execution for Assistant, automations, and background events
+// MomAI Bíblia Sagrada persistent background worker.
+// Hosts the AI tools (search, reading, bookmarks) over the host-owned SQLite
+// storage and emits extension events. Tool logic lives in lib/bible-tools.ts
+// and is shared with the reader through src/services/bible-search-core.ts.
+//
+// Persistence contract: only host storage (worker storage handled by Node Core
+// over IPC) is written. Bundled datasets are read-only assets of the extension.
 
 const fs = require('node:fs')
 const path = require('node:path')
@@ -22,112 +27,13 @@ process.on('unhandledRejection', (reason: any) => {
   console.error('[runtime:momai-biblia-sagrada] Unhandled rejection:', reason)
 })
 
-// Load raw bible dataset
-let rawBibleBooks: any[] = []
-try {
-  const datasetPath = path.join(__dirname, 'assets', 'bible', 'almeida.json')
-  if (fs.existsSync(datasetPath)) {
-    rawBibleBooks = JSON.parse(fs.readFileSync(datasetPath, 'utf8'))
-  }
-} catch (e: any) {
-  console.error('[runtime:momai-biblia-sagrada] Failed to load almeida.json:', e?.message || e)
-}
-
-// Normalized book lookup map
-function normalizeString(str: string): string {
-  return String(str || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '')
-}
-
-const bookLookup = new Map<string, any>()
-for (const b of rawBibleBooks) {
-  bookLookup.set(String(b.id), b)
-  bookLookup.set(normalizeString(b.name), b)
-  bookLookup.set(normalizeString(b.abbrev), b)
-}
-
-const aliases: Record<string, string> = {
-  genesis: 'gn',
-  exodo: 'ex',
-  salmo: 'sl',
-  salmos: 'sl',
-  proverbio: 'pv',
-  proverbios: 'pv',
-  cantico: 'ct',
-  canticos: 'ct',
-  cantares: 'ct',
-  lamentacoes: 'lm',
-  apocalipse: 'ap',
-  mateus: 'mt',
-  marcos: 'mc',
-  lucas: 'lc',
-  joao: 'jo',
-  atos: 'atos',
-  romanos: 'rm',
-  hebreus: 'hb',
-  tiago: 'tg',
-  judas: 'jd',
-  '1joao': '1jo',
-  '2joao': '2jo',
-  '3joao': '3jo',
-  '1pedro': '1pe',
-  '2pedro': '2pe',
-  '1corintios': '1co',
-  '2corintios': '2co',
-  '1tessalonicenses': '1ts',
-  '2tessalonicenses': '2ts',
-  '1timoteo': '1tm',
-  '2timoteo': '2tm',
-  '1samuel': '1sm',
-  '2samuel': '2sm',
-  '1reis': '1rs',
-  '2reis': '2rs',
-  '1cronicas': '1cr',
-  '2cronicas': '2cr'
-}
-
-for (const [alias, targetAbbrev] of Object.entries(aliases)) {
-  const target = bookLookup.get(targetAbbrev)
-  if (target) bookLookup.set(alias, target)
-}
-
-function findBook(query: string | number): any | undefined {
-  if (typeof query === 'number') return rawBibleBooks[query - 1]
-  const clean = normalizeString(String(query))
-  return bookLookup.get(clean)
-}
-
-function getVerse(bookId: number, chapter: number, verse: number) {
-  const book = rawBibleBooks[bookId - 1]
-  if (!book) return null
-  if (chapter < 1 || chapter > book.chapters.length) return null
-  const chVerses = book.chapters[chapter - 1] || []
-  if (verse < 1 || verse > chVerses.length) return null
-  return {
-    id: `${book.abbrev}-${chapter}-${verse}`,
-    bookId: book.id,
-    bookName: book.name,
-    bookAbbrev: book.abbrev,
-    testament: book.testament,
-    chapter,
-    verse,
-    text: chVerses[verse - 1]
-  }
-}
-
-// Bookmarks and reading progress live in host-owned SQLite over IPC
-// (isolated per dev mode). Local JSON files stay as a one-time legacy source
-// and as the fallback for unit tests without an IPC channel.
-const storageFile = path.join(__dirname, 'bookmarks.json')
-const readingFile = path.join(__dirname, 'reading-progress.json')
-const BOOKMARKS_KEY = 'bookmarks'
-const READING_KEY = 'reading-progress'
+// ---------------------------------------------------------------------------
+// Host storage (SQLite via IPC). No JSON files are written by the extension.
+// ---------------------------------------------------------------------------
 
 let storageResponseListener: ((msg: any) => void) | null = null
 let ipcStorage: any = null
+
 function getIpcStorage(): any {
   if (ipcStorage) return ipcStorage
   const { createIpcBibliaStorage } = require('./storage-ipc.ts')
@@ -145,387 +51,105 @@ function useHostStorage(): boolean {
   return typeof process.send === 'function'
 }
 
-function readLocalBookmarksFile(): any[] {
-  try {
-    if (fs.existsSync(storageFile)) {
-      const parsed = JSON.parse(fs.readFileSync(storageFile, 'utf8'))
-      if (Array.isArray(parsed)) return parsed
-    }
-  } catch {}
-  return []
+const workerStorage = {
+  async get(key: string) {
+    if (!useHostStorage()) return null
+    return getIpcStorage().storage.get(key)
+  },
+  async set(key: string, value: unknown) {
+    if (!useHostStorage()) return
+    await getIpcStorage().storage.set(key, value)
+  }
 }
 
-async function loadBookmarks(): Promise<any[]> {
-  if (useHostStorage()) {
+// ---------------------------------------------------------------------------
+// Datasets: the worker follows the translation selected in the reader and
+// reads the bundled JSON on demand, keeping only the loaded ones in memory.
+// ---------------------------------------------------------------------------
+
+let toolsPromise: Promise<{ execute: (toolName: string, args?: any) => Promise<any> }> | null = null
+
+function getTools() {
+  if (!toolsPromise) toolsPromise = initTools()
+  return toolsPromise
+}
+
+async function initTools() {
+  const [{ createBibleTools, ACTIVE_LANGUAGE_KEY }, languages] = await Promise.all([
+    import('./lib/bible-tools.ts'),
+    import('./src/services/bible-languages.ts')
+  ])
+
+  const datasets = new Map<string, any[]>()
+  let activeId: any = languages.DEFAULT_BIBLE_LANGUAGE_ID
+  let lastLanguageCheck = 0
+
+  // Works both from the source root (runtime.ts) and from the packaged
+  // dist/runtime.js bundle, where assets live one level up.
+  function resolveAssetPath(...segments: string[]): string {
+    const direct = path.join(__dirname, ...segments)
+    if (fs.existsSync(direct)) return direct
+    return path.join(__dirname, '..', ...segments)
+  }
+
+  function readDataset(id: string): any[] {
+    const meta = languages.BIBLE_LANGUAGES.find((lang: any) => lang.id === id)
+    if (!meta) throw new Error(`Unknown Bible language: ${String(id)}`)
+    const cached = datasets.get(id)
+    if (cached) return cached
+    const datasetPath = resolveAssetPath('assets', 'bible', meta.file)
+    const books = JSON.parse(fs.readFileSync(datasetPath, 'utf8'))
+    if (!Array.isArray(books) || books.length !== 66) {
+      throw new Error(`Invalid bundled Bible dataset for ${id}`)
+    }
+    datasets.set(id, books)
+    return books
+  }
+
+  async function refreshActiveLanguage(): Promise<void> {
+    const current = Date.now()
+    if (current - lastLanguageCheck < 1000) return
+    lastLanguageCheck = current
     try {
-      const stored = await getIpcStorage().storage.get(BOOKMARKS_KEY)
-      if (Array.isArray(stored)) return stored
-      const legacy = readLocalBookmarksFile()
-      if (legacy.length > 0) {
-        getIpcStorage().storage.set(BOOKMARKS_KEY, legacy).catch(() => {})
-        return legacy
-      }
-      return []
+      const stored = await workerStorage.get(ACTIVE_LANGUAGE_KEY)
+      if (languages.isBibleLanguageId(stored)) activeId = stored
     } catch {
-      return readLocalBookmarksFile()
+      // Keep the last known language when storage is unavailable.
     }
   }
-  return readLocalBookmarksFile()
+
+  async function readTranslation() {
+    await refreshActiveLanguage()
+    return languages.getBibleLanguage(activeId)
+  }
+
+  return createBibleTools({
+    getBooks: async () => {
+      await refreshActiveLanguage()
+      return readDataset(activeId)
+    },
+    getTranslation: async () => {
+      const meta = await readTranslation()
+      return { id: meta.id, name: meta.translationName, short: meta.translationShort }
+    },
+    storage: workerStorage,
+    emit: (eventType: string, data: Record<string, unknown>) => {
+      safeSend({ type: 'event', eventType, data })
+    },
+    isValidLanguage: languages.isBibleLanguageId
+  })
 }
 
-async function saveBookmarks(bms: any[]): Promise<void> {
-  if (useHostStorage()) {
-    try {
-      await getIpcStorage().storage.set(BOOKMARKS_KEY, bms)
-      return
-    } catch {
-      /* fall through to local file */
-    }
-  }
-  try {
-    fs.writeFileSync(storageFile, JSON.stringify(bms, null, 2), 'utf8')
-  } catch (e: any) {
-    console.warn('[runtime:momai-biblia-sagrada] Failed to write bookmarks.json:', e)
-  }
-}
-
-function defaultReading(): any {
-  return {
-    bookId: 43,
-    bookName: 'João',
-    bookAbbrev: 'jo',
-    testament: 'NT',
-    chapter: 1,
-    verse: 1,
-    updatedAt: Date.now()
-  }
-}
-
-async function loadReading(): Promise<any> {
-  if (useHostStorage()) {
-    try {
-      const stored = await getIpcStorage().storage.get(READING_KEY)
-      if (stored && typeof stored === 'object') return stored
-      try {
-        if (fs.existsSync(readingFile)) {
-          const parsed = JSON.parse(fs.readFileSync(readingFile, 'utf8'))
-          if (parsed && typeof parsed === 'object') {
-            getIpcStorage().storage.set(READING_KEY, parsed).catch(() => {})
-            return parsed
-          }
-        }
-      } catch {}
-      return defaultReading()
-    } catch {
-      /* fall through to local file */
-    }
-  }
-  try {
-    if (fs.existsSync(readingFile)) {
-      return JSON.parse(fs.readFileSync(readingFile, 'utf8'))
-    }
-  } catch {}
-  return defaultReading()
-}
-
-// Search parser & search logic for LLM tools
-function searchInBible(rawQuery: string, testament: string = 'ALL', limit: number = 10) {
-  const clean = rawQuery.trim()
-  if (!clean) return []
-
-  // Check reference pattern: "João 3:16", "Sl 23:1"
-  const refMatch = clean.match(/^([1-3]?\s*[a-zA-Záàâãéèêíïóôõöúçñ]+)\s+(\d+)[:\s]+(\d+)$/i)
-  if (refMatch) {
-    const book = findBook(refMatch[1])
-    if (book) {
-      const ch = parseInt(refMatch[2], 10)
-      const v = parseInt(refMatch[3], 10)
-      const verse = getVerse(book.id, ch, v)
-      if (verse) return [verse]
-    }
-  }
-
-  // Chapter pattern: "Salmos 23"
-  const chapMatch = clean.match(/^([1-3]?\s*[a-zA-Záàâãéèêíïóôõöúçñ]+)\s+(\d+)$/i)
-  if (chapMatch) {
-    const book = findBook(chapMatch[1])
-    if (book) {
-      const ch = parseInt(chapMatch[2], 10)
-      if (ch >= 1 && ch <= book.chapters.length) {
-        return (book.chapters[ch - 1] || []).slice(0, limit).map((text: string, idx: number) => ({
-          id: `${book.abbrev}-${ch}-${idx + 1}`,
-          bookId: book.id,
-          bookName: book.name,
-          bookAbbrev: book.abbrev,
-          testament: book.testament,
-          chapter: ch,
-          verse: idx + 1,
-          text
-        }))
-      }
-    }
-  }
-
-  // Keyword / phrase search across all books
-  const normQuery = clean
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\s]/g, ' ')
-    .trim()
-
-  const tokens = normQuery.split(' ').filter(Boolean)
-  if (tokens.length === 0) return []
-
-  const results: any[] = []
-
-  for (const book of rawBibleBooks) {
-    if (testament !== 'ALL' && book.testament !== testament) continue
-
-    for (let c = 0; c < book.chapters.length; c++) {
-      const ch = c + 1
-      const verses = book.chapters[c]
-
-      for (let v = 0; v < verses.length; v++) {
-        const text = verses[v]
-        const normText = text
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[^\w\s]/g, ' ')
-
-        // Check if all tokens are present
-        const matchesAll = tokens.every((tok: string) => normText.includes(tok))
-        if (matchesAll) {
-          results.push({
-            id: `${book.abbrev}-${ch}-${v + 1}`,
-            bookId: book.id,
-            bookName: book.name,
-            bookAbbrev: book.abbrev,
-            testament: book.testament,
-            chapter: ch,
-            verse: v + 1,
-            text
-          })
-
-          if (results.length >= limit) return results
-        }
-      }
-    }
-  }
-
-  return results
-}
-
-// Periodic heartbeat to NodeCore health monitor to keep persistent worker alive
-setInterval(() => {
+// Periodic heartbeat to the Node Core health monitor. Unref keeps the timer
+// from holding the process on its own; the IPC channel keeps it alive.
+const heartbeat = setInterval(() => {
   safeSend({ type: 'heartbeat', timestamp: Date.now() })
 }, 30000)
+if (typeof heartbeat.unref === 'function') heartbeat.unref()
 
-// Immediately emit ready to host-manager
+// Immediately emit ready to the host manager
 safeSend({ type: 'ready' })
 
-/**
- * Tool Execution Dispatcher
- */
-async function executeTool(toolName: string, args: any = {}): Promise<any> {
-  switch (toolName) {
-    case 'command': {
-      const actualTool = args?.toolName || args?.tool
-      const actualArgs = args?.args || args
-      if (actualTool && actualTool !== 'command') {
-        return executeTool(actualTool, actualArgs)
-      }
-      return { ok: false, error: 'Ferramenta ausente no comando.' }
-    }
-
-    case 'search_bible': {
-      const query = args?.query || ''
-      const testament = args?.testament || 'ALL'
-      const limit = typeof args?.limit === 'number' ? args.limit : 10
-      const results = searchInBible(query, testament, limit)
-      return {
-        ok: true,
-        query,
-        total: results.length,
-        results,
-        instruction: results.length === 0
-          ? `Nenhum versículo encontrado para "${query}".`
-          : `Encontrados ${results.length} versículo(s) para "${query}".`,
-        directResponse: results.length === 0
-          ? `Não encontrei passagens bíblicas para "${query}".`
-          : results.map((r: any) => `• ${r.bookName} ${r.chapter}:${r.verse} - "${r.text}"`).join('\n')
-      }
-    }
-
-    case 'get_verse': {
-      const book = findBook(args?.book)
-      if (!book) return { ok: false, error: `Livro "${args?.book}" não encontrado na Bíblia.` }
-      const ch = parseInt(args?.chapter, 10)
-      const v = parseInt(args?.verse, 10)
-      const verse = getVerse(book.id, ch, v)
-      if (!verse) return { ok: false, error: `Versículo ${book.name} ${ch}:${v} não encontrado.` }
-      return {
-        ok: true,
-        verse,
-        reference: `${verse.bookName} ${verse.chapter}:${verse.verse}`,
-        text: verse.text,
-        directResponse: `"${verse.text}" (${verse.bookName} ${verse.chapter}:${verse.verse} - Almeida)`
-      }
-    }
-
-    case 'get_chapter': {
-      const book = findBook(args?.book)
-      if (!book) return { ok: false, error: `Livro "${args?.book}" não encontrado.` }
-      const ch = parseInt(args?.chapter, 10)
-      if (ch < 1 || ch > book.chapters.length) {
-        return { ok: false, error: `Capítulo ${ch} inválido para ${book.name} (possui ${book.chapters.length} capítulos).` }
-      }
-      const verses = (book.chapters[ch - 1] || []).map((text: string, idx: number) => ({
-        verse: idx + 1,
-        text
-      }))
-      return {
-        ok: true,
-        book: book.name,
-        chapter: ch,
-        totalVerses: verses.length,
-        verses,
-        directResponse: `${book.name} capítulo ${ch} possui ${verses.length} versículos.`
-      }
-    }
-
-    case 'get_random_verse': {
-      const testament = args?.testament || 'ALL'
-      const candidates =
-        testament === 'AT'
-          ? rawBibleBooks.filter((b: any) => b.testament === 'AT')
-          : testament === 'NT'
-            ? rawBibleBooks.filter((b: any) => b.testament === 'NT')
-            : rawBibleBooks
-
-      const randomBook = candidates[Math.floor(Math.random() * candidates.length)]
-      const randomChapter = Math.floor(Math.random() * randomBook.chapters.length) + 1
-      const chVerses = randomBook.chapters[randomChapter - 1]
-      const randomVerseNum = Math.floor(Math.random() * chVerses.length) + 1
-      const verse = getVerse(randomBook.id, randomChapter, randomVerseNum)
-
-      // Emit daily verse event for automations
-      if (verse) {
-        safeSend({
-          type: 'event',
-          eventType: 'bible_daily_verse',
-          data: {
-            reference: `${verse.bookName} ${verse.chapter}:${verse.verse}`,
-            text: verse.text,
-            book: verse.bookName,
-            chapter: verse.chapter,
-            verse: verse.verse
-          }
-        })
-      }
-
-      return {
-        ok: true,
-        verse,
-        reference: verse ? `${verse.bookName} ${verse.chapter}:${verse.verse}` : '',
-        directResponse: verse ? `"${verse.text}" (${verse.bookName} ${verse.chapter}:${verse.verse})` : ''
-      }
-    }
-
-    case 'get_last_reading': {
-      const reading = await loadReading()
-      return {
-        ok: true,
-        reading,
-        directResponse: `Sua última leitura foi em ${reading.bookName} capítulo ${reading.chapter}.`
-      }
-    }
-
-    case 'list_bookmarks': {
-      const bookmarks = await loadBookmarks()
-      const bookFilter = args?.book ? normalizeString(args.book) : null
-      const filtered = bookFilter
-        ? bookmarks.filter((b: any) => normalizeString(b.bookName) === bookFilter || normalizeString(b.bookAbbrev) === bookFilter)
-        : bookmarks
-
-      return {
-        ok: true,
-        total: filtered.length,
-        bookmarks: filtered,
-        directResponse: filtered.length === 0
-          ? 'Nenhum versículo marcado encontrado.'
-          : `Você possui ${filtered.length} marcador(es): ${filtered.map((b: any) => `${b.bookName} ${b.chapter}:${b.verse}`).join(', ')}`
-      }
-    }
-
-    case 'add_bookmark': {
-      const book = findBook(args?.book)
-      if (!book) return { ok: false, error: `Livro "${args?.book}" não encontrado.` }
-      const ch = parseInt(args?.chapter, 10)
-      const v = parseInt(args?.verse, 10)
-      const verse = getVerse(book.id, ch, v)
-      if (!verse) return { ok: false, error: `Versículo não encontrado.` }
-
-      const bookmarks = await loadBookmarks()
-      const newBm = {
-        id: `${book.abbrev}-${ch}-${v}-${Date.now()}`,
-        bookId: book.id,
-        bookName: book.name,
-        bookAbbrev: book.abbrev,
-        testament: book.testament,
-        chapter: ch,
-        verse: v,
-        text: verse.text,
-        note: args?.note || '',
-        createdAt: Date.now()
-      }
-
-      const updated = bookmarks.filter((b: any) => !(b.bookId === book.id && b.chapter === ch && b.verse === v))
-      updated.unshift(newBm)
-      await saveBookmarks(updated)
-
-      safeSend({
-        type: 'event',
-        eventType: 'bible_bookmark_created',
-        data: {
-          reference: `${book.name} ${ch}:${v}`,
-          text: verse.text,
-          book: book.name
-        }
-      })
-
-      return {
-        ok: true,
-        bookmark: newBm,
-        directResponse: `Versículo ${book.name} ${ch}:${v} adicionado aos seus marcadores com sucesso.`
-      }
-    }
-
-    case 'remove_bookmark': {
-      const id = args?.id || ''
-      const bookmarks = await loadBookmarks()
-      const updated = bookmarks.filter((b: any) => b.id !== id && `${b.bookAbbrev}-${b.chapter}-${b.verse}` !== id)
-      await saveBookmarks(updated)
-
-      safeSend({
-        type: 'event',
-        eventType: 'bible_bookmark_removed',
-        data: { bookmarkId: id, reference: id }
-      })
-
-      return {
-        ok: true,
-        directResponse: 'Marcador removido com sucesso.'
-      }
-    }
-
-    default:
-      return { ok: false, error: `Ferramenta desconhecida: ${toolName}` }
-  }
-}
-
-// Process incoming IPC messages from MomAI extension host
 process.on('message', async (msg: any) => {
   if (!msg || typeof msg !== 'object') return
   if (msg.type === 'storage-response') {
@@ -535,10 +159,12 @@ process.on('message', async (msg: any) => {
     return
   }
   if (msg.type === 'execute') {
-    const { requestId, payload } = msg
-    const { toolName, args } = payload || {}
+    const { requestId } = msg
+    const source = msg.payload || msg
+    const { toolName, args } = source || {}
     try {
-      const result = await executeTool(toolName, args)
+      const tools = await getTools()
+      const result = await tools.execute(toolName, args)
       safeSend({ type: 'response', requestId, result })
     } catch (err: any) {
       safeSend({
@@ -557,6 +183,5 @@ process.on('disconnect', () => {
 })
 
 module.exports = {
-  execute: executeTool,
-  executeTool
+  execute: (toolName: string, args?: any) => getTools().then((tools) => tools.execute(toolName, args))
 }

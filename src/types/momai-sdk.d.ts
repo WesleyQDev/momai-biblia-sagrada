@@ -19,6 +19,7 @@ declare module 'momai:sdk' {
     }
   }
   export default sdk
+  export function useExtensionVisibility(explicitIsActive?: boolean, extensionId?: string): boolean
 }
 
 declare module 'momai:events' {

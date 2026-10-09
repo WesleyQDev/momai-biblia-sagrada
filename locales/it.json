@@ -42,7 +42,17 @@
       "confirm_desc": "Vuoi segnare {book} {chapter} come letto?",
       "confirm_button": "Conferma",
       "cancel_button": "Annulla",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "context": {
+        "open": "Apri nell’app MomAI",
+        "advance": "Segna come letto",
+        "reset": "Riavvia tutta la lettura biblica"
+      },
+      "custom": {
+        "title": "Personalizza lettura biblica",
+        "goal_label": "Obiettivo giornaliero di capitoli",
+        "goal_option": "{count} capitoli al giorno"
+      }
     }
   },
   "home": {
@@ -91,7 +101,9 @@
     "click_flip_prev": "Clicca per tornare indietro",
     "click_flip_end": "Fine dell'Arpa Cristiana",
     "click_flip_start": "Inizio dell'Arpa Cristiana",
-    "share": "Condividi"
+    "share": "Condividi",
+    "translated_badge": "Tradotto",
+    "original_badge": "Originale portoghese"
   },
   "card": {
     "reroll": "Estrai un altro versetto",

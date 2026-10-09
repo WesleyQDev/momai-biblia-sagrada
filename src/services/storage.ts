@@ -2,6 +2,7 @@ import type { BibleBookmark } from '../types/bookmarks'
 import type { BibleDailyTracker, ReadingProgress, TodayCompletedChapter } from '../types/reading'
 import { isBibleLanguageId, type BibleLanguageId } from './bible-languages'
 import { bibleData } from './bible-data'
+import { executeBibleTool, hasWorkerBridge } from './worker-bridge'
 
 const PREFIX = 'momai_biblia_v1_'
 
@@ -18,6 +19,176 @@ export function getTodayDateString(d: Date = new Date()): string {
 const HARPA_TOTAL_HYMNS = 640
 
 const memoryFallback = new Map<string, string>()
+
+// ---------------------------------------------------------------------------
+// Worker sync: bookmarks and reading progress are owned by the background
+// worker (host SQLite, shared with the AI tools). This module keeps the local
+// cache for instant reads and mirrors every change through the command bridge.
+// ---------------------------------------------------------------------------
+
+const DIRTY_FLAG_KEY = `${PREFIX}worker_dirty`
+const MIGRATED_FLAG_KEY = `${PREFIX}worker_migrated`
+const HYDRATE_MIN_INTERVAL_MS = 3000
+
+type DirtyKey = 'bookmarks' | 'reading'
+
+interface HydratedPayload {
+  bookmarks?: BibleBookmark[]
+  lastReading?: ReadingProgress
+}
+
+const hydratedListeners = new Set<(payload: HydratedPayload) => void>()
+let hydrationPromise: Promise<HydratedPayload | null> | null = null
+let lastHydrationAt = 0
+let syncInitialized = false
+
+function readDirtyKeys(): Set<DirtyKey> {
+  try {
+    const raw = readValue(DIRTY_FLAG_KEY)
+    const parsed = raw ? JSON.parse(raw) : []
+    return new Set(Array.isArray(parsed) ? (parsed as DirtyKey[]) : [])
+  } catch {
+    return new Set()
+  }
+}
+
+function writeDirtyKeys(keys: Set<DirtyKey>): void {
+  writeValue(DIRTY_FLAG_KEY, JSON.stringify([...keys]))
+}
+
+function markDirty(key: DirtyKey): void {
+  const keys = readDirtyKeys()
+  if (!keys.has(key)) {
+    keys.add(key)
+    writeDirtyKeys(keys)
+  }
+}
+
+function clearDirty(key: DirtyKey): void {
+  const keys = readDirtyKeys()
+  if (keys.delete(key)) writeDirtyKeys(keys)
+}
+
+function isMigrated(): boolean {
+  return readValue(MIGRATED_FLAG_KEY) === '1'
+}
+
+function setMigrated(): void {
+  writeValue(MIGRATED_FLAG_KEY, '1')
+}
+
+function readStoredLastReading(): ReadingProgress | null {
+  try {
+    const raw = readValue(`${PREFIX}last_reading`)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? (parsed as ReadingProgress) : null
+  } catch {
+    return null
+  }
+}
+
+async function pushBookmarks(): Promise<boolean> {
+  const result = await executeBibleTool('import_bookmarks', { bookmarks: bibleStorage.getBookmarks() })
+  if (!result) return false
+  clearDirty('bookmarks')
+  return true
+}
+
+async function pushReading(): Promise<boolean> {
+  const reading = bibleStorage.getLastReading()
+  const result = await executeBibleTool('set_last_reading', {
+    bookId: reading.bookId,
+    chapter: reading.chapter,
+    verse: reading.verse ?? 1
+  })
+  if (!result) return false
+  clearDirty('reading')
+  return true
+}
+
+function notifyHydrated(payload: HydratedPayload): void {
+  hydratedListeners.forEach((listener) => {
+    try {
+      listener(payload)
+    } catch {
+      // A broken listener must never break the sync loop
+    }
+  })
+}
+
+/**
+ * Pulls bookmarks and reading progress from the worker (the same data the AI
+ * uses) and applies pending local changes first. Returns the values that
+ * changed, or null when the bridge is unavailable.
+ */
+function hydrateFromWorker(force = false): Promise<HydratedPayload | null> {
+  if (typeof window === 'undefined' || !hasWorkerBridge()) return Promise.resolve(null)
+  if (hydrationPromise) return hydrationPromise
+  const nowMs = Date.now()
+  if (!force && nowMs - lastHydrationAt < HYDRATE_MIN_INTERVAL_MS) return Promise.resolve(null)
+  lastHydrationAt = nowMs
+
+  hydrationPromise = (async () => {
+    const payload: HydratedPayload = {}
+
+    const language = bibleStorage.getBibleLanguageId()
+    if (language) void executeBibleTool('set_active_language', { languageId: language })
+
+    const dirty = readDirtyKeys()
+    if (dirty.has('bookmarks')) await pushBookmarks()
+    if (dirty.has('reading')) await pushReading()
+
+    const list = await executeBibleTool<{ total?: number; bookmarks?: BibleBookmark[] }>(
+      'list_bookmarks',
+      {}
+    )
+    if (list) {
+      const remote = Array.isArray(list.bookmarks) ? list.bookmarks : []
+      const local = bibleStorage.getBookmarks()
+      if (remote.length === 0 && local.length > 0 && !isMigrated()) {
+        // One-time migration of bookmarks created before the worker sync
+        const pushed = await pushBookmarks()
+        if (pushed) {
+          setMigrated()
+          payload.bookmarks = local
+        }
+      } else {
+        if (!isMigrated()) setMigrated()
+        const changed =
+          remote.length !== local.length ||
+          remote.some((bookmark, index) => bookmark.id !== local[index]?.id)
+        if (changed) {
+          bibleStorage.setBookmarksFromSync(remote)
+          payload.bookmarks = remote
+        }
+      }
+    }
+
+    const remoteReading = await executeBibleTool<{ reading?: ReadingProgress | null }>(
+      'get_last_reading',
+      {}
+    )
+    if (remoteReading && !readDirtyKeys().has('reading')) {
+      const remote = remoteReading.reading
+      const local = readStoredLastReading()
+      if (remote && remote.updatedAt >= (local?.updatedAt ?? 0)) {
+        if (!local || JSON.stringify(remote) !== JSON.stringify(local)) {
+          bibleStorage.setLastReadingFromSync(remote)
+          payload.lastReading = remote
+        }
+      }
+    }
+
+    if (payload.bookmarks || payload.lastReading) notifyHydrated(payload)
+    return payload
+  })().finally(() => {
+    hydrationPromise = null
+  })
+
+  return hydrationPromise
+}
+
 
 function readValue(key: string): string | null {
   try {
@@ -57,6 +228,17 @@ export const bibleStorage = {
       localStorage.setItem(`${PREFIX}bookmarks`, JSON.stringify(bookmarks))
     } catch (e) {
       console.warn('[biblia:storage] Failed to save bookmarks:', e)
+    }
+    markDirty('bookmarks')
+    void pushBookmarks()
+  },
+
+  /** Applies the worker copy without echoing it back (sync-internal). */
+  setBookmarksFromSync(bookmarks: BibleBookmark[]): void {
+    try {
+      localStorage.setItem(`${PREFIX}bookmarks`, JSON.stringify(bookmarks))
+    } catch (e) {
+      console.warn('[biblia:storage] Failed to cache bookmarks:', e)
     }
   },
 
@@ -119,6 +301,17 @@ export const bibleStorage = {
     } catch (e) {
       console.warn('[biblia:storage] Failed to save last reading:', e)
     }
+    markDirty('reading')
+    void pushReading()
+  },
+
+  /** Applies the worker copy without echoing it back (sync-internal). */
+  setLastReadingFromSync(reading: ReadingProgress): void {
+    try {
+      localStorage.setItem(`${PREFIX}last_reading`, JSON.stringify(reading))
+    } catch (e) {
+      console.warn('[biblia:storage] Failed to cache last reading:', e)
+    }
   },
 
   getBibleLanguageId(): BibleLanguageId | null {
@@ -129,6 +322,57 @@ export const bibleStorage = {
   setBibleLanguageId(id: BibleLanguageId): void {
     if (!isBibleLanguageId(id)) return
     writeValue(`${PREFIX}bible_language`, id)
+    this.syncActiveLanguage(id)
+  },
+
+  /**
+   * Tells the worker which translation the reader is using, so the AI tools
+   * quote/search the same text shown on screen.
+   */
+  syncActiveLanguage(id: BibleLanguageId): void {
+    if (!isBibleLanguageId(id)) return
+    void executeBibleTool('set_active_language', { languageId: id })
+  },
+
+  /**
+   * Refreshes the local cache from the worker (bookmarks + reading progress).
+   * Returns the values that changed, or null when the bridge is unavailable.
+   */
+  hydrateFromWorker(force = false): Promise<HydratedPayload | null> {
+    return hydrateFromWorker(force)
+  },
+
+  /** Subscribes to worker data that arrived and changed the local cache. */
+  onHydrated(listener: (payload: HydratedPayload) => void): () => void {
+    hydratedListeners.add(listener)
+    return () => {
+      hydratedListeners.delete(listener)
+    }
+  },
+
+  /**
+   * Hydrates immediately and whenever the window regains focus/visibility, so
+   * bookmarks added by the AI show up without reopening the extension.
+   */
+  initDataSync(): () => void {
+    if (syncInitialized || typeof window === 'undefined') return () => {}
+    syncInitialized = true
+    void hydrateFromWorker(true)
+
+    const refresh = () => {
+      void hydrateFromWorker()
+    }
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refresh()
+    }
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => {
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', onVisibility)
+      syncInitialized = false
+    }
   },
 
   getLastHymn(): number {

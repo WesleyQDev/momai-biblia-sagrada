@@ -46,7 +46,25 @@
       "widgets": {
         "tracker": {
           "name": "Leitura Bíblica",
-          "description": "Acompanhamento sequencial de leitura por metas diárias, sem atrasos, com progresso e acesso direto ao leitor."
+          "description": "Acompanhamento sequencial de leitura por metas diárias, sem atrasos, com progresso e acesso direto ao leitor.",
+          "galleryPreview": [
+            {
+              "type": "text",
+              "text": "Gênesis 1",
+              "variant": "title"
+            },
+            {
+              "type": "progress",
+              "label": "Meta de hoje",
+              "value": 67,
+              "detail": "2 de 3 capítulos"
+            },
+            {
+              "type": "text",
+              "text": "No princípio, criou Deus os céus e a terra.",
+              "variant": "body"
+            }
+          ]
         }
       }
     },
@@ -66,7 +84,25 @@
       "widgets": {
         "tracker": {
           "name": "Bible Reading",
-          "description": "Sequential reading tracking by daily goals, no falling behind, with progress and direct access to the reader."
+          "description": "Sequential reading tracking by daily goals, no falling behind, with progress and direct access to the reader.",
+          "galleryPreview": [
+            {
+              "type": "text",
+              "text": "Genesis 1",
+              "variant": "title"
+            },
+            {
+              "type": "progress",
+              "label": "Today's goal",
+              "value": 67,
+              "detail": "2 of 3 chapters"
+            },
+            {
+              "type": "text",
+              "text": "In the beginning God created the heavens and the earth.",
+              "variant": "body"
+            }
+          ]
         }
       }
     },
@@ -86,7 +122,25 @@
       "widgets": {
         "tracker": {
           "name": "Lectura Bíblica",
-          "description": "Seguimiento secuencial de lectura por metas diarias, sin retrasos, con progreso y acceso directo al lector."
+          "description": "Seguimiento secuencial de lectura por metas diarias, sin retrasos, con progreso y acceso directo al lector.",
+          "galleryPreview": [
+            {
+              "type": "text",
+              "text": "Génesis 1",
+              "variant": "title"
+            },
+            {
+              "type": "progress",
+              "label": "Meta de hoy",
+              "value": 67,
+              "detail": "2 de 3 capítulos"
+            },
+            {
+              "type": "text",
+              "text": "En el principio creó Dios los cielos y la tierra.",
+              "variant": "body"
+            }
+          ]
         }
       }
     },
@@ -106,7 +160,25 @@
       "widgets": {
         "tracker": {
           "name": "Lecture Biblique",
-          "description": "Suivi séquentiel de lecture par objectifs quotidiens, sans retard, avec progression et accès direct au lecteur."
+          "description": "Suivi séquentiel de lecture par objectifs quotidiens, sans retard, avec progression et accès direct au lecteur.",
+          "galleryPreview": [
+            {
+              "type": "text",
+              "text": "Genèse 1",
+              "variant": "title"
+            },
+            {
+              "type": "progress",
+              "label": "Objectif du jour",
+              "value": 67,
+              "detail": "2 chapitres sur 3"
+            },
+            {
+              "type": "text",
+              "text": "Au commencement, Dieu créa les cieux et la terre.",
+              "variant": "body"
+            }
+          ]
         }
       }
     },
@@ -126,7 +198,25 @@
       "widgets": {
         "tracker": {
           "name": "Bibellesen",
-          "description": "Fortlaufende Leseerfassung nach Tageszielen, ohne Rückstand, mit Fortschritt und direktem Zugang zum Leser."
+          "description": "Fortlaufende Leseerfassung nach Tageszielen, ohne Rückstand, mit Fortschritt und direktem Zugang zum Leser.",
+          "galleryPreview": [
+            {
+              "type": "text",
+              "text": "Genesis 1",
+              "variant": "title"
+            },
+            {
+              "type": "progress",
+              "label": "Heutiges Ziel",
+              "value": 67,
+              "detail": "2 von 3 Kapiteln"
+            },
+            {
+              "type": "text",
+              "text": "Am Anfang schuf Gott Himmel und Erde.",
+              "variant": "body"
+            }
+          ]
         }
       }
     },
@@ -146,18 +236,36 @@
       "widgets": {
         "tracker": {
           "name": "Lettura Biblica",
-          "description": "Monitoraggio sequenziale della lettura per obiettivi giornalieri, senza ritardi, con progressi e accesso diretto al lettore."
+          "description": "Monitoraggio sequenziale della lettura per obiettivi giornalieri, senza ritardi, con progressi e accesso diretto al lettore.",
+          "galleryPreview": [
+            {
+              "type": "text",
+              "text": "Genesi 1",
+              "variant": "title"
+            },
+            {
+              "type": "progress",
+              "label": "Obiettivo di oggi",
+              "value": 67,
+              "detail": "2 di 3 capitoli"
+            },
+            {
+              "type": "text",
+              "text": "In principio Dio creò il cielo e la terra.",
+              "variant": "body"
+            }
+          ]
         }
       }
     }
   },
   "sidebar": true,
   "background": true,
-  "backgroundScript": "runtime.ts",
+  "backgroundScript": "dist/runtime.js",
   "permissions": [],
   "sdkVersion": 1,
-  "momai_compat": ">=1.15.0",
-  "version": "1.4.0",
+  "momai_compat": ">=1.16.0",
+  "version": "1.5.0",
   "ui": {
     "page": "dist/page.js",
     "pageType": "momai-biblia-page",
@@ -296,7 +404,7 @@
           },
           "limit": {
             "type": "number",
-            "description": "Limite máximo de resultados (padrão: 10)"
+            "description": "Limite máximo de resultados (1 a 50; padrão: 10)"
           }
         }
       }
@@ -439,6 +547,111 @@
           }
         }
       }
+    },
+    {
+      "name": "set_last_reading",
+      "label": "Registrar Ponto de Leitura",
+      "description": "Registra onde o usuário parou de ler a Bíblia (livro, capítulo e versículo).",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "bookId",
+          "chapter"
+        ],
+        "properties": {
+          "bookId": {
+            "type": "number",
+            "description": "Id do livro (1 a 66)"
+          },
+          "chapter": {
+            "type": "number",
+            "description": "Número do capítulo"
+          },
+          "verse": {
+            "type": "number",
+            "description": "Número do versículo (opcional)"
+          }
+        }
+      }
+    },
+    {
+      "name": "import_bookmarks",
+      "label": "Importar Marcadores",
+      "description": "Importa uma lista de marcadores bíblicos para o armazenamento do usuário (uso da interface).",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "bookmarks"
+        ],
+        "properties": {
+          "bookmarks": {
+            "type": "array",
+            "description": "Lista de marcadores",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "report_daily_verse",
+      "label": "Registrar Versículo do Dia",
+      "description": "Informa que um versículo devocional foi apresentado na interface, disparando o evento de automação.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "reference",
+          "text"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "Referência do versículo (ex: João 3:16)"
+          },
+          "text": {
+            "type": "string",
+            "description": "Texto do versículo"
+          },
+          "book": {
+            "type": "string",
+            "description": "Livro"
+          },
+          "chapter": {
+            "type": "number",
+            "description": "Capítulo"
+          },
+          "verse": {
+            "type": "number",
+            "description": "Versículo"
+          }
+        }
+      }
+    },
+    {
+      "name": "set_active_language",
+      "label": "Definir Idioma Ativo",
+      "description": "Informa qual tradução o leitor está usando, para que as respostas citem o mesmo texto da tela (uso da interface).",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "languageId"
+        ],
+        "properties": {
+          "languageId": {
+            "type": "string",
+            "enum": [
+              "pt-BR",
+              "en-US",
+              "es",
+              "fr",
+              "de",
+              "it"
+            ],
+            "description": "Id do idioma/tradução ativa"
+          }
+        }
+      }
     }
   ],
   "routes": [
@@ -446,6 +659,11 @@
       "method": "GET",
       "path": "/reading/last",
       "tool": "get_last_reading"
+    },
+    {
+      "method": "POST",
+      "path": "/reading/last",
+      "tool": "set_last_reading"
     },
     {
       "method": "GET",

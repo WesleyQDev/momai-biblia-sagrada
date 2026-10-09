@@ -1,9 +1,5 @@
 import baseDataset from '../../assets/harpa/harpa-crista.json'
-import enUSOverlay from '../../assets/harpa/harpa-en-US.json'
-import esOverlay from '../../assets/harpa/harpa-es.json'
-import frOverlay from '../../assets/harpa/harpa-fr.json'
-import deOverlay from '../../assets/harpa/harpa-de.json'
-import itOverlay from '../../assets/harpa/harpa-it.json'
+import { registerHarpaLanguageLoader } from './harpa-language'
 import type { HarpaDataset, HarpaHymn, HarpaSearchResult } from '../types/harpa'
 import {
   DEFAULT_BIBLE_LANGUAGE_ID,
@@ -17,13 +13,19 @@ const baseByNumber = new Map<number, HarpaHymn>(baseHymns.map((hymn) => [hymn.nu
 
 type HarpaOverlay = Pick<HarpaDataset, 'hymns'>
 
+// Only the Portuguese original ships in the initial bundle; translated
+// overlays are code-split and fetched the first time the reader selects them.
+const overlayLoaders: Record<BibleLanguageId, () => Promise<{ default: HarpaOverlay }>> = {
+  'pt-BR': async () => ({ default: { hymns: [] } }),
+  'en-US': async () => ({ default: (await import('../../assets/harpa/harpa-en-US.json')).default as unknown as HarpaOverlay }),
+  es: async () => ({ default: (await import('../../assets/harpa/harpa-es.json')).default as unknown as HarpaOverlay }),
+  fr: async () => ({ default: (await import('../../assets/harpa/harpa-fr.json')).default as unknown as HarpaOverlay }),
+  de: async () => ({ default: (await import('../../assets/harpa/harpa-de.json')).default as unknown as HarpaOverlay }),
+  it: async () => ({ default: (await import('../../assets/harpa/harpa-it.json')).default as unknown as HarpaOverlay })
+}
+
 const overlayCache = new Map<BibleLanguageId, Map<number, HarpaHymn>>([
-  [DEFAULT_BIBLE_LANGUAGE_ID, new Map()],
-  ['en-US', toOverlayMap(enUSOverlay as HarpaOverlay)],
-  ['es', toOverlayMap(esOverlay as HarpaOverlay)],
-  ['fr', toOverlayMap(frOverlay as HarpaOverlay)],
-  ['de', toOverlayMap(deOverlay as HarpaOverlay)],
-  ['it', toOverlayMap(itOverlay as HarpaOverlay)]
+  [DEFAULT_BIBLE_LANGUAGE_ID, new Map()]
 ])
 
 function toOverlayMap(overlay: HarpaOverlay): Map<number, HarpaHymn> {
@@ -141,11 +143,22 @@ export const harpaData = {
       return Promise.reject(new Error(`Unknown Harpa language: ${String(id)}`))
     }
     if (id === activeLanguageId) return Promise.resolve()
-    if (!overlayCache.has(id)) {
+    if (overlayCache.has(id)) {
+      setActiveDataset(id)
+      return Promise.resolve()
+    }
+    const load = overlayLoaders[id]
+    if (!load) {
       return Promise.reject(new Error(`Harpa translation for ${id} is not available`))
     }
-    setActiveDataset(id)
-    return Promise.resolve()
+    return load()
+      .then((mod) => {
+        overlayCache.set(id, toOverlayMap(mod.default))
+        setActiveDataset(id)
+      })
+      .catch((err) => {
+        throw err instanceof Error ? err : new Error(`Failed to load Harpa translation for ${id}`)
+      })
   },
 
   getSource(): string {
@@ -233,3 +246,5 @@ export const harpaData = {
     return results.slice(0, limit)
   }
 }
+
+registerHarpaLanguageLoader((id) => harpaData.loadHarpaLanguage(id))

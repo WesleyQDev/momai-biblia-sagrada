@@ -1,0 +1,53 @@
+/**
+ * Curated list of well-known, complete, uplifting passages (canonical book ids
+ * 1-66, stable across every bundled translation). Shared by the reader's
+ * devotional card and the worker's get_random_verse tool so both draw from the
+ * same pool.
+ */
+export const CURATED_PASSAGES: ReadonlyArray<{ bookId: number; chapter: number; verse: number }> = [
+  { bookId: 43, chapter: 3, verse: 16 },
+  { bookId: 19, chapter: 23, verse: 1 },
+  { bookId: 19, chapter: 23, verse: 4 },
+  { bookId: 19, chapter: 91, verse: 1 },
+  { bookId: 19, chapter: 91, verse: 2 },
+  { bookId: 19, chapter: 119, verse: 105 },
+  { bookId: 19, chapter: 121, verse: 1 },
+  { bookId: 19, chapter: 121, verse: 2 },
+  { bookId: 19, chapter: 46, verse: 1 },
+  { bookId: 19, chapter: 37, verse: 5 },
+  { bookId: 20, chapter: 3, verse: 5 },
+  { bookId: 20, chapter: 3, verse: 6 },
+  { bookId: 20, chapter: 16, verse: 3 },
+  { bookId: 20, chapter: 18, verse: 10 },
+  { bookId: 23, chapter: 40, verse: 31 },
+  { bookId: 23, chapter: 41, verse: 10 },
+  { bookId: 24, chapter: 29, verse: 11 },
+  { bookId: 40, chapter: 6, verse: 33 },
+  { bookId: 40, chapter: 11, verse: 28 },
+  { bookId: 40, chapter: 28, verse: 20 },
+  { bookId: 45, chapter: 8, verse: 28 },
+  { bookId: 45, chapter: 8, verse: 31 },
+  { bookId: 45, chapter: 8, verse: 38 },
+  { bookId: 45, chapter: 12, verse: 2 },
+  { bookId: 46, chapter: 13, verse: 4 },
+  { bookId: 46, chapter: 13, verse: 13 },
+  { bookId: 47, chapter: 5, verse: 17 },
+  { bookId: 47, chapter: 12, verse: 9 },
+  { bookId: 48, chapter: 2, verse: 20 },
+  { bookId: 48, chapter: 5, verse: 22 },
+  { bookId: 49, chapter: 2, verse: 8 },
+  { bookId: 50, chapter: 4, verse: 6 },
+  { bookId: 50, chapter: 4, verse: 13 },
+  { bookId: 51, chapter: 3, verse: 14 },
+  { bookId: 51, chapter: 3, verse: 23 },
+  { bookId: 52, chapter: 5, verse: 16 },
+  { bookId: 52, chapter: 5, verse: 17 },
+  { bookId: 52, chapter: 5, verse: 18 },
+  { bookId: 55, chapter: 1, verse: 7 },
+  { bookId: 58, chapter: 11, verse: 1 },
+  { bookId: 58, chapter: 12, verse: 2 },
+  { bookId: 59, chapter: 1, verse: 5 },
+  { bookId: 60, chapter: 5, verse: 7 },
+  { bookId: 62, chapter: 4, verse: 19 },
+  { bookId: 66, chapter: 21, verse: 4 }
+]

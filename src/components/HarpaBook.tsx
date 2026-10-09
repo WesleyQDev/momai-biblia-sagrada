@@ -10,7 +10,6 @@ import ContextMenu from './ContextMenu'
 import { ShareIcon } from './icons/ShareIcon'
 import { shareHymn } from '../services/share-verse'
 import { BookStage, BOOK_PAPER, type BookPageRenderArgs } from './book/BookStage'
-import { useBookPageCapacity } from './book/useBookPageCapacity'
 import { LanguageMenu } from './LanguageMenu'
 import type { HarpaHymn } from '../types/harpa'
 
@@ -49,10 +48,9 @@ export const HarpaBook: React.FC<HarpaBookProps> = ({
   const handleZoomChange = useCallback((updater: (prev: number) => number) => {
     setZoomScale((prev) => updater(prev))
   }, [])
-  const charsPerPage = useBookPageCapacity()
 
   const pages = useMemo(() => {
-    const raw = paginateHymns(harpaData.getAllHymns(), charsPerPage)
+    const raw = paginateHymns(harpaData.getAllHymns())
     if (raw.length === 0) return raw
     // Pad with a blank sheet so the doubled spread always closes perfectly
     if (raw.length % 2 !== 0) {
@@ -65,7 +63,7 @@ export const HarpaBook: React.FC<HarpaBookProps> = ({
       })
     }
     return raw
-  }, [charsPerPage, datasetVersion])
+  }, [datasetVersion])
 
   const totalSpreads = Math.ceil(pages.length / 2)
   const [currentSpread, setCurrentSpread] = useState(0)
@@ -420,6 +418,11 @@ const RenderHarpaPage: React.FC<{
                     )}
                     <span>{block.title}</span>
                   </div>
+                  {!harpaData.isHymnTranslated(block.hymnNumber) && (
+                    <div className="text-[9px] font-sans uppercase tracking-wider opacity-60 mt-0.5">
+                      {t('harpa.original_badge')}
+                    </div>
+                  )}
                   <div className="w-10 h-[1px] mx-auto mt-1.5" style={{ background: BOOK_PAPER.rule }} />
                 </div>
               )

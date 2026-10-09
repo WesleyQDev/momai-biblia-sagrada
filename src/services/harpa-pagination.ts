@@ -20,9 +20,11 @@ export interface HarpaPage {
  */
 export function paginateHymns(
   hymns: HarpaHymn[],
-  charsPerPage: number,
+  charsPerPage?: number,
   firstPageNumber = 1
 ): HarpaPage[] {
+  // One hymn per page by construction; the capacity hint is accepted for
+  // backward compatibility but not needed.
   void charsPerPage
   return hymns.map((hymn, index) => {
     const blocks: HarpaPageBlock[] = [

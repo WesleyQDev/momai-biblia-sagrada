@@ -1,9 +1,21 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef, type JSX } from 'react'
-import { useBibleI18n } from '../services/i18n'
+import { useBibleI18n, getCurrentLocale, getTranslation } from '../services/i18n'
 import { bibleStorage } from '../services/storage'
 import { bibleData } from '../services/bible-data'
+import { useBibleLanguage } from '../services/useBibleLanguage'
 import type { BibleDailyTracker } from '../types/reading'
 import type { BibleVerse } from '../types/bible'
+
+/** Localized string for the widget metadata (context menu / customizer). */
+function wt(key: string, fallback: string): string {
+  const translated = getTranslation(getCurrentLocale(), key)
+  return translated === key ? fallback : translated
+}
+
+function wtCount(key: string, count: number, fallback: string): string {
+  const translated = getTranslation(getCurrentLocale(), key, { count })
+  return translated === key ? fallback : translated
+}
 
 const FlameIcon = ({ className = 'w-3 h-3' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -122,6 +134,9 @@ export default function BibleTrackerWidget({
   config
 }: TrackerWidgetProps): JSX.Element {
   const { t, getBookName } = useBibleI18n()
+  // Follows the reader's translation so the widget never shows Almeida while
+  // the Bible tab is on KJV/Segond/etc.
+  const { datasetVersion } = useBibleLanguage()
   const [tracker, setTracker] = useState<BibleDailyTracker>(() => bibleStorage.getDailyTracker())
   const [showInfo, setShowInfo] = useState(false)
   const [isBookListOpen, setIsBookListOpen] = useState(false)
@@ -175,14 +190,14 @@ export default function BibleTrackerWidget({
         widgetId?: string
       }>
       const action = customEv.detail?.actionId
-      const matchInstance = !customEv.detail?.instanceId || customEv.detail.instanceId === instanceId
-      const matchWidget =
-        !customEv.detail?.widgetId ||
-        customEv.detail.widgetId === widgetId ||
-        customEv.detail.widgetId === 'tracker' ||
-        customEv.detail.widgetId === 'momai-biblia-tracker-widget'
+      const detailInstance = customEv.detail?.instanceId
+      const detailWidget = customEv.detail?.widgetId
+      // Host events always carry the instance; legacy events may not. An action
+      // must only run in the widget it was opened on.
+      const matchInstance = detailInstance ? detailInstance === instanceId : true
+      const matchWidget = detailWidget ? detailWidget === widgetId : true
 
-      if (matchInstance || matchWidget) {
+      if (matchInstance && matchWidget) {
         if (action === 'open_reading') {
           openChapterInMomAI(tracker.currentBookId, tracker.currentChapter)
         } else if (action === 'advance_chapter') {
@@ -211,7 +226,7 @@ export default function BibleTrackerWidget({
 
   const currentBook = useMemo(() => {
     return bibleData.getBookById(tracker.currentBookId) || bibleData.getBookById(1)!
-  }, [tracker.currentBookId])
+  }, [tracker.currentBookId, datasetVersion])
 
   const currentBookLocalizedName = useMemo(() => {
     return getBookName(tracker.currentBookId, currentBook.name)
@@ -219,7 +234,7 @@ export default function BibleTrackerWidget({
 
   const readingVerses: BibleVerse[] = useMemo(() => {
     return bibleData.getChapterVerses(tracker.currentBookId, tracker.currentChapter)
-  }, [tracker.currentBookId, tracker.currentChapter])
+  }, [tracker.currentBookId, tracker.currentChapter, datasetVersion])
 
   const canPrev = useMemo(() => {
     return bibleData.getPrevChapter(tracker.currentBookId, tracker.currentChapter) !== null
@@ -266,8 +281,8 @@ export default function BibleTrackerWidget({
     setShowResetConfirmModal(false)
   }, [])
 
-  const oldTestamentBooks = useMemo(() => bibleData.getOldTestamentBooks(), [])
-  const newTestamentBooks = useMemo(() => bibleData.getNewTestamentBooks(), [])
+  const oldTestamentBooks = useMemo(() => bibleData.getOldTestamentBooks(), [datasetVersion])
+  const newTestamentBooks = useMemo(() => bibleData.getNewTestamentBooks(), [datasetVersion])
 
   const handleSelectBook = useCallback((bookId: number) => {
     const updated: BibleDailyTracker = {
@@ -870,20 +885,20 @@ export default function BibleTrackerWidget({
   )
 }
 
-BibleTrackerWidget.contextMenu = [
+BibleTrackerWidget.contextMenu = () => [
   {
     id: 'open_reading',
-    label: 'Abrir no Aplicativo MomAI',
+    label: wt('widget.tracker.context.open', 'Abrir no Aplicativo MomAI'),
     action: 'open_reading'
   },
   {
     id: 'advance_chapter',
-    label: 'Marcar como Lido',
+    label: wt('widget.tracker.context.advance', 'Marcar como Lido'),
     action: 'advance_chapter'
   },
   {
     id: 'reset_all',
-    label: 'Reiniciar Toda a Leitura Bíblica',
+    label: wt('widget.tracker.context.reset', 'Reiniciar Toda a Leitura Bíblica'),
     action: 'reset_all'
   }
 ]
@@ -891,20 +906,17 @@ BibleTrackerWidget.contextMenu = [
 BibleTrackerWidget.customization = {
   isCustomized: (config?: Record<string, unknown>) =>
     Boolean(config && config.dailyGoal !== undefined && config.dailyGoal !== 3),
-  title: 'Personalizar Leitura Bíblica',
+  title: () => wt('widget.tracker.custom.title', 'Personalizar Leitura Bíblica'),
   defaults: { dailyGoal: 3 },
-  options: [
+  options: () => [
     {
       key: 'dailyGoal',
       kind: 'select',
-      label: 'Meta Diária de Capítulos',
-      options: [
-        { value: '1', label: '1 capítulo por dia' },
-        { value: '2', label: '2 capítulos por dia' },
-        { value: '3', label: '3 capítulos por dia' },
-        { value: '4', label: '4 capítulos por dia' },
-        { value: '5', label: '5 capítulos por dia' }
-      ]
+      label: wt('widget.tracker.custom.goal_label', 'Meta Diária de Capítulos'),
+      options: [1, 2, 3, 4, 5].map((count) => ({
+        value: String(count),
+        label: wtCount('widget.tracker.custom.goal_option', count, `${count} capítulos por dia`)
+      }))
     }
   ]
 }

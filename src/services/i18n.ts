@@ -8,7 +8,7 @@ import it from '../../locales/it.json'
 import { isBibleLanguageId } from './bible-languages'
 import { bibleStorage } from './storage'
 import { bibleData } from './bible-data'
-import { harpaData } from './harpa-data'
+import { loadHarpaLanguageDeferred } from './harpa-language'
 
 export const dictionaries = {
   'pt-BR': ptBR,
@@ -67,9 +67,7 @@ export function applyHostLocale(rawLocale: unknown): SupportedLocale {
         bibleStorage.setBibleLanguageId(next)
         void bibleData.loadBibleLanguage(next)
       }
-      if (next !== harpaData.getActiveLanguageId()) {
-        void harpaData.loadHarpaLanguage(next)
-      }
+      void loadHarpaLanguageDeferred(next).catch(() => {})
     }
   } catch {}
   return next

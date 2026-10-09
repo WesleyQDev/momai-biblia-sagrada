@@ -10,7 +10,9 @@ import { bibleSearch } from '../services/search'
 import { randomVerseService } from '../services/random-verse'
 import { getBibleLanguage } from '../services/bible-languages'
 import { buildVerseShareText, requestWhatsAppShare } from '../services/share-verse'
+import { reportDailyVerseShown } from '../services/bible-events'
 import { harpaData } from '../services/harpa-data'
+import { OverlayPortal } from './OverlayPortal'
 import { useBibleI18n } from '../services/i18n'
 import { useBibleLanguage } from '../services/useBibleLanguage'
 import type { BibleVerse, SearchResult, SearchScope } from '../types/bible'
@@ -89,6 +91,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
     setRandomVerse(randomVerseService.getRandomVerse())
   }, [languageId])
 
+  // Let automations know the devotional verse was drawn in the reader
+  useEffect(() => {
+    reportDailyVerseShown(randomVerse)
+  }, [randomVerse])
+
   // Close search modal when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -153,8 +160,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Modal / Popup de Busca Rápida ao clicar na Lupa */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div
+        <OverlayPortal>
+          <div className="absolute inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div
             ref={searchModalRef}
             className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-slide-in-up"
           >
@@ -312,7 +320,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
             )}
           </div>
-        </div>
+          </div>
+        </OverlayPortal>
       )}
 
       {/* 1. Header: Título Centralizado */}

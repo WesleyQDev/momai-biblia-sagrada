@@ -7,6 +7,7 @@
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -34,5 +35,5 @@
       "momai:sdk": ["src/types/momai-sdk.d.ts"]
     }
   },
-  "include": ["src/**/*", "runtime-shim.d.ts"]
+  "include": ["src/**/*", "lib/**/*", "runtime-shim.d.ts"]
 }

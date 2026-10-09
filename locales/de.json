@@ -42,7 +42,17 @@
       "confirm_desc": "Möchten Sie {book} {chapter} als gelesen markieren?",
       "confirm_button": "Bestätigen",
       "cancel_button": "Abbrechen",
-      "close": "Schließen"
+      "close": "Schließen",
+      "context": {
+        "open": "In der MomAI-App öffnen",
+        "advance": "Als gelesen markieren",
+        "reset": "Ganzes Bibellesen neu starten"
+      },
+      "custom": {
+        "title": "Bibellesen anpassen",
+        "goal_label": "Tägliches Kapitelziel",
+        "goal_option": "{count} Kapitel pro Tag"
+      }
     }
   },
   "home": {
@@ -91,7 +101,9 @@
     "click_flip_prev": "Klicken, um zurückzublättern",
     "click_flip_end": "Ende der Christlichen Harfe",
     "click_flip_start": "Anfang der Christlichen Harfe",
-    "share": "Teilen"
+    "share": "Teilen",
+    "translated_badge": "Übersetzt",
+    "original_badge": "Portugiesisches Original"
   },
   "card": {
     "reroll": "Anderen Vers ziehen",

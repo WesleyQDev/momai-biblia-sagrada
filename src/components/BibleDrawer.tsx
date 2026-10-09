@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { bibleData } from '../services/bible-data'
 import { useBibleI18n } from '../services/i18n'
+import { OverlayPortal } from './OverlayPortal'
 import type { BibleBookInfo, Testament } from '../types/bible'
 
 interface BibleDrawerProps {
@@ -60,22 +61,20 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
   }
 
   return (
-    <div
-      style={{ top: '48px', height: 'calc(100vh - 48px)' }}
-      className="fixed inset-x-0 bottom-0 z-[9999] flex justify-end pointer-events-auto"
-    >
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
-      />
+    <OverlayPortal legacyTopPx={48}>
+      <div className="absolute inset-0 z-[9999] flex justify-end pointer-events-auto">
+        {/* Backdrop */}
+        <div
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
+        />
 
-      {/* Drawer Container (Abaixo da titlebar nativa da MomAI) */}
-      <aside
-        aria-label="Índice dos Livros"
-        style={{ height: '100%' }}
-        className="relative z-10 w-full max-w-sm bg-card border-l border-border shadow-2xl flex flex-col animate-slide-in-up"
-      >
+        {/* Drawer Container (dentro da área da extensão, abaixo da titlebar) */}
+        <aside
+          aria-label={t('drawer.title')}
+          style={{ height: '100%' }}
+          className="relative z-10 w-full max-w-sm bg-card border-l border-border shadow-2xl flex flex-col animate-slide-in-up"
+        >
         {/* Header Superior Limpo */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/70 bg-card shrink-0">
           <h2 className="text-base font-serif font-bold text-[#1c1917]">
@@ -186,6 +185,7 @@ export const BibleDrawer: React.FC<BibleDrawerProps> = ({
           </div>
         )}
       </aside>
-    </div>
+      </div>
+    </OverlayPortal>
   )
 }

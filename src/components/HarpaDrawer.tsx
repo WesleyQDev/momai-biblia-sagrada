@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { harpaData } from '../services/harpa-data'
 import { useBibleI18n } from '../services/i18n'
 import { useHarpaLanguage } from '../services/useHarpaLanguage'
+import { OverlayPortal } from './OverlayPortal'
 import { SearchGlassIcon } from './icons/SearchGlassIcon'
 import type { HarpaHymn } from '../types/harpa'
 
@@ -55,21 +56,19 @@ export const HarpaDrawer: React.FC<HarpaDrawerProps> = ({
   if (!isOpen) return null
 
   return (
-    <div
-      style={{ top: '48px', height: 'calc(100vh - 48px)' }}
-      className="fixed inset-x-0 bottom-0 z-[9999] flex justify-end pointer-events-auto"
-    >
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
-      />
+    <OverlayPortal legacyTopPx={48}>
+      <div className="absolute inset-0 z-[9999] flex justify-end pointer-events-auto">
+        {/* Backdrop */}
+        <div
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
+        />
 
-      <aside
-        aria-label={t('harpa.index_title')}
-        style={{ height: '100%' }}
-        className="relative z-10 w-full max-w-sm bg-card border-l border-border shadow-2xl flex flex-col animate-slide-in-up"
-      >
+        <aside
+          aria-label={t('harpa.index_title')}
+          style={{ height: '100%' }}
+          className="relative z-10 w-full max-w-sm bg-card border-l border-border shadow-2xl flex flex-col animate-slide-in-up"
+        >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/70 bg-card shrink-0">
           <div className="flex flex-col">
             <h2 className="text-base font-serif font-bold text-text">{t('harpa.index_title')}</h2>
@@ -170,6 +169,7 @@ export const HarpaDrawer: React.FC<HarpaDrawerProps> = ({
           <p className="text-[10px] leading-relaxed text-text-muted">{t('harpa.original_note')}</p>
         </div>
       </aside>
-    </div>
+      </div>
+    </OverlayPortal>
   )
 }

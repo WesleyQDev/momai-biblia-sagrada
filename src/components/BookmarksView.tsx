@@ -30,7 +30,9 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; bookmark: BibleBookmark } | null>(null)
 
   useEffect(() => {
-    setBookmarks(bibleStorage.getBookmarks())
+    const refresh = () => setBookmarks(bibleStorage.getBookmarks())
+    refresh()
+    return bibleStorage.onHydrated(refresh)
   }, [])
 
   const handleCopy = (b: BibleBookmark) => {

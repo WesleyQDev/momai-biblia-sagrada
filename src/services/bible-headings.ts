@@ -15,6 +15,37 @@ const headingDatasets: Record<BibleLanguageId, Record<string, string>> = {
   'it': itHeadings as Record<string, string>
 }
 
+// `${bookId}-${chapter}` -> verse -> heading. Built once per language so the
+// full-Bible pagination no longer scans every heading entry per chapter.
+type ChapterHeadings = Map<string, Map<number, string>>
+const indexCache = new Map<BibleLanguageId, ChapterHeadings>()
+
+function buildIndex(dataset: Record<string, string>): ChapterHeadings {
+  const index: ChapterHeadings = new Map()
+  for (const [key, text] of Object.entries(dataset)) {
+    const separator = key.lastIndexOf('-')
+    if (separator <= 0) continue
+    const chapterKey = key.slice(0, separator)
+    const verse = parseInt(key.slice(separator + 1), 10)
+    if (isNaN(verse)) continue
+    let chapterMap = index.get(chapterKey)
+    if (!chapterMap) {
+      chapterMap = new Map()
+      index.set(chapterKey, chapterMap)
+    }
+    chapterMap.set(verse, text)
+  }
+  return index
+}
+
+function getIndex(languageId: BibleLanguageId): ChapterHeadings {
+  const cached = indexCache.get(languageId)
+  if (cached) return cached
+  const index = buildIndex(headingDatasets[languageId] || headingDatasets['pt-BR'])
+  indexCache.set(languageId, index)
+  return index
+}
+
 export const bibleHeadings = {
   getHeading(
     languageId: BibleLanguageId,
@@ -22,9 +53,11 @@ export const bibleHeadings = {
     chapter: number,
     verse: number
   ): string | undefined {
-    const key = `${bookId}-${chapter}-${verse}`
-    const currentDataset = headingDatasets[languageId] || headingDatasets['pt-BR']
-    return currentDataset[key] || headingDatasets['pt-BR'][key]
+    const key = `${bookId}-${chapter}`
+    return (
+      getIndex(languageId).get(key)?.get(verse) ??
+      getIndex('pt-BR').get(key)?.get(verse)
+    )
   },
 
   getChapterHeadings(
@@ -32,31 +65,17 @@ export const bibleHeadings = {
     bookId: number,
     chapter: number
   ): Map<number, string> {
-    const map = new Map<number, string>()
-    const prefix = `${bookId}-${chapter}-`
-    const currentDataset = headingDatasets[languageId] || headingDatasets['pt-BR']
-    const fallbackDataset = headingDatasets['pt-BR']
-
-    for (const [key, text] of Object.entries(currentDataset)) {
-      if (key.startsWith(prefix)) {
-        const verse = parseInt(key.slice(prefix.length), 10)
-        if (!isNaN(verse)) {
-          map.set(verse, text)
+    const key = `${bookId}-${chapter}`
+    const current = getIndex(languageId).get(key)
+    const result = new Map(current ?? [])
+    if (languageId !== 'pt-BR') {
+      const fallback = getIndex('pt-BR').get(key)
+      if (fallback) {
+        for (const [verse, text] of fallback) {
+          if (!result.has(verse)) result.set(verse, text)
         }
       }
     }
-
-    if (currentDataset !== fallbackDataset) {
-      for (const [key, text] of Object.entries(fallbackDataset)) {
-        if (key.startsWith(prefix)) {
-          const verse = parseInt(key.slice(prefix.length), 10)
-          if (!isNaN(verse) && !map.has(verse)) {
-            map.set(verse, text)
-          }
-        }
-      }
-    }
-
-    return map
+    return result
   }
 }

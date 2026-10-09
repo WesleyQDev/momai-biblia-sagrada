@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { useExtensionVisibility } from 'momai:sdk'
 import { HomeView } from './components/HomeView'
 import { RealisticBook } from './components/RealisticBook'
 import { BookmarksView } from './components/BookmarksView'
@@ -21,6 +22,7 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
   isActive = true,
   locale: propLocale
 }) => {
+  const isPageActive = useExtensionVisibility(isActive, 'momai-biblia-sagrada')
   const { t, getBookName } = useBibleI18n(propLocale)
   // Re-renders reading state (book names, verses) on Bible language switches
   const { languageId } = useBibleLanguage()
@@ -51,6 +53,16 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
     () => new Set(bibleStorage.getHymnFavorites())
   )
 
+  // Latest book/chapter for the hydration listener without re-subscribing
+  const currentBookIdRef = useRef(currentBookId)
+  const currentChapterRef = useRef(currentChapter)
+  useEffect(() => {
+    currentBookIdRef.current = currentBookId
+  }, [currentBookId])
+  useEffect(() => {
+    currentChapterRef.current = currentChapter
+  }, [currentChapter])
+
   // Sync bookmarks for active book and chapter
   const refreshBookmarksForChapter = useCallback((bId: number, ch: number) => {
     const bms = bibleStorage.getBookmarks()
@@ -68,6 +80,20 @@ export const BiblePage: React.FC<{ isActive?: boolean; locale?: string }> = ({
     const latest = bibleStorage.getLastReading()
     setLastReading(latest)
   }, [])
+
+  // Keep the local view in sync with bookmarks/progress stored by the worker
+  // (the same data the AI tools use).
+  useEffect(() => {
+    const stopSync = bibleStorage.initDataSync()
+    const unsubscribe = bibleStorage.onHydrated(() => {
+      refreshLastReading()
+      refreshBookmarksForChapter(currentBookIdRef.current, currentChapterRef.current)
+    })
+    return () => {
+      unsubscribe()
+      stopSync()
+    }
+  }, [refreshBookmarksForChapter, refreshLastReading])
 
   // Check pending navigation from widgets / external triggers
   useEffect(() => {

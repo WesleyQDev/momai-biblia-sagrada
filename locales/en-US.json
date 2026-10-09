@@ -42,7 +42,17 @@
       "confirm_desc": "Do you want to mark {book} {chapter} as read?",
       "confirm_button": "Confirm",
       "cancel_button": "Cancel",
-      "close": "Close"
+      "close": "Close",
+      "context": {
+        "open": "Open in the MomAI App",
+        "advance": "Mark as Read",
+        "reset": "Restart All Bible Reading"
+      },
+      "custom": {
+        "title": "Customize Bible Reading",
+        "goal_label": "Daily Chapter Goal",
+        "goal_option": "{count} chapters per day"
+      }
     }
   },
   "home": {
@@ -91,7 +101,9 @@
     "click_flip_prev": "Click to go back a page",
     "click_flip_end": "End of the Christian Harp",
     "click_flip_start": "Beginning of the Christian Harp",
-    "share": "Share"
+    "share": "Share",
+    "translated_badge": "Translated",
+    "original_badge": "Portuguese original"
   },
   "card": {
     "reroll": "Draw another verse",

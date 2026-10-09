@@ -42,7 +42,17 @@
       "confirm_desc": "Voulez-vous marquer {book} {chapter} comme lu ?",
       "confirm_button": "Confirmer",
       "cancel_button": "Annuler",
-      "close": "Fermer"
+      "close": "Fermer",
+      "context": {
+        "open": "Ouvrir dans l’application MomAI",
+        "advance": "Marquer comme lu",
+        "reset": "Redémarrer toute la lecture biblique"
+      },
+      "custom": {
+        "title": "Personnaliser la lecture biblique",
+        "goal_label": "Objectif quotidien de chapitres",
+        "goal_option": "{count} chapitres par jour"
+      }
     }
   },
   "home": {
@@ -91,7 +101,9 @@
     "click_flip_prev": "Cliquez pour revenir en arrière",
     "click_flip_end": "Fin de la Harpe Chrétienne",
     "click_flip_start": "Début de la Harpe Chrétienne",
-    "share": "Partager"
+    "share": "Partager",
+    "translated_badge": "Traduit",
+    "original_badge": "Original en portugais"
   },
   "card": {
     "reroll": "Tirer un autre verset",

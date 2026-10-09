@@ -42,7 +42,17 @@
       "confirm_desc": "Deseja marcar {book} {chapter} como lido?",
       "confirm_button": "Confirmar",
       "cancel_button": "Cancelar",
-      "close": "Fechar"
+      "close": "Fechar",
+      "context": {
+        "open": "Abrir no Aplicativo MomAI",
+        "advance": "Marcar como Lido",
+        "reset": "Reiniciar Toda a Leitura Bíblica"
+      },
+      "custom": {
+        "title": "Personalizar Leitura Bíblica",
+        "goal_label": "Meta Diária de Capítulos",
+        "goal_option": "{count} capítulos por dia"
+      }
     }
   },
   "home": {
@@ -91,7 +101,9 @@
     "click_flip_prev": "Clique para voltar a página",
     "click_flip_end": "Fim da Harpa Cristã",
     "click_flip_start": "Início da Harpa Cristã",
-    "share": "Compartilhar"
+    "share": "Compartilhar",
+    "translated_badge": "Traduzido",
+    "original_badge": "Original em português"
   },
   "card": {
     "reroll": "Sortear outro versículo",

@@ -133,10 +133,31 @@ export const RealisticBook: React.FC<RealisticBookProps> = ({
   // used to hide its last lines (chapters appeared to vanish).
   const [paperBox, setPaperBox] = useState<{ width: number; height: number } | null>(null)
   const charsPerPage = useBookPageCapacity(paperBox)
+  // The first measurement applies immediately; resizes are debounced so the
+  // whole-Bible pagination never runs on every frame of a window drag.
+  const lastPaperBoxRef = useRef<{ width: number; height: number } | null>(null)
+  const paperLayoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const handlePaperLayout = useCallback((box: { width: number; height: number }) => {
-    setPaperBox((prev) =>
-      prev && prev.width === box.width && prev.height === box.height ? prev : box
-    )
+    const last = lastPaperBoxRef.current
+    if (last && last.width === box.width && last.height === box.height) return
+    if (!last) {
+      lastPaperBoxRef.current = box
+      setPaperBox(box)
+      return
+    }
+    if (paperLayoutTimerRef.current) clearTimeout(paperLayoutTimerRef.current)
+    paperLayoutTimerRef.current = setTimeout(() => {
+      paperLayoutTimerRef.current = null
+      lastPaperBoxRef.current = box
+      setPaperBox((prev) =>
+        prev && prev.width === box.width && prev.height === box.height ? prev : box
+      )
+    }, 140)
+  }, [])
+  useEffect(() => {
+    return () => {
+      if (paperLayoutTimerRef.current) clearTimeout(paperLayoutTimerRef.current)
+    }
   }, [])
 
   // FLUXO CONTÍNUO DE TODA A BÍBLIA: todos os 66 livros são paginados juntos em uma única lista contínua (~12ms)
