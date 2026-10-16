@@ -1,6 +1,6 @@
 ---
-name: momai-biblia-sagrada
-description: Leitura, estudo e pesquisa bíblica na tradução Almeida (66 livros do cânon protestante). Use quando o usuario pedir versículo, passagem, capítulo, livro da Bíblia, estudo bíblico, palavra de Deus ou reflexão diária.
+name: Bíblia Sagrada
+description: Consulta versículos, capítulos inteiros, passagens temáticas e dados de concordância dos livros das Sagradas Escrituras (tradução Almeida). Use quando o usuário solicitar a leitura de um trecho bíblico, buscar versículos sobre determinado tema, pedir reflexões espirituais baseadas nas escrituras ou consultar livros da Bíblia.
 ---
 
 # Bíblia Sagrada — Assistente MomAI
