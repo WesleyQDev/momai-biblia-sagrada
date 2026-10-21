@@ -1,13 +1,12 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
+import sdk from 'momai:sdk'
 import {
   BIBLE_SHARE_SOURCE,
-  WHATSAPP_PAGE_PATH,
-  WHATSAPP_SHARE_EVENT,
-  WHATSAPP_SHARE_STORAGE_KEY,
   buildHymnShareText,
   buildVerseShareText,
   copyTextToClipboard,
+  requestShare,
   requestWhatsAppShare,
   shareHymn,
   shareVerse
@@ -17,6 +16,7 @@ import type { HarpaHymn } from '../src/types/harpa'
 
 beforeEach(() => {
   sessionStorage.clear()
+  vi.clearAllMocks()
 })
 
 afterEach(() => {
@@ -66,92 +66,67 @@ describe('buildHymnShareText', () => {
   })
 })
 
-describe('requestWhatsAppShare', () => {
-  it('copies the verse, stores the pending share and opens the WhatsApp tab', async () => {
+describe('requestShare', () => {
+  it('calls sdk.share.open with the provided payload', async () => {
+    const payload = {
+      title: 'John 3:16',
+      text: '"For God so loved the world." (John 3:16)'
+    }
+
+    const res = await requestShare(payload)
+    expect(res).toBe(true)
+    expect(sdk.share.open).toHaveBeenCalledWith(payload)
+  })
+
+  it('accepts a string payload and wraps it as text', async () => {
+    const text = 'Simple share text'
+    await requestShare(text)
+    expect(sdk.share.open).toHaveBeenCalledWith({ text })
+  })
+
+  it('falls back to clipboard if sdk.share.open rejects or fails', async () => {
+    vi.mocked(sdk.share.open).mockRejectedValueOnce(new Error('SDK error'))
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText },
       configurable: true
     })
 
-    const seen: Array<{ type: string; detail: unknown }> = []
-    const listener = (e: Event) => {
-      seen.push({ type: e.type, detail: (e as CustomEvent).detail })
-    }
-    window.addEventListener(WHATSAPP_SHARE_EVENT, listener)
-    window.addEventListener('momai_navigate', listener)
-    window.addEventListener('momai_window_action', listener)
-
-    const text = buildVerseShareText(mockVerse, 'John', 'KJV')
-    requestWhatsAppShare(text)
-
-    await vi.waitFor(() => {
-      expect(writeText).toHaveBeenCalledWith(text)
-    })
-
-    const stored = JSON.parse(sessionStorage.getItem(WHATSAPP_SHARE_STORAGE_KEY)!)
-    expect(stored).toMatchObject({ text, source: BIBLE_SHARE_SOURCE })
-    expect(typeof stored.at).toBe('number')
-
-    expect(seen).toContainEqual({
-      type: WHATSAPP_SHARE_EVENT,
-      detail: stored
-    })
-    expect(seen).toContainEqual({
-      type: 'momai_navigate',
-      detail: { path: WHATSAPP_PAGE_PATH }
-    })
-    expect(seen).toContainEqual({
-      type: 'momai_window_action',
-      detail: { action: 'restore' }
-    })
-
-    window.removeEventListener(WHATSAPP_SHARE_EVENT, listener)
-    window.removeEventListener('momai_navigate', listener)
-    window.removeEventListener('momai_window_action', listener)
+    const res = await requestShare('Fallback text')
+    expect(res).toBe(true)
+    expect(writeText).toHaveBeenCalledWith('Fallback text')
   })
+})
 
-  it('still navigates when the clipboard write fails', () => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
-      configurable: true
-    })
-    const navigateSpy = vi.fn()
-    window.addEventListener('momai_navigate', navigateSpy)
-
-    expect(() => requestWhatsAppShare('verse')).not.toThrow()
-    expect(navigateSpy).toHaveBeenCalledTimes(1)
-    expect(sessionStorage.getItem(WHATSAPP_SHARE_STORAGE_KEY)).toContain('verse')
-
-    window.removeEventListener('momai_navigate', navigateSpy)
+describe('requestWhatsAppShare (legacy alias)', () => {
+  it('delegates to requestShare for backwards compatibility', async () => {
+    const text = 'Shared text'
+    await requestWhatsAppShare(text)
+    expect(sdk.share.open).toHaveBeenCalledWith({ text })
   })
 })
 
 describe('shareVerse', () => {
-  it('shares the formatted verse on the MomAI WhatsApp tab', () => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-      configurable: true
+  it('formats and opens SDK share with book reference title and verse text', async () => {
+    await shareVerse(mockVerse, 'John', 'KJV')
+
+    expect(sdk.share.open).toHaveBeenCalledWith({
+      title: 'John 3:16 (KJV)',
+      text: '"For God so loved the world." (John 3:16 - KJV)'
     })
-
-    shareVerse(mockVerse, 'John', 'KJV')
-
-    const stored = JSON.parse(sessionStorage.getItem(WHATSAPP_SHARE_STORAGE_KEY)!)
-    expect(stored.text).toBe('"For God so loved the world." (John 3:16 - KJV)')
   })
 })
 
 describe('shareHymn', () => {
-  it('shares the formatted hymn on the MomAI WhatsApp tab', () => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-      configurable: true
-    })
+  it('formats and opens SDK share with hymn title and stanzas text', async () => {
+    await shareHymn(mockHymn)
 
-    shareHymn(mockHymn)
-
-    const stored = JSON.parse(sessionStorage.getItem(WHATSAPP_SHARE_STORAGE_KEY)!)
-    expect(stored.text).toContain('Hino 1 - Chuvas de Graça')
+    expect(sdk.share.open).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Hino 1 - Chuvas de Graça',
+        text: expect.stringContaining('Chuvas de Graça')
+      })
+    )
   })
 })
 

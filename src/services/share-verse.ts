@@ -1,28 +1,18 @@
 import type { BibleVerse } from '../types/bible'
 import type { HarpaHymn } from '../types/harpa'
+import sdk from 'momai:sdk'
 
-/**
- * Cross-extension share contract with momai-whatsapp. The host stays out of
- * it: biblia stores the verse as a pending share and asks the host (via the
- * same `momai_navigate` event the tracker widget uses) to open the WhatsApp
- * tab. The WhatsApp page consumes the pending share when the user selects a
- * contact and pre-fills the message composer. The clipboard copy remains as
- * a manual-paste fallback.
- */
-export const WHATSAPP_PAGE_PATH = '/extensions/momai-whatsapp'
-export const WHATSAPP_SHARE_STORAGE_KEY = 'momai_whatsapp_pending_share'
-export const WHATSAPP_SHARE_EVENT = 'momai_whatsapp_share'
 export const BIBLE_SHARE_SOURCE = 'momai-biblia-sagrada'
 
-export interface WhatsAppSharePayload {
+export interface ShareContentPayload {
+  title?: string
   text: string
-  source: string
-  at: number
+  url?: string
 }
 
 /**
  * Formats a verse exactly like the reading-view copy action so the text
- * pasted into WhatsApp matches what the user already knows:
+ * shared or copied matches what the user already knows:
  * "text" (Book chapter:verse - Translation).
  */
 export function buildVerseShareText(
@@ -86,50 +76,56 @@ export async function copyTextToClipboard(text: string): Promise<boolean> {
 }
 
 /**
- * Copies the verse (manual-paste fallback), stores it as the pending WhatsApp
- * share and opens the MomAI WhatsApp tab, where selecting a contact pastes
- * the verse into the message input automatically.
+ * Uses MomAI SDK's share modal system to share content across available
+ * providers (e.g. WhatsApp, Email, or clipboard copy). Falls back to
+ * direct clipboard copy if the SDK share module is not available.
  */
-export function requestWhatsAppShare(text: string): void {
-  void copyTextToClipboard(text).catch(() => {})
+export async function requestShare(
+  payload: ShareContentPayload | string
+): Promise<boolean> {
+  const sharePayload: ShareContentPayload =
+    typeof payload === 'string' ? { text: payload } : payload
 
-  const payload: WhatsAppSharePayload = {
-    text,
-    source: BIBLE_SHARE_SOURCE,
-    at: Date.now()
-  }
   try {
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(WHATSAPP_SHARE_STORAGE_KEY, JSON.stringify(payload))
+    const shareApi =
+      (sdk as any)?.share ||
+      (typeof window !== 'undefined' && (window as any).MomAISDK?.share)
+
+    if (shareApi && typeof shareApi.open === 'function') {
+      const res = await shareApi.open(sharePayload)
+      return res?.ok ?? true
     }
-  } catch {
-    // Sharing still works when the WhatsApp tab is already mounted: the
-    // event below carries the same payload.
+  } catch (err) {
+    console.warn('[share-verse] SDK share failed, falling back to clipboard', err)
   }
 
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(WHATSAPP_SHARE_EVENT, { detail: payload }))
-    window.dispatchEvent(
-      new CustomEvent('momai_navigate', { detail: { path: WHATSAPP_PAGE_PATH } })
-    )
-    window.dispatchEvent(
-      new CustomEvent('momai_window_action', { detail: { action: 'restore' } })
-    )
-  }
+  return copyTextToClipboard(sharePayload.text)
+}
+
+/**
+ * @deprecated Use requestShare instead. Kept for backwards compatibility.
+ */
+export function requestWhatsAppShare(text: string): Promise<boolean> {
+  return requestShare(text)
 }
 
 export function shareVerse(
   verse: BibleVerse,
   bookName: string,
   translationShort?: string
-): void {
-  requestWhatsAppShare(buildVerseShareText(verse, bookName, translationShort))
+): Promise<boolean> {
+  const suffix = translationShort ? ` (${translationShort})` : ''
+  const title = `${bookName} ${verse.chapter}:${verse.verse}${suffix}`
+  const text = buildVerseShareText(verse, bookName, translationShort)
+  return requestShare({ title, text })
 }
 
 export function shareHymn(
   hymn: HarpaHymn,
   hymnLabel = 'Hino',
   chorusLabel = 'Coro'
-): void {
-  requestWhatsAppShare(buildHymnShareText(hymn, hymnLabel, chorusLabel))
+): Promise<boolean> {
+  const title = `${hymnLabel} ${hymn.number} - ${hymn.title}`
+  const text = buildHymnShareText(hymn, hymnLabel, chorusLabel)
+  return requestShare({ title, text })
 }

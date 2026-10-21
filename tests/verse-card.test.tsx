@@ -96,7 +96,7 @@ describe('VerseCard text selection vs navigation', () => {
     const buttons = container.querySelectorAll('button')
     expect(buttons).toHaveLength(2)
     const shareButton = container.querySelector(
-      'button[aria-label="Compartilhar versículo no WhatsApp"]'
+      'button[aria-label="Compartilhar versículo"]'
     ) as HTMLButtonElement
     expect(shareButton).not.toBeNull()
   })
@@ -115,7 +115,7 @@ describe('VerseCard text selection vs navigation', () => {
     )
 
     const shareButton = container.querySelector(
-      'button[aria-label="Compartilhar versículo no WhatsApp"]'
+      'button[aria-label="Compartilhar versículo"]'
     ) as HTMLButtonElement
     fireEvent.click(shareButton)
 

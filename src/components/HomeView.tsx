@@ -9,7 +9,7 @@ import { HarpIcon } from './icons/HarpIcon'
 import { bibleSearch } from '../services/search'
 import { randomVerseService } from '../services/random-verse'
 import { getBibleLanguage } from '../services/bible-languages'
-import { buildVerseShareText, requestWhatsAppShare } from '../services/share-verse'
+import { shareVerse } from '../services/share-verse'
 import { reportDailyVerseShown } from '../services/bible-events'
 import { harpaData } from '../services/harpa-data'
 import { OverlayPortal } from './OverlayPortal'
@@ -124,9 +124,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   }
 
   const handleShareVerse = (v: BibleVerse) => {
-    requestWhatsAppShare(
-      buildVerseShareText(v, getBookName(v.bookId, v.bookName), translationShort)
-    )
+    shareVerse(v, getBookName(v.bookId, v.bookName), translationShort)
   }
 
   const handleSelectSearchResult = (result: SearchResult) => {
