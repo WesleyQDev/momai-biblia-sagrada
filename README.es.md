@@ -1,33 +1,37 @@
 # Santa Biblia para MomAI
 
-La Santa Biblia es una extensión dedicada a la lectura, meditación diaria y estudio de las Sagradas Escrituras directamente en MomAI. Creada para edificar su vida cristiana, ofrece una experiencia agradable, práctica y sin distracciones para su devocional diario.
+Lee la Biblia a tu ritmo, marca los versículos que te hablaron y continúa donde lo dejaste. La extensión funciona sin conexión e incluye el Arpa Cristiana completa.
 
-## Una bendición diaria con la Palabra de Dios
+## Qué incluye
 
-La Palabra del Señor es lámpara a nuestros pies y lumbrera a nuestro camino. Con esta extensión integrada en su día a día, podrá alimentar su fe, buscar pasajes bíblicos rápidamente y mantener su lectura siempre al día.
+- Los 66 libros de la Biblia, desde Génesis hasta Apocalipsis.
+- Un versículo del día con un botón para abrir el capítulo completo.
+- Búsqueda por referencia, como "Juan 3:16", "Salmos 23" o "Romanos 8:28", y por palabras o temas.
+- Marcadores y copia de versículos.
+- Historial de lectura para volver al último capítulo.
+- Metas diarias y racha de días en el área de widgets de MomAI.
+- El Arpa Cristiana con los 640 himnos, búsqueda por número, título o fragmento de la letra y favoritos.
+- Conversar con MomAI sobre un pasaje, pedirle que lea un capítulo o te ayude a entender el contexto.
+- Lectura en dos columnas, con paso de página, como en un libro.
+- Funciona sin internet.
 
-### Características Principales
+## Cómo usar
 
-- **Texto Sagrado Completo**: Contiene los 66 libros de la Santa Biblia (39 del Antiguo Testamento y 27 del Nuevo Testamento).
-- **Traducción Fiel y Reconocida**: Texto basado en la traducción de Almeida, de gran estima y fidelidad.
-- **Versículo del Día**: Al abrir la extensión, reciba una reflexión inspiradora con acceso directo a la lectura del capítulo completo.
-- **Búsqueda Rápida**: Localice cualquier versículo o libro escribiendo naturalmente (ej: Juan 3:16, Salmos 23, Romanos 8:28) o por palabras clave.
-- **Lectura Fluida**: Navegue por libros y capítulos fácilmente mediante el índice lateral o las flechas de navegación.
-- **Continuar Lectura**: Guarda automáticamente el último pasaje leído.
-- **Marcadores**: Guarde y copie versículos favoritos fácilmente.
-- **Widget de Metas Diarias**: Sigue tu progreso de lectura secuencial directamente en la pantalla de widgets de MomAI, con lista de verificación diaria, racha de días y apertura instantánea del capítulo en el lector.
-- **Arpa Cristiana completa**: Los 640 himnos del himnario con índice de 1 a 640, búsqueda por número, título o fragmento de la letra, favoritos y la misma lectura en libro realista de la Biblia.
-- **100% Offline**: Funciona completamente sin conexión a internet.
-- **Acompañamiento con MomAI**: Pida a MomAI que lea pasajes o busque temas en sus conversaciones.
+1. Abre MomAI y haz clic en el icono de la Biblia.
+2. En la pantalla inicial, lee el versículo del día o busca un pasaje.
+3. Abre el índice para elegir libro y capítulo.
+4. Haz clic en un versículo para marcarlo o copiarlo.
+5. Para abrir el Arpa Cristiana, usa el botón del centro de la pantalla inicial.
+6. También puedes pedir en el chat: "MomAI, lee el Salmo 91."
+
+## Idiomas y traducciones
+
+La Biblia en portugués usa la traducción de João Ferreira de Almeida, de dominio público. Las otras versiones también son de dominio público: King James Version (inglés), Reina-Valera 1909 (español), Louis Segond 1910 (francés), Lutherbibel 1912 (alemán) y Riveduta 1927 (italiano). El idioma sigue la configuración de MomAI, pero puedes cambiarlo con el botón Idiomas.
 
 ## Arpa Cristiana
 
-La pantalla inicial de la extensión también incluye el **Arpa Cristiana completa** (*Harpa Cristã*): los 640 himnos del himnario, con índice de 1 a 640, búsqueda por número, título o fragmento de la letra, y favoritos.
+El Arpa Cristiana tiene los 640 himnos del himnario. Puedes buscar por número, título o fragmento de la letra, marcar favoritos y continuar en el último himno. Los himnos se abren en el mismo lector con formato de libro que la Biblia, con dos columnas y paso de página. El texto original está en portugués y se mantiene así cuando falta una traducción. Para abrirlo, usa el botón central de la pantalla inicial.
 
-- **La misma experiencia de lectura**: los himnos se abren en el mismo libro realista de la Biblia, con paso de página, dos columnas y navegación por el índice lateral.
-- **Índice completo**: encuentre cualquier himno por el número (ej: 545), por el título (ej: «Porque Él Vive») o por un fragmento del coro.
-- **Favoritos del Arpa**: marque los himnos que más canta y vuelva a ellos cuando quiera.
-- **Continúe en el último himno**: la extensión guarda el himno donde se quedó.
-- **En tu idioma, original en portugués**: título, estrofas y coro siguen el idioma seleccionado (Ajustes, bienvenida o botón Idiomas); el portugués es el original y se usa cuando falta traducción.
+## Privacidad
 
-Para abrirlo, haga clic en el botón central del Arpa Cristiana, entre los cuatro íconos principales de la pantalla inicial.
+La Biblia y el Arpa vienen instaladas con la extensión. La lectura, la búsqueda y los marcadores funcionan sin conexión y quedan guardados en tu computador.

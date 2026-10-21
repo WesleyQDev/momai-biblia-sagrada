@@ -1,46 +1,37 @@
 # Bíblia Sagrada para MomAI
 
-A Bíblia Sagrada é uma extensão dedicada à leitura, meditação diária e estudo das Sagradas Escrituras diretamente no MomAI. Criada para edificar a sua vida cristã, ela oferece uma experiência agradável, prática e sem distrações para o seu devocional diário.
+Leia a Bíblia no seu ritmo, marque os versículos que falaram com você e continue de onde parou. A extensão funciona offline e também traz a Harpa Cristã completa.
 
-## Uma bênção para o seu dia a dia com a Palavra de Deus
+## O que tem dentro
 
-A Palavra do Senhor é lâmpada para os nossos pés e luz para os nossos caminhos. Com esta extensão integrada ao seu dia no computador, você pode alimentar sua fé, pesquisar passagens rapidamente e manter a leitura bíblica sempre em dia.
+- Os 66 livros da Bíblia, do Gênesis ao Apocalipse.
+- Versículo do dia com um botão para abrir o capítulo inteiro.
+- Busca por referência, como "João 3:16", "Salmos 23" ou "Romanos 8:28", e por palavras ou temas.
+- Marcadores e cópia de versículos.
+- Histórico de leitura para voltar ao último capítulo.
+- Metas diárias e sequência de dias na área de widgets do MomAI.
+- Harpa Cristã com os 640 hinos, busca por número, título ou trecho e favoritos.
+- Conversar com a MomAI sobre a passagem, pedir para ler um capítulo ou entender o contexto.
+- Leitura em duas colunas, com virada de página, no mesmo estilo de um livro.
+- Funciona sem internet.
 
-### Principais Recursos
+## Como usar
 
-- **O Texto Sagrado Completo**: Contém os 66 livros da Bíblia Sagrada protestante, sendo 39 livros do Antigo Testamento (de Gênesis a Malaquias) e 27 livros do Novo Testamento (de Mateus a Apocalipse).
-- **Tradução Fiel e Reconhecida**: Texto baseado na consagrada tradução de João Ferreira de Almeida, clara e amplamente utilizada pelas igrejas evangélicas do Brasil.
-- **6 Idiomas com Traduções Evangélicas**: Troque na hora, pelo botão Idiomas ao lado do Índice, entre Português (Almeida), English (King James Version), Español (Reina-Valera 1909), Français (Louis Segond 1910), Deutsch (Lutherbibel 1912) e Italiano (Riveduta 1927). Ao mudar o idioma nas Configurações do MomAI, a Bíblia inteira acompanha automaticamente.
-- **Versículo do Dia e Meditação**: Toda vez que você abre a extensão, recebe uma passagem inspiradora com a citação completa e botão direto para ler o contexto do capítulo.
-- **Busca Rápida de Passagens**: Localize facilmente qualquer versículo ou livro digitando como você fala (por exemplo: João 3:16, Salmos 23 ou Romanos 8:28). Você também pode buscar por palavras e temas que desejar estudar.
-- **Leitura Fluida e Confortável**: Navegue pelos livros e capítulos com facilidade através do índice lateral ou pelas setas de navegação no rodapé e no teclado.
-- **Continue de Onde Parou**: O leitor memoriza automaticamente o último capítulo e versículo em que você esteve, para você nunca se perder no seu plano de leitura.
-- **Marcadores de Versículos**: Destaque e salve seus versículos preferidos, copie facilmente para compartilhar com a família ou nos grupos da igreja.
-- **Widget de Metas Diárias**: Acompanhe seu progresso sequencial de leitura direto na área de widgets do MomAI, com metas diárias em checklist, ofensiva de dias e abertura instantânea do capítulo no leitor.
-- **Harpa Cristã Completa**: Os 640 hinos do hinário com índice de 1 a 640, busca por número, título ou trecho da letra, favoritos e a mesma leitura em livro realista da Bíblia.
-- **Funciona 100% Offline**: Todo o texto bíblico está instalado com a extensão. Você não precisa de conexão com a internet para ler, buscar ou meditar na Palavra.
-- **Companhia de Oração e Estudo com a MomAI**: Durante suas conversas, você pode pedir à assistente para buscar passagens, ler capítulos para você ou auxiliar na compreensão do contexto bíblico.
+1. Abra o MomAI e clique no ícone da Bíblia.
+2. Na tela inicial, leia o versículo do dia ou pesquise uma passagem.
+3. Abra o índice para escolher livro e capítulo.
+4. Clique em um versículo para favoritar ou copiar.
+5. Para abrir a Harpa Cristã, use o botão no centro da tela inicial.
+6. Você também pode pedir no chat: "MomAI, leia o Salmo 91."
 
-## Como Usar
+## Idiomas e traduções
 
-1. Abra o MomAI e clique no ícone da Bíblia Sagrada na barra lateral.
-2. Na tela inicial, leia a mensagem do dia ou use a barra de pesquisa para ir direto ao capítulo desejado.
-3. Para abrir o índice geral dos 66 livros, clique no botão de lista ou índice bíblico no topo.
-4. Clique em qualquer versículo para marcá-lo como favorito ou copiá-lo para a área de transferência.
-5. Você também pode interagir por voz ou texto com a MomAI, pedindo por exemplo: "MomAI, leia o Salmo 91" ou "Mostre o versículo de hoje".
-
-## Tradução e Compromisso
-
-O texto bíblico utilizado nesta extensão segue a clássica tradução de João Ferreira de Almeida, em domínio público, preservando a fidelidade aos manuscritos e o respeito reverente às Sagradas Escrituras. Para os demais idiomas, a extensão inclui as principais traduções evangélicas em domínio público de cada país: King James Version (inglês), Reina-Valera 1909 (espanhol), Louis Segond 1910 (francês), Lutherbibel 1912 (alemão) e Riveduta 1927 (italiano). Que esta ferramenta seja um canal de bênçãos e crescimento espiritual para a sua vida e para a sua família!
+A Bíblia em português usa a tradução de João Ferreira de Almeida, em domínio público. As outras versões também são de domínio público: King James Version (inglês), Reina-Valera 1909 (espanhol), Louis Segond 1910 (francês), Lutherbibel 1912 (alemão) e Riveduta 1927 (italiano). O idioma segue a configuração do MomAI, mas você pode trocar no botão Idiomas.
 
 ## Harpa Cristã
 
-A tela inicial da extensão também traz a **Harpa Cristã completa**: os 640 hinos do hinário, com índice de 1 a 640, busca por número, título ou trecho da letra e favoritos.
+A Harpa Cristã tem os 640 hinos do hinário. Você pode buscar por número, título ou trecho da letra, marcar favoritos e continuar no último hino. Os hinos abrem no mesmo leitor em formato de livro da Bíblia, com duas colunas e virada de página. O texto original está em português e continua assim quando não há tradução. Para abrir, use o botão central da tela inicial.
 
-- **Mesma experiência de leitura**: os hinos abrem no mesmo livro realista da Bíblia, com virada de página, duas colunas e navegação pelo índice lateral.
-- **Índice completo**: localize qualquer hino pelo número (ex: 545), pelo título (ex: "Porque Ele Vive") ou por um trecho do coro.
-- **Favoritos da Harpa**: marque os hinos que você mais canta e volte a eles quando quiser.
-- **Continue no último hino**: a extensão guarda o hino em que você parou.
-- **No seu idioma, original em português**: título, estrofes e coro acompanham o idioma selecionado (Configurações, boas-vindas ou botão Idiomas); o português é o original e é usado quando falta tradução.
+## Privacidade
 
-Para abrir, clique no botão central da Harpa Cristã, entre os quatro ícones principais da tela inicial.
+A Bíblia e a Harpa vêm instaladas com a extensão. A leitura, a busca e os marcadores funcionam sem conexão e ficam salvos no seu computador.

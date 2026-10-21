@@ -1,44 +1,37 @@
 # Sacra Bibbia per MomAI
 
-La Sacra Bibbia è un'estensione dedicata alla lettura, alla meditazione quotidiana e allo studio delle Sacre Scritture direttamente in MomAI. Creata per edificare la tua vita cristiana, offre un'esperienza piacevole, pratica e senza distrazioni per il tuo devozionale quotidiano.
+Leggi la Bibbia con i tuoi tempi, segna i versetti che ti hanno parlato e riprendi da dove ti sei fermato. L'estensione funziona offline e include anche l'Arpa Cristiana completa.
 
-## Una benedizione per la tua quotidianità con la Parola di Dio
+## Cosa contiene
 
-La Parola del Signore è lampada ai nostri piedi e luce sul nostro cammino. Con questa estensione integrata nella tua giornata al computer, puoi nutrire la tua fede, cercare rapidamente i brani e tenere sempre aggiornata la tua lettura biblica.
-
-### Funzionalità principali
-
-- **Il Testo Sacro completo**: Contiene i 66 libri della Sacra Bibbia protestante, di cui 39 libri dell'Antico Testamento (dalla Genesi a Malachia) e 27 libri del Nuovo Testamento (da Matteo all'Apocalisse).
-- **Traduzione fedele e riconosciuta**: Testo basato sulla consacrata traduzione di João Ferreira de Almeida, chiara e ampiamente utilizzata dalle chiese evangeliche del Brasile.
-- **Versetto del giorno e meditazione**: Ogni volta che apri l'estensione, ricevi un brano ispiratore con la citazione completa e un pulsante diretto per leggere il contesto del capitolo.
-- **Ricerca rapida dei brani**: Trova facilmente qualsiasi versetto o libro scrivendo come parli (per esempio: Giovanni 3:16, Salmi 23 o Romani 8:28). Puoi anche cercare per parole e temi che desideri studiare.
-- **Lettura fluida e confortevole**: Sfoglia libri e capitoli con facilità tramite l'indice laterale oppure con le frecce di navigazione nel piè di pagina e sulla tastiera.
-- **Riprendi da dove hai interrotto**: Il lettore memorizza automaticamente l'ultimo capitolo e versetto in cui ti trovavi, così non perderai mai il filo del tuo piano di lettura.
-- **Segnalibri dei versetti**: Evidenzia e salva i tuoi versetti preferiti, copiali facilmente per condividerli con la famiglia o nei gruppi della chiesa.
-- **Arpa Cristiana completa**: I 640 inni del cantico con indice da 1 a 640, ricerca per numero, titolo o estratto del testo, preferiti e la stessa lettura in libro realistico della Bibbia.
-- **Funziona 100% offline**: L'intero testo biblico è installato con l'estensione. Non hai bisogno di una connessione a internet per leggere, cercare o meditare la Parola.
-- **Compagnia di preghiera e studio con MomAI**: Durante le tue conversazioni, puoi chiedere all'assistente di cercare brani, leggere capitoli per te o aiutare a comprendere il contesto biblico.
+- I 66 libri della Bibbia, dalla Genesi all'Apocalisse.
+- Un versetto del giorno con un pulsante per aprire il capitolo intero.
+- Ricerca per riferimento, come "Giovanni 3:16", "Salmi 23" o "Romani 8:28", e per parole o temi.
+- Segnalibri e copia dei versetti.
+- Cronologia di lettura per tornare all'ultimo capitolo.
+- Obiettivi giornalieri e serie di giorni nell'area widget di MomAI.
+- L'Arpa Cristiana con i 640 inni, ricerca per numero, titolo o estratto del testo e preferiti.
+- Parlare con MomAI di un brano, chiedergli di leggere un capitolo o aiutarti a capire il contesto.
+- Lettura a due colonne, con voltata di pagina, come in un libro.
+- Funziona senza internet.
 
 ## Come usare
 
-1. Apri MomAI e fai clic sull'icona della Sacra Bibbia nella barra laterale.
-2. Nella schermata iniziale, leggi il messaggio del giorno oppure usa la barra di ricerca per andare direttamente al capitolo desiderato.
-3. Per aprire l'indice generale dei 66 libri, fai clic sul pulsante di elenco o indice biblico in alto.
-4. Fai clic su qualsiasi versetto per contrassegnarlo come preferito oppure copiarlo negli appunti.
-5. Puoi anche interagire con la voce o con il testo con MomAI, chiedendo per esempio: «MomAI, leggi il Salmo 91» oppure «Mostrami il versetto di oggi».
+1. Apri MomAI e fai clic sull'icona della Bibbia.
+2. Nella schermata iniziale, leggi il versetto del giorno o cerca un brano.
+3. Apri l'indice per scegliere libro e capitolo.
+4. Fai clic su un versetto per metterlo tra i preferiti o copiarlo.
+5. Per aprire l'Arpa Cristiana, usa il pulsante al centro della schermata iniziale.
+6. Puoi anche chiedere nella chat: "MomAI, leggi il Salmo 91."
 
-## Traduzione e impegno
+## Lingue e traduzioni
 
-Il testo biblico utilizzato in questa estensione segue la classica traduzione di João Ferreira de Almeida, di pubblico dominio, preservando la fedeltà ai manoscritti e il rispetto riverente dovuto alle Sacre Scritture. Che questo strumento sia un canale di benedizioni e di crescita spirituale per la tua vita e per la tua famiglia!
+La Bibbia in portoghese usa la traduzione di João Ferreira de Almeida, di pubblico dominio. Anche le altre versioni sono di pubblico dominio: King James Version (inglese), Reina-Valera 1909 (spagnolo), Louis Segond 1910 (francese), Lutherbibel 1912 (tedesco) e Riveduta 1927 (italiano). La lingua segue l'impostazione di MomAI, ma puoi cambiarla con il pulsante Lingue.
 
 ## Arpa Cristiana
 
-La schermata iniziale dell'estensione include anche l'**Arpa Cristiana completa** (*Harpa Cristã*): i 640 inni del cantico, con indice da 1 a 640, ricerca per numero, titolo o estratto del testo, e preferiti.
+L'Arpa Cristiana contiene i 640 inni dell'innario. Puoi cercare per numero, titolo o estratto del testo, segnare i preferiti e riprendere dall'ultimo inno. Gli inni si aprono nello stesso lettore in formato libro della Bibbia, con due colonne e voltata di pagina. Il testo originale è in portoghese e resta così quando manca una traduzione. Per aprirla, usa il pulsante centrale della schermata iniziale.
 
-- **La stessa esperienza di lettura**: gli inni si aprono nello stesso libro realistico della Bibbia, con voltata di pagina, due colonne e navigazione tramite l'indice laterale.
-- **Indice completo**: trova qualsiasi inno dal numero (es. 545), dal titolo (es. «Perché Egli Vive») o da un estratto del coro.
-- **Preferiti dell'Arpa**: contrassegna gli inni che canti di più e torna a trovarli quando vuoi.
-- **Riprendi dall'ultimo inno**: l'estensione ricorda l'inno in cui ti sei fermato.
-- **Originale in portoghese**: gli inni sono sempre presentati nel loro testo originale in portoghese, qualunque sia la lingua dell'interfaccia.
+## Privacy
 
-Per aprirla, fai clic sul pulsante centrale dell'Arpa Cristiana, tra le quattro icone principali della schermata iniziale.
+La Bibbia e l'Arpa vengono installate con l'estensione. La lettura, la ricerca e i segnalibri funzionano senza connessione e restano sul tuo computer.

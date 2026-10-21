@@ -1,44 +1,37 @@
 # Heilige Schrift für MomAI
 
-Die Heilige Schrift ist eine Erweiterung für das Lesen, die tägliche Andacht und das Studium der Heiligen Schrift direkt in MomAI. Geschaffen, um Ihr christliches Leben aufzubauen, bietet sie eine angenehme, praktische und ablenkungsfreie Erfahrung für Ihre tägliche Andacht.
+Lesen Sie die Bibel in Ihrem Tempo, markieren Sie die Verse, die Sie ansprechen, und machen Sie dort weiter, wo Sie aufgehört haben. Die Erweiterung funktioniert offline und enthält auch die vollständige Christliche Harfe.
 
-## Ein Segen für Ihren Alltag mit dem Wort Gottes
+## Was enthalten ist
 
-Das Wort des Herrn ist eine Leuchte für unsere Füße und ein Licht auf unserem Weg. Mit dieser Erweiterung, die in Ihren Tag am Computer integriert ist, können Sie Ihren Glauben nähren, schnell Schriftstellen finden und Ihre Bibellese stets aktuell halten.
-
-### Hauptfunktionen
-
-- **Der vollständige heilige Text**: Enthält die 66 Bücher der protestantischen Heiligen Schrift, davon 39 Bücher des Alten Testaments (von Genesis bis Maleachi) und 27 Bücher des Neuen Testaments (von Matthäus bis zur Offenbarung).
-- **Treue und anerkannte Übersetzung**: Text auf Grundlage der bewährten Übersetzung von João Ferreira de Almeida, klar und von den evangelischen Gemeinden Brasiliens weit verbreitet.
-- **Vers des Tages und Andacht**: Jedes Mal, wenn Sie die Erweiterung öffnen, erhalten Sie eine inspirierende Schriftstelle mit vollständiger Stellenangabe und einer direkten Schaltfläche, um den Zusammenhang des Kapitels zu lesen.
-- **Schnelle Schriftsuche**: Finden Sie mühelos jeden Vers oder jedes Buch, indem Sie so schreiben, wie Sie sprechen (zum Beispiel: Johannes 3:16, Psalmen 23 oder Römer 8:28). Sie können auch nach Wörtern und Themen suchen, die Sie studieren möchten.
-- **Flüssiges und angenehmes Lesen**: Blättern Sie mühelos durch Bücher und Kapitel über das seitliche Verzeichnis oder die Navigationspfeile in der Fußzeile und auf der Tastatur.
-- **Weiterlesen, wo Sie aufgehört haben**: Der Leser merkt sich automatisch das letzte Kapitel und den letzten Vers, bei dem Sie waren, damit Sie in Ihrem Leseplan nie den Faden verlieren.
-- **Vers-Lesezeichen**: Heben Sie Ihre Lieblingsverse hervor und speichern Sie sie, kopieren Sie sie mühelos, um sie mit der Familie oder in den Gemeindegruppen zu teilen.
-- **Vollständige Christliche Harfe**: Alle 640 Lieder des Gesangbuchs mit Register von 1 bis 640, Suche nach Nummer, Titel oder Liedtextausschnitt, Favoriten und demselben realistischen Buchleser wie die Bibel.
-- **Funktioniert 100 % offline**: Der gesamte Bibeltext ist mit der Erweiterung installiert. Sie benötigen keine Internetverbindung, um das Wort zu lesen, zu suchen oder darüber nachzusinnen.
-- **Gebets- und Studienbegleitung mit MomAI**: In Ihren Gesprächen können Sie die Assistentin bitten, Schriftstellen zu suchen, Kapitel vorzulesen oder beim Verstehen des biblischen Zusammenhangs zu helfen.
+- Alle 66 Bücher der Bibel, von Genesis bis Offenbarung.
+- Ein Vers des Tages mit einer Schaltfläche zum Öffnen des ganzen Kapitels.
+- Suche nach Stelle, zum Beispiel "Johannes 3:16", "Psalm 23" oder "Römer 8:28", und nach Wörtern oder Themen.
+- Lesezeichen und Kopieren von Versen.
+- Leseverlauf, damit Sie zum letzten Kapitel zurückkehren können.
+- Tagesziele und Tage in Folge im MomAI-Widget-Bereich.
+- Die Christliche Harfe mit allen 640 Liedern, Suche nach Nummer, Titel oder Textausschnitt und Favoriten.
+- Mit MomAI über eine Stelle sprechen, ein Kapitel vorlesen lassen oder sich den Zusammenhang erklären lassen.
+- Zweispaltiges Lesen mit Seitenumblättern, wie in einem echten Buch.
+- Funktioniert ohne Internet.
 
 ## Verwendung
 
-1. Öffnen Sie MomAI und klicken Sie in der Seitenleiste auf das Symbol der Heiligen Schrift.
-2. Lesen Sie auf dem Startbildschirm die Botschaft des Tages oder verwenden Sie die Suchleiste, um direkt zum gewünschten Kapitel zu gelangen.
-3. Um das allgemeine Verzeichnis der 66 Bücher zu öffnen, klicken Sie oben auf die Listen- oder Bibelverzeichnis-Schaltfläche.
-4. Klicken Sie auf einen beliebigen Vers, um ihn als Favorit zu markieren oder in die Zwischenablage zu kopieren.
-5. Sie können auch per Sprache oder Text mit MomAI interagieren, zum Beispiel: „MomAI, lies Psalm 91" oder „Zeige den Vers des Tages".
+1. Öffnen Sie MomAI und klicken Sie auf das Bibelsymbol.
+2. Lesen Sie auf dem Startbildschirm den Vers des Tages oder suchen Sie eine Stelle.
+3. Öffnen Sie das Verzeichnis, um Buch und Kapitel auszuwählen.
+4. Klicken Sie auf einen Vers, um ihn zu markieren oder zu kopieren.
+5. Um die Christliche Harfe zu öffnen, nutzen Sie die Schaltfläche in der Mitte des Startbildschirms.
+6. Sie können auch im Chat fragen: "MomAI, lies Psalm 91."
 
-## Übersetzung und Verpflichtung
+## Sprachen und Übersetzungen
 
-Der in dieser Erweiterung verwendete Bibeltext folgt der klassischen Übersetzung von João Ferreira de Almeida, die gemeinfrei ist, und bewahrt die Treue zu den Handschriften sowie die ehrfürchtige Achtung vor der Heiligen Schrift. Möge dieses Werkzeug ein Kanal des Segens und des geistlichen Wachstums für Ihr Leben und Ihre Familie sein!
+Die portugiesische Bibel verwendet die Übersetzung von João Ferreira de Almeida, gemeinfrei. Auch die anderen Versionen sind gemeinfrei: King James Version (Englisch), Reina-Valera 1909 (Spanisch), Louis Segond 1910 (Französisch), Lutherbibel 1912 (Deutsch) und Riveduta 1927 (Italienisch). Die Sprache folgt der MomAI-Einstellung, lässt sich aber über die Schaltfläche Sprachen ändern.
 
 ## Christliche Harfe
 
-Der Startbildschirm der Erweiterung enthält auch die **vollständige Christliche Harfe** (*Harpa Cristã*): alle 640 Lieder des Gesangbuchs, mit Register von 1 bis 640, Suche nach Nummer, Titel oder Liedtextausschnitt und Favoriten.
+Die Christliche Harfe enthält alle 640 Lieder des Gesangbuchs. Sie können nach Nummer, Titel oder Textausschnitt suchen, Favoriten markieren und beim letzten Lied weiterlesen. Die Lieder öffnen sich im selben Buchleser wie die Bibel, mit zwei Spalten und Seitenumblättern. Der Originaltext ist portugiesisch und bleibt es, wenn eine Übersetzung fehlt. Zum Öffnen nutzen Sie die mittlere Schaltfläche auf dem Startbildschirm.
 
-- **Dasselbe Leseerlebnis**: Die Lieder öffnen sich im selben realistischen Buch wie die Bibel, mit Umblättern, zwei Spalten und Navigation über das seitliche Register.
-- **Vollständiges Register**: Finden Sie jedes Lied über die Nummer (z. B. 545), den Titel (z. B. „Weil er lebt") oder einen Ausschnitt des Refrains.
-- **Favoriten der Harfe**: Markieren Sie die Lieder, die Sie am meisten singen, und kehren Sie jederzeit zu ihnen zurück.
-- **Weiter beim letzten Lied**: Die Erweiterung merkt sich das Lied, bei dem Sie aufgehört haben.
-- **In deiner Sprache, Original auf Portugiesisch**: Titel, Strophen und Refrain folgen der gewählten Sprache (Einstellungen, Startbildschirm oder Sprachen-Button); Portugiesisch ist das Original und wird verwendet, wenn eine Übersetzung fehlt.
+## Datenschutz
 
-Klicken Sie auf die mittlere Schaltfläche der Christlichen Harfe zwischen den vier Hauptsymbolen des Startbildschirms, um sie zu öffnen.
+Der vollständige Bibel- und Harfentext wird mit der Erweiterung installiert. Lesen, Suche und Lesezeichen funktionieren ohne Verbindung und bleiben auf Ihrem Computer.
