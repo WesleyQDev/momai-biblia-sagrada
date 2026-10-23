@@ -264,8 +264,8 @@
   "backgroundScript": "dist/runtime.js",
   "permissions": [],
   "sdkVersion": 1,
-  "momai_compat": ">=1.16.0",
-  "version": "1.5.1",
+  "momai_compat": ">=1.17.1",
+  "version": "1.6.0",
   "ui": {
     "page": "dist/page.js",
     "pageType": "momai-biblia-page",
