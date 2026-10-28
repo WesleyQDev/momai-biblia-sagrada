@@ -131,7 +131,8 @@ export function openChapterInMomAI(bookId: number, chapter: number): void {
 export default function BibleTrackerWidget({
   instanceId,
   widgetId,
-  config
+  config,
+  isEditing = false
 }: TrackerWidgetProps): JSX.Element {
   const { t, getBookName } = useBibleI18n()
   // Follows the reader's translation so the widget never shows Almeida while
@@ -333,25 +334,25 @@ export default function BibleTrackerWidget({
   // ==========================================
   if (showCelebration) {
     return (
-      <div className="w-full h-full flex flex-col p-3 select-none text-text relative overflow-hidden">
+      <div className="w-full h-full flex flex-col p-2 sm:p-2.5 select-none text-text relative overflow-hidden bible-tracker-widget">
         {/* Top Header: Badge + Collapsible info */}
-        <div className="shrink-0 mb-1.5 flex flex-col gap-1.5">
+        <div className={`shrink-0 mb-1 flex flex-col gap-1 widget-header-row ${isEditing ? 'pr-14' : ''}`}>
           <div className="flex justify-end">
             <div className="flex items-center gap-1.5 shrink-0">
               {tracker.streakDays > 0 && (
                 <span
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-card text-text border border-border"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-card text-text border border-border bible-tracker-streak"
                   title={t('widget.tracker.streak_tooltip', { count: tracker.streakDays })}
                 >
-                  <FlameIcon className="w-2.5 h-2.5 text-text" />
-                  <span>{t('widget.tracker.streak_days', { count: tracker.streakDays })}</span>
+                  <FlameIcon className="w-2.5 h-2.5 text-text shrink-0" />
+                  <span className="bible-tracker-streak-text">{t('widget.tracker.streak_days', { count: tracker.streakDays })}</span>
                 </span>
               )}
 
               <button
                 type="button"
                 onClick={() => setShowInfo((prev) => !prev)}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-card text-text border border-border hover:bg-card-hover transition-all cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-card text-text border border-border hover:bg-card-hover transition-all cursor-pointer shadow-xs bible-tracker-goal"
                 title={t('widget.tracker.goal_badge_tooltip_done', { count: tracker.completedToday })}
                 aria-label={t('widget.tracker.goal_completed_title')}
               >
@@ -396,34 +397,34 @@ export default function BibleTrackerWidget({
         </div>
 
         {/* Centered Celebration Content */}
-        <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center text-center gap-3.5 px-2 my-auto">
-          <div className="w-11 h-11 rounded-2xl bg-card border border-border/80 flex items-center justify-center text-accent shadow-xs shrink-0 transition-transform duration-300 hover:scale-110">
-            <SparklesIcon className="w-5 h-5 text-accent" />
+        <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center text-center gap-2 sm:gap-3.5 px-2 my-auto bible-celebrate-content">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-card border border-border/80 flex items-center justify-center text-accent shadow-xs shrink-0 transition-transform duration-300 hover:scale-110 bible-celebrate-icon">
+            <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
           </div>
 
-          <div className="space-y-1 max-w-xs">
-            <h3 className="text-base sm:text-lg font-bold text-text leading-snug">
+          <div className="space-y-0.5 sm:space-y-1 max-w-xs">
+            <h3 className="text-sm sm:text-base font-bold text-text leading-snug bible-celebrate-title">
               {t('widget.tracker.goal_completed_title')}
             </h3>
-            <p className="text-xs text-text-muted">
+            <p className="text-[11px] sm:text-xs text-text-muted bible-celebrate-desc">
               {tracker.completedToday === 1
                 ? t('widget.tracker.goal_completed_desc_one', { count: tracker.completedToday })
                 : t('widget.tracker.goal_completed_desc_other', { count: tracker.completedToday })}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 pt-1 bible-celebrate-actions">
             <button
               type="button"
               onClick={() => setReadingExtra(true)}
-              className="px-3.5 py-2 rounded-xl bg-card hover:bg-card-hover border border-border font-semibold text-xs text-text transition-all active:scale-95 cursor-pointer shadow-xs"
+              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-card hover:bg-card-hover border border-border font-semibold text-xs text-text transition-all active:scale-95 cursor-pointer shadow-xs bible-celebrate-btn"
             >
               {t('widget.tracker.read_extra_button')}
             </button>
             <button
               type="button"
               onClick={() => setShowResetConfirmModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-input/60 hover:bg-input border border-border font-medium text-xs text-text-muted hover:text-text transition-all active:scale-95 cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-input/60 hover:bg-input border border-border font-medium text-xs text-text-muted hover:text-text transition-all active:scale-95 cursor-pointer shadow-xs inline-flex items-center gap-1.5 bible-celebrate-btn"
               title={t('widget.tracker.restart_reading_tooltip')}
             >
               <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -489,10 +490,10 @@ export default function BibleTrackerWidget({
   // VIEW 2: DIRECT SCRIPTURE READING VIEW
   // ==========================================
   return (
-    <div className="w-full h-full flex flex-col p-3 select-none text-text relative overflow-hidden">
+    <div className="w-full h-full flex flex-col p-2 sm:p-2.5 select-none text-text relative overflow-hidden bible-tracker-widget">
       {/* Top Header: Navigation arrows + Chapter Title + Goal Badge */}
-      <div className="shrink-0 mb-1.5 flex flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-1.5">
+      <div className={`shrink-0 mb-1 flex flex-col gap-1 widget-header-row ${isEditing ? 'pr-14' : ''}`}>
+        <div className="flex items-center justify-between gap-1">
           {/* Chapter Navigation (< Book Chapter >) */}
           <div className="flex items-center gap-0.5 min-w-0 flex-1">
             <button
@@ -534,15 +535,25 @@ export default function BibleTrackerWidget({
             </button>
           </div>
 
-          {/* Right side: Streak badge + Goal Badge */}
+          {/* Right side: Quick mark button (compact sizes) + Streak badge + Goal Badge */}
           <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowConfirmModal(true)}
+              className="bible-tracker-header-mark hidden items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-card hover:bg-card-hover border border-border text-text transition-all cursor-pointer shadow-xs shrink-0 active:scale-95"
+              title={t('widget.tracker.mark_as_read')}
+            >
+              <CheckIcon className="w-3 h-3 text-accent shrink-0" />
+              <span className="bible-tracker-mark-text">{t('widget.tracker.read_status_done', { defaultValue: 'Lido' })}</span>
+            </button>
+
             {tracker.streakDays > 0 && (
               <span
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-card text-text border border-border"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-card text-text border border-border bible-tracker-streak"
                 title={t('widget.tracker.streak_tooltip', { count: tracker.streakDays })}
               >
-                <FlameIcon className="w-2.5 h-2.5 text-text" />
-                <span>{t('widget.tracker.streak_days', { count: tracker.streakDays })}</span>
+                <FlameIcon className="w-2.5 h-2.5 text-text shrink-0" />
+                <span className="bible-tracker-streak-text">{t('widget.tracker.streak_days', { count: tracker.streakDays })}</span>
               </span>
             )}
 
@@ -550,7 +561,7 @@ export default function BibleTrackerWidget({
               <button
                 type="button"
                 onClick={() => setShowInfo((prev) => !prev)}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-card text-text border border-border hover:bg-card-hover transition-all cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-card text-text border border-border hover:bg-card-hover transition-all cursor-pointer shadow-xs bible-tracker-goal"
                 title={t('widget.tracker.goal_badge_tooltip_done', { count: tracker.completedToday })}
                 aria-label={t('widget.tracker.goal_completed_title')}
               >
@@ -561,11 +572,16 @@ export default function BibleTrackerWidget({
               <button
                 type="button"
                 onClick={() => setShowInfo((prev) => !prev)}
-                className="px-2 py-0.5 rounded-full text-xs font-semibold bg-card hover:bg-card-hover border border-border text-text transition-all cursor-pointer shadow-xs"
+                className="px-2 py-0.5 rounded-full text-xs font-semibold bg-card hover:bg-card-hover border border-border text-text transition-all cursor-pointer shadow-xs bible-tracker-goal"
                 title={t('widget.tracker.goal_badge_tooltip_progress')}
                 aria-label={t('widget.tracker.goal_badge_progress', { completed: tracker.completedToday, goal: effectiveGoal })}
               >
-                {t('widget.tracker.goal_badge_progress', { completed: tracker.completedToday, goal: effectiveGoal })}
+                <span className="bible-tracker-goal-full">
+                  {t('widget.tracker.goal_badge_progress', { completed: tracker.completedToday, goal: effectiveGoal })}
+                </span>
+                <span className="bible-tracker-goal-short hidden">
+                  {tracker.completedToday}/{effectiveGoal}
+                </span>
               </button>
             )}
           </div>
@@ -613,7 +629,7 @@ export default function BibleTrackerWidget({
       {/* Main Verses Reading Area */}
       <div
         ref={textContainerRef}
-        className="flex-1 min-h-0 overflow-y-auto px-1 py-1 space-y-2 select-text custom-scrollbar text-[13px] sm:text-sm leading-relaxed"
+        className="flex-1 min-h-0 overflow-y-auto px-1 py-1 space-y-2 select-text custom-scrollbar text-[13px] sm:text-sm leading-relaxed bible-tracker-verses"
       >
         {readingVerses.length > 0 ? (
           readingVerses.map((verse) => (
@@ -632,11 +648,11 @@ export default function BibleTrackerWidget({
       </div>
 
       {/* Bottom Action: Marcar como lido */}
-      <div className="pt-2 shrink-0 flex justify-center">
+      <div className="pt-1.5 shrink-0 flex justify-center bible-tracker-bottom-action">
         <button
           type="button"
           onClick={() => setShowConfirmModal(true)}
-          className="w-full max-w-sm py-2 px-4 rounded-xl bg-card hover:bg-card-hover border border-border font-medium text-xs text-text transition-all active:scale-95 cursor-pointer shadow-xs text-center"
+          className="w-full max-w-sm py-1.5 px-3 rounded-xl bg-card hover:bg-card-hover border border-border font-medium text-xs text-text transition-all active:scale-95 cursor-pointer shadow-xs text-center bible-tracker-mark-btn"
         >
           {t('widget.tracker.mark_as_read')}
         </button>
