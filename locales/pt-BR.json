@@ -38,6 +38,7 @@
       "select_book_title": "Selecionar Livro",
       "loading_text": "Carregando texto bíblico...",
       "mark_as_read": "Marcar como lido",
+      "read_status_done": "Lido",
       "confirm_title": "Confirmar Leitura",
       "confirm_desc": "Deseja marcar {book} {chapter} como lido?",
       "confirm_button": "Confirmar",

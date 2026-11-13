@@ -544,7 +544,7 @@ export default function BibleTrackerWidget({
               title={t('widget.tracker.mark_as_read')}
             >
               <CheckIcon className="w-3 h-3 text-accent shrink-0" />
-              <span className="bible-tracker-mark-text">{t('widget.tracker.read_status_done', { defaultValue: 'Lido' })}</span>
+              <span className="bible-tracker-mark-text">{t('widget.tracker.read_status_done')}</span>
             </button>
 
             {tracker.streakDays > 0 && (

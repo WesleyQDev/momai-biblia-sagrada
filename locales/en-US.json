@@ -38,6 +38,7 @@
       "select_book_title": "Select Book",
       "loading_text": "Loading scripture...",
       "mark_as_read": "Mark as read",
+      "read_status_done": "Read",
       "confirm_title": "Confirm Reading",
       "confirm_desc": "Do you want to mark {book} {chapter} as read?",
       "confirm_button": "Confirm",
