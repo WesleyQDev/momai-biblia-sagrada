@@ -34,4 +34,4 @@ A Harpa Cristã tem os 640 hinos do hinário. Você pode buscar por número, tí
 
 ## Privacidade
 
-A Bíblia e a Harpa vêm instaladas com a extensão. A leitura, a busca e os marcadores funcionam sem conexão e ficam salvos no seu computador.
+A Bíblia e a Harpa vêm instaladas com a extensão. A leitura, a busca e os marcadores funcionam sem conexão e ficam salvos no seu computador. 
