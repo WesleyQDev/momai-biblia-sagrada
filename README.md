@@ -1,7 +1,5 @@
 # Holy Bible for MomAI
 
-**English** · [Português](README.pt-BR.md) · [Español](README.es.md) · [Français](README.fr.md) · [Italiano](README.it.md) · [Deutsch](README.de.md)
-
 Read the Bible at your own pace, bookmark the verses that speak to you, and pick up where you left off. The extension works offline and includes the complete Christian Harp.
 
 ## What's inside

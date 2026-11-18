@@ -1,7 +1,5 @@
 # Bíblia Sagrada para MomAI
 
-[English](README.md) · **Português** · [Español](README.es.md) · [Français](README.fr.md) · [Italiano](README.it.md) · [Deutsch](README.de.md)
-
 Leia a Bíblia no seu ritmo, marque os versículos que falaram com você e continue de onde parou. A extensão funciona offline e também traz a Harpa Cristã completa.
 
 ## O que tem dentro

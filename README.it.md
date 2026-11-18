@@ -1,7 +1,5 @@
 # Sacra Bibbia per MomAI
 
-[English](README.md) · [Português](README.pt-BR.md) · [Español](README.es.md) · [Français](README.fr.md) · **Italiano** · [Deutsch](README.de.md)
-
 Leggi la Bibbia con i tuoi tempi, segna i versetti che ti hanno parlato e riprendi da dove ti sei fermato. L'estensione funziona offline e include anche l'Arpa Cristiana completa.
 
 ## Cosa contiene

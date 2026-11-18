@@ -1,7 +1,5 @@
 # Heilige Schrift für MomAI
 
-[English](README.md) · [Português](README.pt-BR.md) · [Español](README.es.md) · [Français](README.fr.md) · [Italiano](README.it.md) · **Deutsch**
-
 Lesen Sie die Bibel in Ihrem Tempo, markieren Sie die Verse, die Sie ansprechen, und machen Sie dort weiter, wo Sie aufgehört haben. Die Erweiterung funktioniert offline und enthält auch die vollständige Christliche Harfe.
 
 ## Was enthalten ist
