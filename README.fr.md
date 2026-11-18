@@ -1,5 +1,7 @@
 # Sainte Bible pour MomAI
 
+[English](README.md) · [Português](README.pt-BR.md) · [Español](README.es.md) · **Français** · [Italiano](README.it.md) · [Deutsch](README.de.md)
+
 Lisez la Bible à votre rythme, marquez les versets qui vous parlent et reprenez là où vous vous êtes arrêté. L'extension fonctionne hors ligne et inclut la Harpe Chrétienne complète.
 
 ## Ce qu'elle contient

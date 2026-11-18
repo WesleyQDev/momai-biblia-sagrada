@@ -1,37 +1,39 @@
-# Bíblia Sagrada para MomAI
+# Holy Bible for MomAI
 
-Leia a Bíblia no seu ritmo, marque os versículos que falaram com você e continue de onde parou. A extensão funciona offline e também traz a Harpa Cristã completa.
+**English** · [Português](README.pt-BR.md) · [Español](README.es.md) · [Français](README.fr.md) · [Italiano](README.it.md) · [Deutsch](README.de.md)
 
-## O que tem dentro
+Read the Bible at your own pace, bookmark the verses that speak to you, and pick up where you left off. The extension works offline and includes the complete Christian Harp.
 
-- Os 66 livros da Bíblia, do Gênesis ao Apocalipse.
-- Versículo do dia com um botão para abrir o capítulo inteiro.
-- Busca por referência, como "João 3:16", "Salmos 23" ou "Romanos 8:28", e por palavras ou temas.
-- Marcadores e cópia de versículos.
-- Histórico de leitura para voltar ao último capítulo.
-- Metas diárias e sequência de dias na área de widgets do MomAI.
-- Harpa Cristã com os 640 hinos, busca por número, título ou trecho e favoritos.
-- Conversar com a MomAI sobre a passagem, pedir para ler um capítulo ou entender o contexto.
-- Leitura em duas colunas, com virada de página, no mesmo estilo de um livro.
-- Funciona sem internet.
+## What's inside
 
-## Como usar
+- All 66 books of the Bible, from Genesis to Revelation.
+- A daily verse with a button to open the full chapter.
+- Search by reference, such as "John 3:16", "Psalm 23", or "Romans 8:28", and by words or topics.
+- Bookmarks and verse copying.
+- Reading history so you can return to your last chapter.
+- Daily goals and streak tracking in the MomAI widgets area.
+- The Christian Harp with all 640 hymns, search by number, title, or lyric excerpt, and favorites.
+- Talk to MomAI about a passage, ask it to read a chapter, or ask it to help you understand the context.
+- Two-column reading with page turns, like a real book.
+- Works without internet.
 
-1. Abra o MomAI e clique no ícone da Bíblia.
-2. Na tela inicial, leia o versículo do dia ou pesquise uma passagem.
-3. Abra o índice para escolher livro e capítulo.
-4. Clique em um versículo para favoritar ou copiar.
-5. Para abrir a Harpa Cristã, use o botão no centro da tela inicial.
-6. Você também pode pedir no chat: "MomAI, leia o Salmo 91."
+## How to use
 
-## Idiomas e traduções
+1. Open MomAI and click the Bible icon.
+2. On the home screen, read the daily verse or search for a passage.
+3. Open the index to choose a book and chapter.
+4. Click a verse to bookmark or copy it.
+5. To open the Christian Harp, use the button in the center of the home screen.
+6. You can also ask in chat: "MomAI, read Psalm 91."
 
-A Bíblia em português usa a tradução de João Ferreira de Almeida, em domínio público. As outras versões também são de domínio público: King James Version (inglês), Reina-Valera 1909 (espanhol), Louis Segond 1910 (francês), Lutherbibel 1912 (alemão) e Riveduta 1927 (italiano). O idioma segue a configuração do MomAI, mas você pode trocar no botão Idiomas.
+## Languages and translations
 
-## Harpa Cristã
+The Portuguese Bible uses the João Ferreira de Almeida translation, in the public domain. The other versions are also in the public domain: King James Version (English), Reina-Valera 1909 (Spanish), Louis Segond 1910 (French), Lutherbibel 1912 (German), and Riveduta 1927 (Italian). The language follows the MomAI setting, but you can change it with the Languages button.
 
-A Harpa Cristã tem os 640 hinos do hinário. Você pode buscar por número, título ou trecho da letra, marcar favoritos e continuar no último hino. Os hinos abrem no mesmo leitor em formato de livro da Bíblia, com duas colunas e virada de página. O texto original está em português e continua assim quando não há tradução. Para abrir, use o botão central da tela inicial.
+## Christian Harp
 
-## Privacidade
+The Christian Harp contains all 640 hymns of the hymnal. You can search by number, title, or lyric excerpt, bookmark favorites, and continue at the last hymn. The hymns open in the same book-style reader as the Bible, with two columns and page turns. The original text is in Portuguese and stays that way when a translation is missing. To open it, use the center button on the home screen.
 
-A Bíblia e a Harpa vêm instaladas com a extensão. A leitura, a busca e os marcadores funcionam sem conexão e ficam salvos no seu computador. 
+## Privacy
+
+The Bible and the Harp come installed with the extension. Reading, search, and bookmarks work without a connection and stay on your computer.

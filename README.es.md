@@ -1,5 +1,7 @@
 # Santa Biblia para MomAI
 
+[English](README.md) · [Português](README.pt-BR.md) · **Español** · [Français](README.fr.md) · [Italiano](README.it.md) · [Deutsch](README.de.md)
+
 Lee la Biblia a tu ritmo, marca los versículos que te hablaron y continúa donde lo dejaste. La extensión funciona sin conexión e incluye el Arpa Cristiana completa.
 
 ## Qué incluye
