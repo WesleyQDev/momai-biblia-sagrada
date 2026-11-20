@@ -3,13 +3,25 @@
 // Bookmarks and reading progress must go through host-owned SQLite over IPC
 // (isolated per dev mode) instead of JSON files inside the extension folder.
 
-function codedError(code, message) {
-  const err = new Error(message)
+function codedError(code: string, message: string): Error & { code: string } {
+  const err = new Error(message) as Error & { code: string }
   err.code = code
   return err
 }
 
-function createIpcBibliaStorage({ send, onResponse, storageDir, timeoutMs = 30000 } = {}) {
+export interface CreateIpcBibliaStorageOptions {
+  send?: (msg: unknown) => void
+  onResponse?: (fn: (msg: any) => void) => void
+  storageDir?: string
+  timeoutMs?: number
+}
+
+export function createIpcBibliaStorage({
+  send,
+  onResponse,
+  storageDir,
+  timeoutMs = 30000
+}: CreateIpcBibliaStorageOptions = {}) {
   let seq = 0
   const pending = new Map()
 
@@ -69,8 +81,4 @@ function createIpcBibliaStorage({ send, onResponse, storageDir, timeoutMs = 3000
     collections: area('collections', ['insert', 'list', 'count', 'search', 'remove', 'clear', 'upsert', 'upsertMany']),
     sessionFiles: area('sessionFiles', ['write', 'read', 'list', 'remove'])
   }
-}
-
-module.exports = {
-  createIpcBibliaStorage
 }

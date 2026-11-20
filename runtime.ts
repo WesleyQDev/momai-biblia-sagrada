@@ -7,8 +7,15 @@
 // Persistence contract: only host storage (worker storage handled by Node Core
 // over IPC) is written. Bundled datasets are read-only assets of the extension.
 
-const fs = require('node:fs')
-const path = require('node:path')
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { createIpcBibliaStorage } from './storage-ipc.ts'
+
+const runtimeDir =
+  typeof import.meta?.url === 'string' && import.meta.url.startsWith('file:')
+    ? path.dirname(fileURLToPath(import.meta.url))
+    : __dirname
 
 function safeSend(msg: any) {
   try {
@@ -36,7 +43,6 @@ let ipcStorage: any = null
 
 function getIpcStorage(): any {
   if (ipcStorage) return ipcStorage
-  const { createIpcBibliaStorage } = require('./storage-ipc.ts')
   ipcStorage = createIpcBibliaStorage({
     send: (msg: any) => safeSend(msg),
     onResponse: (fn: (msg: any) => void) => {
@@ -87,9 +93,9 @@ async function initTools() {
   // Works both from the source root (runtime.ts) and from the packaged
   // dist/runtime.js bundle, where assets live one level up.
   function resolveAssetPath(...segments: string[]): string {
-    const direct = path.join(__dirname, ...segments)
+    const direct = path.join(runtimeDir, ...segments)
     if (fs.existsSync(direct)) return direct
-    return path.join(__dirname, '..', ...segments)
+    return path.join(runtimeDir, '..', ...segments)
   }
 
   function readDataset(id: string): any[] {
@@ -182,6 +188,6 @@ process.on('disconnect', () => {
   process.exit(0)
 })
 
-module.exports = {
-  execute: (toolName: string, args?: any) => getTools().then((tools) => tools.execute(toolName, args))
+export function execute(toolName: string, args?: any) {
+  return getTools().then((tools) => tools.execute(toolName, args))
 }
